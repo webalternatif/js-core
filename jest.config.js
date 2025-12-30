@@ -1,0 +1,14 @@
+export default {
+    testEnvironment: 'jsdom',
+    verbose: true,
+    collectCoverage: true,
+    coverageDirectory: 'coverage',
+    moduleFileExtensions: ['js'],
+    coverageReporters: ['text-summary', 'html'],
+    roots: ['<rootDir>/tests'],
+    collectCoverageFrom: [
+        'src/**/*.{js,jsx}',
+        '!i18n/**',
+        '!tests/**/*.js'
+    ]
+};

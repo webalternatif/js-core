@@ -1,0 +1,16 @@
+export function isString(str: any): boolean;
+export function isObject(o: any): boolean;
+export function isFunction(f: any): boolean;
+export function isPlainObject(o: any): boolean;
+export function isBoolean(b: any): boolean;
+export function isBool(b: any): boolean;
+export function isUndefined(v: any): v is undefined;
+export function isArray(a: any): a is any[];
+export function isDate(o: any): boolean;
+export function isEvent(o: any): boolean;
+export function isInteger(n: any): boolean;
+export function isInt(n: any): boolean;
+export function isFloat(n: any): boolean;
+export function isScalar(value: any): boolean;
+export function isEventSupported(eventName: any): boolean;
+export function isTouchDevice(): boolean;

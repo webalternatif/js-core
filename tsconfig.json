@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "lib": ["esnext", "dom"],
+        "declaration": true,
+        "emitDeclarationOnly": true,
+        "outDir": "types",
+        "allowJs": true,
+        "checkJs": false,
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "baseUrl": "./",
+    },
+    "include": ["src/**/*.js"],
+    "exclude": ["i18n", "index.js"]
+}
