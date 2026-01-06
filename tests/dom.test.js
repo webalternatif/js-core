@@ -215,6 +215,228 @@ describe('dom manipulation', () => {
             expect([...el.classList]).toEqual(before);
         })
     })
+
+    describe('hasClass()', () => {
+        it('should return true if element has all classes', () => {
+            const child = el.children[0];
+            expect(dom.hasClass(child, 'child child0')).toBe(true);
+            expect(dom.hasClass(child, 'notexists')).toBe(false);
+        })
+
+        it('should handle empty string', () => {
+            expect(dom.hasClass(el, '')).toBe(false);
+        })
+    })
+
+    describe('append()', () => {
+        it('should append a child to an element', () => {
+            const div = document.createElement('div');
+
+            dom.append(el, div);
+            expect(el.lastElementChild).toBe(div);
+        })
+
+        it('should append multiple children', () => {
+            const c1 = document.createElement('span');
+            const c2 = document.createElement('span');
+
+            dom.append(el, c1, c2);
+
+            expect(el.children).toHaveLength(5);
+            expect(el.lastElementChild).toBe(c2);
+        });
+    })
+
+    describe('prepend()', () => {
+        it('should prepend a child to an element', () => {
+            const div = document.createElement('div');
+
+            dom.prepend(el, div);
+            expect(el.firstElementChild).toBe(div);
+        })
+
+        it('should prepend multiple children', () => {
+            const c1 = document.createElement('span');
+            const c2 = document.createElement('span');
+
+            dom.prepend(el, c1, c2);
+
+            expect(el.children).toHaveLength(5);
+            expect(el.firstElementChild).toBe(c1);
+            expect(el.firstElementChild.nextElementSibling).toBe(c2);
+        });
+    })
+
+    describe('remove()', () => {
+        it('should remove an element', () => {
+            const child = el.children[0];
+
+            dom.remove(child);
+            expect(el.children).toHaveLength(2);
+        })
+
+        it('should remove multiple elements', () => {
+            const child1 = el.children[0];
+            const child2 = el.children[1];
+
+            dom.remove(el, child1, child2);
+
+            expect(el.children).toHaveLength(1);
+        });
+    })
+
+    describe('closest()', () => {
+        it('should return the closest element', () => {
+            const child = el.children[0];
+            const grandchild = child.children[0];
+
+            expect(dom.closest(grandchild, '#root')).toBe(el);
+            expect(dom.closest(grandchild, '.grandchild')).toBe(grandchild);
+            expect(dom.closest(grandchild)).toBe(grandchild);
+        })
+    })
+
+    describe('next()', () => {
+        it('should return the next element', () => {
+            const child = el.children[0];
+
+            expect(dom.next(child)).toBe(el.children[1]);
+            expect(dom.next(child, '.child1')).toBe(el.children[1]);
+        })
+
+        it('should return null if there is no next element', () => {
+            const child1 = el.children[0];
+            const child3 = el.children[2];
+
+            expect(dom.next(child3)).toBe(null);
+            expect(dom.next(child1, '.notexists')).toBe(null);
+        })
+    })
+
+    describe('prev()', () => {
+        it('should return the previous element', () => {
+            const child = el.children[0];
+
+            expect(dom.next(child)).toBe(el.children[1]);
+            expect(dom.next(child, '.child2')).toBe(el.children[2]);
+        })
+
+        it('should return null if there is no previous element', () => {
+            const child1 = el.children[0];
+            const child3 = el.children[2];
+
+            expect(dom.prev(child1)).toBe(null);
+            expect(dom.prev(child3, '.notexists')).toBe(null);
+        })
+    })
+
+    describe('nextAll()', () => {
+        it('should return every elements next to an element', () => {
+            const child = el.children[0];
+
+            expect(dom.nextAll(child)).toHaveLength(2);
+            expect(dom.nextAll(child, '.child')).toHaveLength(2);
+            expect(dom.nextAll(child, '.child2')).toHaveLength(1);
+        })
+
+        it('should return an empty list if there is no next element', () => {
+            const child1 = el.children[0];
+            const child3 = el.children[2];
+
+            expect(dom.nextAll(child3)).toHaveLength(0);
+            expect(dom.nextAll(child1, '.notexists')).toHaveLength(0);
+        })
+    })
+
+    describe('prevAll()', () => {
+        it('should return every elements previous to an element', () => {
+            const child3 = el.children[2];
+
+            expect(dom.prevAll(child3)).toHaveLength(2);
+            expect(dom.prevAll(child3, '.child')).toHaveLength(2);
+            expect(dom.prevAll(child3, '.child1')).toHaveLength(1);
+        })
+
+        it('should return an empty list if there is no previous element', () => {
+            const child1 = el.children[0];
+            const child3 = el.children[2];
+
+            expect(dom.prevAll(child1)).toHaveLength(0);
+            expect(dom.prevAll(child3, '.notexists')).toHaveLength(0);
+        })
+    })
+
+    describe('wrap()', () => {
+    })
+
+    describe('attr()', () => {
+    })
+
+    describe('prop()', () => {
+    })
+
+    describe('html()', () => {
+    })
+
+    describe('text()', () => {
+    })
+
+    describe('hide()', () => {
+    })
+
+    describe('show()', () => {
+    })
+
+    describe('toggle()', () => {
+    })
+
+    describe('data()', () => {
+    })
+
+    describe('removeData()', () => {
+    })
+
+    describe('on()', () => {
+    })
+
+    describe('on()', () => {
+    })
+
+    describe('on()', () => {
+    })
+
+    describe('off()', () => {
+    })
+
+    describe('css()', () => {
+    })
+
+    describe('closestFind()', () => {
+    })
+
+    describe('closestFindOne()', () => {
+    })
+
+    describe('first()', () => {
+    })
+
+    describe('last()', () => {
+    })
+
+    describe('create()', () => {
+    })
+
+    describe('eq()', () => {
+    })
+
+    describe('after()', () => {
+    })
+
+    describe('before()', () => {
+    })
+
+    describe('empty()', () => {
+    })
 })
 
 

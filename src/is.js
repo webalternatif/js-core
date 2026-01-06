@@ -31,6 +31,15 @@ export const isUndefined = function(v) {
     return typeof v === 'undefined';
 }
 
+export const isArrayLike = function(o) {
+    return null !== o
+        && !isString(o)
+        && !isFunction(o)
+        && isInt(o.length)
+        && o.length >= 0
+        && Number.isFinite(o.length);
+}
+
 export const isArray = function(a) {
     return Array.isArray(a);
 }

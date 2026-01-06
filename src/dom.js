@@ -1,7 +1,37 @@
-import {isObject, isPlainObject, isString} from "./is.js";
+import {isArray, isArrayLike, isObject, isString} from "./is.js";
 import {camelCase} from "./string.js";
-import {each} from "./traversal.js";
-import {compareArray} from "./array.js";
+import {each, foreach, map} from "./traversal.js";
+import {inArray} from "./array.js";
+
+const cssNumber = [
+    'animationIterationCount',
+    'aspectRatio',
+    'borderImageSlice',
+    'columnCount',
+    'flexGrow',
+    'flexShrink',
+    'fontWeight',
+    'gridArea',
+    'gridColumn',
+    'gridColumnEnd',
+    'gridColumnStart',
+    'gridRow',
+    'gridRowEnd',
+    'gridRowStart',
+    'lineHeight',
+    'opacity',
+    'order',
+    'orphans',
+    'scale',
+    'widows',
+    'zIndex',
+    'zoom',
+    'fillOpacity',
+    'floodOpacity',
+    'stopOpacity',
+    'strokeMiterlimit',
+    'strokeOpacity',
+];
 
 export const isWindow = function(o) {
     return !!o && o === o.window;
@@ -47,45 +77,46 @@ export default {
     },
 
     /**
-     * @param {Element|Document|string} refEl
-     * @param {string} [selector='*']
-     * @returns {NodeList}
-     */
-    find(refEl, selector = '*') {
-        if (isString(refEl)) {
-            selector = refEl;
-            refEl = document;
-        }
-
-        try {
-            return refEl.querySelectorAll(selector);
-        } catch(e) {
-            return document.querySelectorAll(':not(*)');
-        }
-    },
-
-    /**
-     * @param {Element|Document|string} refEl
-     * @param {string} [selector='*']
+     * @param {Element|Document} refEl
+     * @param {string|Element|NodeList|Array<Element>} [selector]
      * @returns {Element|null}
      */
-    findOne(refEl, selector = '*') {
-        if (isString(refEl)) {
+    findOne(refEl, selector) {
+        return this.find(refEl, selector)[0] ?? null;
+    },
+
+    /**
+     * @param {Element|Document} refEl
+     * @param {string|Element|NodeList|Array<Element>} selector
+     * @returns {Array<Element>}
+     */
+    find(refEl, selector) {
+        if (undefined === selector) {
             selector = refEl;
             refEl = document;
         }
 
-        try {
-            return refEl.querySelector(selector);
-        } catch (e) {
-            return null;
+        if (selector instanceof Element) {
+            selector = [selector];
         }
+
+        if (isArrayLike(selector)) {
+            return map(Array.from(selector), (i, el) => {
+                if (el instanceof Element) {
+                    return refEl === el || refEl.contains(el) ? el : null;
+                }
+
+                return null;
+            })
+        }
+
+        return Array.from(refEl.querySelectorAll(selector));
     },
 
     /**
-     * @param {Element} el
+     * @param {Element|NodeList|Array<Element>} el
      * @param {string} className
-     * @returns {Element}
+     * @returns {Element|NodeList|Array<Element>}
      */
     addClass(el, className) {
         if (!className) return el;
@@ -94,22 +125,40 @@ export default {
             .map(c => c.trim())
             .filter(Boolean);
 
-        el.classList.add(...classNames);
+        const elements = (el instanceof Element)
+            ? [el]
+            : Array.from(el);
+
+        elements.forEach(e => {
+            if (e instanceof Element) {
+                e.classList.add(...classNames);
+            }
+        })
 
         return el;
     },
 
     /**
-     * @param {Element} el
-     * @param {string} classNames
-     * @returns {Element}
+     * @param {Element|NodeList|Array<Element>} el
+     * @param {string} className
+     * @returns {Element|NodeList|Array<Element>}
      */
-    removeClass(el, classNames) {
-        if (!classNames) return el;
+    removeClass(el, className) {
+        if (!className) return;
 
-        el.classList.remove(...classNames.split(' ')
+        const classNames = className.split(' ')
             .map(c => c.trim())
-            .filter(Boolean));
+            .filter(Boolean);
+
+        const elements = (el instanceof Element)
+            ? [el]
+            : Array.from(el);
+
+        elements.forEach(e => {
+            if (e instanceof Element) {
+                e.classList.remove(...classNames);
+            }
+        })
 
         return el;
     },
@@ -121,11 +170,11 @@ export default {
      * @returns {Element}
      */
     toggleClass(el, classNames, force) {
-        each(
+        foreach(
             classNames.split(' ')
                 .map(c => c.trim())
                 .filter(Boolean),
-            (i, c) => el.classList.toggle(c, force)
+            c => el.classList.toggle(c, force)
         )
 
         return el;
@@ -137,48 +186,87 @@ export default {
      * @returns {boolean}
      */
     hasClass(el, classNames) {
-        return compareArray(
-            [...el.classList],
+        if (!classNames) return false;
+
+        let foundClasses = true;
+
+        foreach(
             classNames.split(' ')
-                .map(c => c.trim())
-                .filter(Boolean),
-        );
+            .map(c => c.trim())
+            .filter(Boolean),
+            c => {
+                if (el.classList.contains(c)) {
+                    return true;
+                }
+
+                foundClasses = false;
+                return false;
+            }
+        )
+
+        return foundClasses;
     },
 
     /**
-     * @param {Element} el
-     * @param {Element} child
-     * @returns {Element}
+     * @param {Node} node
+     * @param {...Node} children
+     * @returns {Node}
      */
-    append(el, child) {
-        el.append(child);
-        return el;
+    append(node, ...children) {
+        node.append(...children);
+        return node;
     },
 
     /**
-     * @param {Element} el
-     * @param {Element} child
-     * @returns {Element}
+     * @param {Node} node
+     * @param {...Node} children
+     * @returns {Node}
      */
-    prepend(el, child) {
-        el.prepend(child);
-        return el;
+    prepend(node, ...children) {
+        node.prepend(...children);
+        return node;
     },
 
     /**
-     * @param {Element} el
+     * @param {Element|NodeList|Array<Element>|string} els
      * @returns {void}
      */
-    remove(el) {
-        el.remove();
+    remove(...els) {
+        els.forEach(el => {
+            if (el instanceof Element) {
+                el.remove();
+            } else if (el instanceof NodeList || isArray(el)) {
+                Array.from(el).forEach(e => e.remove());
+            } else {
+                this.remove(this.find(el));
+            }
+        })
     },
 
     /**
      * @param {Element} el
-     * @param {string} [selector]
+     * @param {string|Element} selector
      * @returns {Element|null}
      */
     closest(el, selector) {
+        if (selector instanceof Element) {
+            if (el === selector) {
+                return el;
+            }
+
+            let parentEl = el.parentElement;
+
+            while (parentEl) {
+                if (parentEl === selector) {
+                    return parentEl;
+                }
+
+                parentEl = parentEl.parentElement;
+            }
+
+            return null;
+        }
+
         return el.closest(selector);
     },
 
@@ -196,7 +284,7 @@ export default {
             return sibling;
         }
 
-        return sibling;
+        return null;
     },
 
     /**
@@ -256,6 +344,66 @@ export default {
         }
 
         return siblings;
+    },
+
+    /**
+     * @param {Element} el
+     * @param {Element|string} selector
+     * @returns {Element[]}
+     */
+    nextUntil(el, selector) {
+        let selectorIsElement = false;
+        const list = [];
+
+        if (selector instanceof Element) {
+            selectorIsElement = true;
+        }
+
+        let nextSibling = el.nextElementSibling;
+
+        while (nextSibling) {
+            const found = selectorIsElement
+                ? nextSibling === selector
+                : nextSibling.matches(selector);
+
+            if (found) break;
+
+            list.push(nextSibling);
+
+            nextSibling = nextSibling.nextElementSibling;
+        }
+
+        return list;
+    },
+
+    /**
+     * @param {Element} el
+     * @param {Element|string} selector
+     * @returns {Element[]}
+     */
+    prevUntil(el, selector) {
+        let selectorIsElement = false;
+        const list = [];
+
+        if (selector instanceof Element) {
+            selectorIsElement = true;
+        }
+
+        let prevSibling = el.previousElementSibling;
+
+        while (prevSibling) {
+            const found = selectorIsElement
+                ? prevSibling === selector
+                : prevSibling.matches(selector);
+
+            if (found) break;
+
+            list.push(prevSibling);
+
+            prevSibling = prevSibling.previousElementSibling;
+        }
+
+        return list;
     },
 
     /**
@@ -373,11 +521,15 @@ export default {
      * @param {Element} el
      * @param {Object<string, string>|string} name
      * @param {string} [value]
-     * @returns {Element}
+     * @returns {Element|DOMStringMap}
      */
     data(el, name, value) {
-        if (isPlainObject(name)) {
-            each(name, (k, v) => this.data(el, k, v));
+        if (undefined === name && undefined === value) {
+            return el.dataset;
+        }
+
+        if (webf.isPlainObject(name)) {
+            webf.each(name, (k, v) => this.data(el, k, v));
             return el;
         }
 
@@ -386,7 +538,10 @@ export default {
 
         if (undefined === value) return el.dataset[key];
 
-        if (null === value) this.removeData(el, key);
+        if (null === value) {
+            this.removeData(el, key);
+            return el;
+        }
 
         el.dataset[key] = value;
 
@@ -399,7 +554,7 @@ export default {
      * @returns {Element|*}
      */
     removeData(el, name) {
-        const key = (name + '').replace(/^data-/, '').camelCase();
+        const key = camelCase((name + '').replace(/^data-/, ''));
 
         delete el.dataset[key];
 
@@ -432,34 +587,31 @@ export default {
 
     /**
      * @param {HTMLElement} el
-     * @param {Object<string, string>|string} styles
+     * @param {Object<string, string>|string} style
      * @param {string} [value]
      * @returns {Element}
      */
-    css(el, styles, value) {
-        if (isString(styles)) {
+    css(el, style, value) {
+        if (isString(style)) {
+            const prop = style.startsWith('--') ? style : camelCase(style);
+
             if (undefined === value) {
-                return styles.startsWith('--')
-                    ? el.style.getPropertyValue(styles)
-                    : el.style[styles];
+                return getStyle(el, prop);
             }
 
-            if (styles.startsWith('--')) {
-                el.style.setProperty(styles, String(value));
+            if (prop.startsWith('--')) {
+                el.style.setProperty(prop, String(value));
             } else {
-                el.style[styles] = value;
-            }
+                if (typeof value === "number" && !inArray(prop, cssNumber))
+                    value += 'px';
 
-            return el;
+                el.style[prop] = value;
+            }
+        } else {
+            each(style, (name, v) => {
+                this.css(el, name, v);
+            });
         }
-
-        each(styles, (name, v) => {
-            if (name.startsWith('--')) {
-                el.style.setProperty(name, String(v));
-            } else {
-                el.style[name] = v;
-            }
-        });
 
         return el;
     },
@@ -505,21 +657,22 @@ export default {
     },
 
     /**
-     * @param {NodeList} nodeList
+     * @param {NodeList|Array<Element>} nodeList
      * @returns {Element|null}
      */
     last(nodeList) {
-        return nodeList.length ? nodeList.item(nodeList.length - 1) : null;
+        const arr = Array.from(nodeList)[0];
+        return arr[arr.length - 1];
     },
 
     /**
      * @param {string} html
-     * @returns {Element}
+     * @returns {Element|null}
      */
     create(html) {
         const tpl = document.createElement('template');
         tpl.innerHTML = html.trim();
-        return tpl.content.firstElementChild;
+        return tpl.content.firstElementChild ?? null;
     },
 
     /**
@@ -565,5 +718,26 @@ export default {
         }
 
         return el;
+    },
+
+    /**
+     * @param {Element|NodeList} el
+     * @param {string|Element} selector
+     * @return {Element[]}
+     */
+    not(el, selector) {
+        const elements = (el instanceof Element)
+            ? [el]
+            : Array.from(el);
+
+        const selectorIsString = webf.isString(selector);
+
+        return elements.filter(e => {
+            if (!(e instanceof Element)) return false
+
+            return selectorIsString
+                ? !e.matches(selector)
+                : e !== selector
+        })
     }
 }
