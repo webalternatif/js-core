@@ -1,6 +1,7 @@
 import * as stringFunctions from './string.js';
 import './stringPrototype.js';
 import * as arrayFunctions from './array.js';
+import * as is from './is.js';
 import * as traversal from './traversal.js';
 import dom, {getStyle, isDomElement, isWindow} from './dom.js';
 import * as math from './math.js';
@@ -12,6 +13,7 @@ const webf = {
     ...stringFunctions,
     ...arrayFunctions,
     ...traversal,
+    ...is,
     dom, isWindow, isDomElement, getStyle,
     ...math,
     ...utils,

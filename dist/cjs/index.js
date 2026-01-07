@@ -7,13 +7,14 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 import * as stringFunctions from './string.js';
 import './stringPrototype.js';
 import * as arrayFunctions from './array.js';
+import * as is from './is.js';
 import * as traversal from './traversal.js';
 import dom, { getStyle, isDomElement, isWindow } from './dom.js';
 import * as math from './math.js';
 import * as utils from './utils.js';
 import * as i18n from './i18n.js';
 import eventDispatcher from './eventDispatcher.js';
-var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, stringFunctions), arrayFunctions), traversal), {}, {
+var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, stringFunctions), arrayFunctions), traversal), is), {}, {
   dom: dom,
   isWindow: isWindow,
   isDomElement: isDomElement,
