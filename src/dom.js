@@ -649,11 +649,12 @@ export default {
     },
 
     /**
-     * @param {NodeList} nodeList
+     * @param {NodeList|Element|Array<Element>} nodeList
      * @returns {Element|null}
      */
     first(nodeList) {
-        return nodeList?.length ? nodeList.item(0) : null;
+        if (nodeList instanceof Element) return nodeList
+        return nodeList.length ? Array.from(nodeList)[0] : null;
     },
 
     /**
@@ -739,5 +740,25 @@ export default {
                 ? !e.matches(selector)
                 : e !== selector
         })
-    }
+    },
+
+    /**
+     * @param {Element} el
+     * @param {Element} child
+     * @param {Element} oldChild
+     */
+    replaceChild(el, child, oldChild) {
+        return el.replaceChild(child, oldChild);
+    },
+
+    /**
+     * @param {Element} el
+     * @param {Element[]} children
+     * @returns {Element}
+     */
+    replaceChildren(el, ...children) {
+        el.replaceChildren(...children);
+
+        return el;
+    },
 }
