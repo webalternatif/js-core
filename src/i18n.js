@@ -1,4 +1,4 @@
-import * as i18n from "../i18n/index.js";
+import * as i18n from "./i18n/index.js";
 import {isFunction, isUndefined} from "./is.js";
 
 export const translate = function (lang, ns, label) {

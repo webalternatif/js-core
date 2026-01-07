@@ -1,6 +1,6 @@
 import {translate, _, setLang, getLang} from '../src/i18n.js';
 
-jest.mock('../i18n/index', () => {
+jest.mock('../src/i18n/index', () => {
     return {
         core: {
             en: { hello: 'Hello', goodbye: 'Goodbye' },

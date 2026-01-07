@@ -16,7 +16,7 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "build:esm": "babel src --out-dir dist/esm --extensions .js",
-    "build:cjs": "babel src --out-dir dist/cjs --extensions .js --plugins @babel/plugin-transform-modules-commonjs",
+    "build:cjs": "babel src --out-dir dist/cjs --extensions .js",
     "types": "tsc",
     "build": "yarn build:esm && yarn build:cjs && yarn types",
     "readme": "documentation readme src/index.js --section=API --github"
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@babel/cli": "^7.28.3",
     "@babel/core": "^7.26.0",
+    "@babel/plugin-transform-export-namespace-from": "^7.27.1",
     "@babel/preset-env": "^7.26.0",
     "@testing-library/dom": "^10.4.1",
     "@types/jest": "^29.5.14",
