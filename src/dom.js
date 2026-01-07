@@ -609,9 +609,9 @@ export default {
     /**
      * @param {Element|Document|Window} el
      * @param {string} events
-     * @param {string|Element} selector
-     * @param {function} handler
-     * @param {AddEventListenerOptions|boolean} options
+     * @param {string|Element|function} selector
+     * @param {function|AddEventListenerOptions|boolean} [handler]
+     * @param {AddEventListenerOptions|boolean} [options]
      * @returns {Element}
      */
     on(el, events, selector, handler, options) {
@@ -671,9 +671,9 @@ export default {
     /**
      * @param {Element|Document|Window} el
      * @param {string} events
-     * @param {string|Element} selector
-     * @param {function} handler
-     * @param {EventListenerOptions|boolean} [options]
+     * @param {string|Element|function} selector
+     * @param {function|AddEventListenerOptions|boolean} [handler]
+     * @param {AddEventListenerOptions|boolean} [options]
      * @returns {Element}
      */
     off(el, events, selector, handler, options) {
