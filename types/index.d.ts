@@ -66,7 +66,7 @@ declare const webf: {
         } | string, value?: string): Element;
         closestFind(el: Element, selectorClosest: string, selectorFind: string): NodeList | null;
         closestFindOne(el: Element, selectorClosest: string, selectorFindOne: string): Element | null;
-        first(nodeList: NodeList): Element | null;
+        first(nodeList: NodeList | Element | Array<Element>): Element | null;
         last(nodeList: NodeList | Array<Element>): Element | null;
         create(html: string): Element | null;
         eq(nodeList: NodeList, index?: number): Element | null;
@@ -74,6 +74,8 @@ declare const webf: {
         before(el: Element, newEl: Element): Element;
         empty(el: Element): Element;
         not(el: Element | NodeList, selector: string | Element): Element[];
+        replaceChild(el: Element, child: Element, oldChild: Element): Element;
+        replaceChildren(el: Element, ...children: Element[]): Element;
     };
     isWindow: (o: any) => boolean;
     isDomElement: (o: any) => boolean;

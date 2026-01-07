@@ -212,10 +212,10 @@ declare namespace _default {
      */
     function closestFindOne(el: Element, selectorClosest: string, selectorFindOne: string): Element | null;
     /**
-     * @param {NodeList} nodeList
+     * @param {NodeList|Element|Array<Element>} nodeList
      * @returns {Element|null}
      */
-    function first(nodeList: NodeList): Element | null;
+    function first(nodeList: NodeList | Element | Array<Element>): Element | null;
     /**
      * @param {NodeList|Array<Element>} nodeList
      * @returns {Element|null}
@@ -255,5 +255,17 @@ declare namespace _default {
      * @return {Element[]}
      */
     function not(el: Element | NodeList, selector: string | Element): Element[];
+    /**
+     * @param {Element} el
+     * @param {Element} child
+     * @param {Element} oldChild
+     */
+    function replaceChild(el: Element, child: Element, oldChild: Element): Element;
+    /**
+     * @param {Element} el
+     * @param {Element[]} children
+     * @returns {Element}
+     */
+    function replaceChildren(el: Element, ...children: Element[]): Element;
 }
 export default _default;
