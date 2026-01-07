@@ -114,6 +114,27 @@ export default {
     },
 
     /**
+     * @param {Element} el
+     * @param {string} data
+     * @param {string} value
+     * @returns {Element|null}
+     */
+    findOneByData(el, data, value) {
+        return this.findByData(el, data, value)[0] ?? null;
+    },
+
+    /**
+     * @param {Element} el
+     * @param {string} data
+     * @param {string} value
+     * @returns {Element[]}
+     */
+    findByData(el, data, value) {
+        const escapeValue = CSS.escape(value);
+        return this.find(el, `[data-${data}="${escapeValue}"]`);
+    },
+
+    /**
      * @param {Element|NodeList|Array<Element>} el
      * @param {string} className
      * @returns {Element|NodeList|Array<Element>}
