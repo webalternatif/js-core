@@ -27,6 +27,20 @@ declare namespace _default {
      */
     function find(refEl: Element | Document, selector: string | Element | NodeList | Array<Element>): Array<Element>;
     /**
+     * @param {Element} el
+     * @param {string} data
+     * @param {string} value
+     * @returns {Element|null}
+     */
+    function findOneByData(el: Element, data: string, value: string): Element | null;
+    /**
+     * @param {Element} el
+     * @param {string} data
+     * @param {string} value
+     * @returns {Element[]}
+     */
+    function findByData(el: Element, data: string, value: string): Element[];
+    /**
      * @param {Element|NodeList|Array<Element>} el
      * @param {string} className
      * @returns {Element|NodeList|Array<Element>}
