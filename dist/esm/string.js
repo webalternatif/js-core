@@ -1,0 +1,470 @@
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+import { isArray, isFloat, isInteger, isObject, isPlainObject, isString, isUndefined } from "./is.js";
+import { dec2hex, hex2dec, round } from "./math.js";
+import { inArray } from "./array.js";
+import { each, foreach, map } from "./traversal.js";
+import { translate } from "./i18n.js";
+export var trim = function trim(str) {
+  var _char = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '\\s';
+  return ltrim(rtrim(str, _char), _char);
+};
+export var ltrim = function ltrim(str) {
+  var _char2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '\\s';
+  return str.replace(new RegExp("^".concat(_char2, "+"), 'g'), '');
+};
+export var rtrim = function rtrim(str) {
+  var _char3 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '\\s';
+  return str.replace(new RegExp("".concat(_char3, "+$"), 'g'), '');
+};
+export var stripMultipleSpaces = function stripMultipleSpaces(str) {
+  return str.trim().replace(/ +/g, ' ');
+};
+export var noAccent = function noAccent(str) {
+  return str.replace(/[àäâ]/g, 'a').replace(/[èéêë]/g, 'e').replace(/[îïí]/g, 'i').replace(/[öô]/g, 'o').replace(/[üù]/g, 'u').replace(/ç/g, 'c').replace(/ÿ/g, 'y').replace(/[ÀÄÂ]/g, 'A').replace(/[ÈÉÊË]/g, 'E').replace(/[ÎÏÍ]/g, 'I').replace(/[ÖÔ]/g, 'O').replace(/[ÜÙ]/g, 'U').replace(/Ç/g, 'C').replace(/Ÿ/g, 'Y');
+};
+export var br2nl = function br2nl(str) {
+  return str.split(/<br\s*\/*>/).join('\n');
+};
+export var nl2br = function nl2br(str) {
+  return str.split('\n').join('<br>');
+};
+export var ucfirst = function ucfirst(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+export var lcfirst = function lcfirst(str) {
+  return str.charAt(0).toLowerCase() + str.slice(1);
+};
+export var insertTag = function insertTag(str, tag) {
+  var position = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var length = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+  var startTag = "<".concat(tag, ">");
+  var endTag = "</".concat(tag, ">");
+  if (['br', 'hr', 'img', 'link', 'input'].includes(tag)) {
+    startTag = "<".concat(tag, "/>");
+    endTag = '';
+  }
+  return str.slice(0, position) + startTag + str.slice(position, position + length) + endTag + str.slice(position + length);
+};
+export var substringIndex = function substringIndex(str, delimiter, index) {
+  var input = str + '',
+    arr = input.split(delimiter);
+  if (index > 0) {
+    arr.splice(index, arr.length - index);
+  } else if (index < 0) {
+    arr.splice(0, arr.length + index);
+  }
+  return arr.join(delimiter);
+};
+export var insert = function insert(str, ins, n) {
+  if (n >= str.length) {
+    return str;
+  }
+  return _toConsumableArray(str).reduce(function (newStr, _char4, index) {
+    if (index > 0 && index % n === 0) {
+      return newStr + ins + _char4;
+    }
+    return newStr + _char4;
+  }, '');
+};
+export var reverse = function reverse(str) {
+  var res = [];
+  for (var i = 0; i < str.length; i++) {
+    res.unshift(str[i]);
+  }
+  return res.join('');
+};
+export var thousandSeparator = function thousandSeparator(value) {
+  var separator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '.';
+  var pointDecimal = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '.';
+  if (isUndefined(value) || null === value) {
+    return value;
+  }
+  value = (value + '').replace(',', '.');
+  if (Math.abs(value) >= 1000) {
+    var intval = Math[value >= 1000 ? 'floor' : 'ceil'](value) + '';
+    var newval = reverse(insert(reverse(intval), reverse(separator), 3));
+    return value.indexOf('.') > 0 ? newval + pointDecimal + substringIndex(value, '.', -1) : newval;
+  }
+  return (value + '').replace('.', pointDecimal);
+};
+export var numberFormat = function numberFormat(number) {
+  var decimals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 2;
+  var forceCentimes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var thousandSep = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  var pointDecimal = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '.';
+  number = number ? number + '' : '0';
+  number = round(parseFloat(number.replace(',', '.')), decimals) + '';
+  if (decimals === 0) {
+    return thousandSeparator(number, thousandSep, pointDecimal);
+  }
+  var pos = number.lastIndexOf('.');
+  if (-1 === pos) {
+    if (true === forceCentimes) {
+      number += pointDecimal + repeat('0', decimals);
+    }
+    return thousandSeparator(number, thousandSep, pointDecimal);
+  }
+  var digits = number.slice(pos + 1);
+  var nbDigits = digits.length;
+  if (decimals > nbDigits) {
+    return thousandSeparator(number + '0'.repeat(decimals - nbDigits), thousandSep, pointDecimal);
+  }
+  return thousandSeparator(number.slice(0, pos + 1 + decimals), thousandSep, pointDecimal);
+};
+export var toPrice = numberFormat;
+
+/**
+ * Pads a string to a specified length with a specified string and padding type
+ *
+ * @param {string} str
+ * @param {number} pad_length
+ * @param {string} [pad_str]
+ * @param {string} [pad_type]
+ * @returns {string}
+ */
+export var pad = function pad(str, pad_length) {
+  var pad_str = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ' ';
+  var pad_type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'left';
+  if (isUndefined(pad_length) || str.length >= pad_length || !inArray(pad_type, ['left', 'right'])) {
+    return str;
+  }
+  if (pad_type === 'left') {
+    return pad_str.repeat(Math.ceil(pad_length / pad_str.length)).slice(0, pad_length - str.length) + str;
+  }
+  return str + pad_str.repeat(Math.ceil(pad_length / pad_str.length)).slice(0, pad_length - str.length);
+};
+
+/**
+ * Converts RGB values to a hexadecimal color string.
+ *
+ * @param {number|number[]} r - Either an array representing a RGB color (e.g. [255, 0, 0]) or the red component as a
+ *                              number (0-255).
+ * @param {number} [g] - The green component (0-255). Required if `r` is a number.
+ * @param {number} [b] - The blue component (0-255). Required if `r` is a number.
+ * @returns {string} The hexadecimal color string (e.g., 'FF0000').
+ *
+ * @example
+ * // Using separate RGB components
+ * rgb2hex(255, 0, 0); // Returns 'FF0000'
+ *
+ * @example
+ * // Using an array of RGB components
+ * rgb2hex([255, 0, 0]); // Returns 'FF0000'
+ */
+var _rgb2hex = function rgb2hex(r, g, b) {
+  if (isArray(r)) {
+    return _rgb2hex.apply(void 0, _toConsumableArray(r));
+  }
+  if (!isInteger(r) || !isInteger(g) || !isInteger(b)) return '';
+  return [pad(dec2hex(parseInt(r)), 2, '0').toUpperCase(), pad(dec2hex(parseInt(g)), 2, '0').toUpperCase(), pad(dec2hex(parseInt(b)), 2, '0').toUpperCase()].join('');
+};
+export { _rgb2hex as rgb2hex };
+export var rgbtohex = _rgb2hex;
+
+/**
+ * Converts a hexadecimal color to RGB values.
+ *
+ * @param {string} hex - The hexadecimal value (e.g #FF0000)
+ * @returns {number[]} The RGB color array (e.g [255, 0, 0]).
+ */
+export var hex2rgb = function hex2rgb(hex) {
+  if (!isString(hex) || !hex.length) return [];
+  hex = hex.slice(-6).toUpperCase();
+  if (hex.length < 6) {
+    hex = map(hex.slice(-3), function (i, h) {
+      return h + '' + h;
+    }).join('');
+  }
+  for (var i = 0; i < hex.length; i++) {
+    if (-1 === '0123456789ABCDEF'.indexOf(hex[i])) {
+      return [];
+    }
+  }
+  return map(insert(hex, ',', 2).split(','), function (i, h) {
+    return hex2dec(h);
+  });
+};
+export var hextorgb = hex2rgb;
+
+/**
+ * Parses a URL string into its components.
+ *
+ * @param {string} str - The URL string to be parsed.
+ * @returns {Object} An object containing the parsed components of the URL.
+ *
+ * @property {string} [scheme] - The scheme (protocol) of the URL (e.g., `http`, `https`).
+ * @property {string} [authority] - The authority part of the URL.
+ * @property {string} [userInfo] - The user information (e.g., `user:pass`).
+ * @property {string} [user] - The username from the user information.
+ * @property {string} [pass] - The password from the user information.
+ * @property {string} [host] - The host of the URL (e.g., `example.com`).
+ * @property {string} [port] - The port of the URL (e.g., `8080`).
+ * @property {string} [relative] - The relative URL.
+ * @property {string} [path] - The path of the URL (e.g., `/path/to/resource`).
+ * @property {string} [directory] - The directory of the URL path.
+ * @property {string} [file] - The file name from the path, if applicable.
+ * @property {string} [query] - The query string (e.g., `key=value&key2=value2`).
+ * @property {string} [fragment] - The fragment (hash) of the URL (e.g., `#section`).
+ */
+export var parse_url = function parse_url(str) {
+  var key = ['source', 'scheme', 'authority', 'userInfo', 'user', 'pass', 'host', 'port', 'relative', 'path', 'directory', 'file', 'query', 'fragment'],
+    parser = /^(?:([^:\/?#]+):)?(?:\/\/()(?:(?:()(?:([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?()(?:(()(?:(?:[^?#\/]*\/)*)()(?:[^?#]*))(?:\?([^#]*))?(?:#(.*))?)/;
+  var m = parser.exec(str);
+  var uri = {},
+    i = 14;
+  while (i--) {
+    if (m[i]) {
+      uri[key[i]] = m[i];
+    }
+  }
+  delete uri.source;
+  return uri;
+};
+
+/**
+ * Adds or updates one or more query parameters to a given URL.
+ *
+ * @param {string} url - The URL to which the parameters should be added.
+ * @param {string|Object} param - The key of the parameter to add, or an object containing multiple key-value pairs to add.
+ * @param {string|null} [value=null] - The value of the parameter to add. Ignored if `param` is an object.
+ * @returns {string} The updated URL with the new query parameters.
+ *
+ * @example <caption>Add a single parameter to a URL without a query string</caption>
+ * addUrlParam('https://example.com', 'key', 'value');
+ * // Returns: 'https://example.com?key=value'
+ *
+ * @example <caption>Add multiple parameters to a URL</caption>
+ * addUrlParam('https://example.com', { key1: 'value1', key2: 'value2' });
+ * // Returns: 'https://example.com?key1=value1&key2=value2'
+ */
+var _addUrlParam = function addUrlParam(url, param) {
+  var value = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  if (isPlainObject(param)) {
+    each(param, function (key, val) {
+      url = _addUrlParam(url, key, val);
+    });
+  } else {
+    var parseUrl = parse_url(url),
+      pos,
+      hash = "";
+    if ((pos = url.indexOf("#")) > -1) {
+      hash = url.slice(pos);
+    }
+    if (hash) {
+      url = url.slice(0, url.lastIndexOf(hash));
+    }
+    if (!parseUrl.query) {
+      url += "?" + param + "=" + value + hash;
+    } else {
+      var params = parseUrl.query.split('&');
+      var param_exists = false;
+      for (var i = 0; i < params.length; i++) {
+        if (params[i].indexOf(param + "=") > -1) {
+          param_exists = true;
+          params[i] = param + "=" + value;
+          break;
+        }
+      }
+      if (false === param_exists) {
+        params.push(param + "=" + value);
+      }
+      if (parseUrl.scheme && parseUrl.host) {
+        url = parseUrl.scheme + '://' + parseUrl.host + (parseUrl.path || '') + "?" + params.join("&") + hash;
+      } else {
+        url = (parseUrl.host || '') + parseUrl.path + "?" + params.join("&") + hash;
+      }
+    }
+  }
+  return url;
+};
+export { _addUrlParam as addUrlParam };
+export var decodeHtml = function decodeHtml(str) {
+  if (!isString(str)) return '';
+  return str.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#039;/g, "'");
+};
+export var htmlquotes = function htmlquotes(str) {
+  if (!isString(str)) return '';
+  return str.replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+};
+export var htmlsimplequotes = function htmlsimplequotes(str) {
+  if (!isString(str)) return '';
+  return str.replace(/'/g, "&#039;");
+};
+export var repeat = function repeat(str, n) {
+  if (!isString(str) || !isFloat(n)) return '';
+  return new Array(Math.floor(n) + 1).join(str);
+};
+export var stripTags = function stripTags(str, tag) {
+  if (isString(tag)) {
+    var rStripTags = new RegExp("<".concat(tag, "[^>]*>(.*?)</").concat(tag, ">|<").concat(tag, "[^>]*/>"), 'ig');
+    while (rStripTags.test(str)) str = str.replace(rStripTags, '$1');
+    return str;
+  }
+  return str.replace(/(<([^>]+)>)/ig, "");
+};
+export var toUrl = function toUrl(str) {
+  return trim(noAccent(str).toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-{2,}/g, '-'), '-');
+};
+
+/**
+ * @see http://stackoverflow.com/questions/3115150/how-to-escape-regular-expression-special-characters-using-javascript
+ */
+export var escapeRegex = function escapeRegex(str) {
+  return str.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&").replace(/[\n\t]/g, " ");
+};
+export var camelCase = function camelCase(str) {
+  foreach('-_', function (_char5) {
+    str = trim(str, _char5).replace(new RegExp("".concat(_char5, "+"), 'g'), _char5);
+  });
+  str = trim(str).replace(/\s+/g, '-');
+  return str.toLowerCase().replace(/[_-](\w)/g, function (match, p1) {
+    return p1.toUpperCase();
+  });
+};
+export var format = function format(str) {
+  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    args[_key - 1] = arguments[_key];
+  }
+  if (args.length) {
+    each(args, function (i, arg) {
+      if (isString(arg)) {
+        var o = {};
+        o[i] = arg;
+        arg = o;
+      }
+      each(arg, function (placeholder, replacement) {
+        str = str.replace(new RegExp('\\{' + placeholder + '\\}', 'gm'), function (match) {
+          return isUndefined(replacement) ? match : replacement;
+        });
+      });
+    });
+  }
+  return str;
+};
+export var f = format;
+
+/**
+ * @see https://stackoverflow.com/questions/7627000/javascript-convert-string-to-safe-class-name-for-css
+ */
+export var toCssClassName = function toCssClassName(str) {
+  return str.replace(/[^a-z0-9_-]/ig, function (s) {
+    var c = s.charCodeAt(0);
+    if (c === 32) return '-';
+    return '__' + ('000' + c.toString(16)).slice(-4);
+  });
+};
+export var hilite = function hilite(str, req) {
+  var tag = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'strong';
+  str = decodeHtml(str);
+  var str_folded = noAccent(str).toLowerCase().replace(/[\[\]]+/g, '');
+  var q_folded,
+    re,
+    hilite_hints = '';
+  if (!isArray(req)) {
+    req = [req];
+  }
+  each(req, function (i, q) {
+    if (q.length) {
+      q = decodeHtml(q);
+      q_folded = noAccent(q).toLowerCase().replace(/[\[\]]+/g, '');
+      re = new RegExp(escapeRegex(q_folded), 'g');
+      hilite_hints = str_folded.replace(re, "[".concat(q_folded, "]"));
+      str_folded = hilite_hints;
+    }
+  });
+  if (!hilite_hints.length) {
+    return str;
+  }
+  var spos = 0;
+  var highlighted = '';
+  var dirHook = 'end';
+  each(hilite_hints, function (i, hint) {
+    var c = str.charAt(spos);
+    if (hint === '[' && dirHook === 'end') {
+      highlighted += "<".concat(tag, ">");
+      dirHook = 'start';
+    } else if (hint === ']' && dirHook === 'start') {
+      highlighted += "</".concat(tag, ">");
+      dirHook = 'end';
+    } else {
+      spos += 1;
+      highlighted += c;
+    }
+  });
+  return highlighted.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(new RegExp("&lt;".concat(tag, "&gt;"), 'g'), "<".concat(tag, ">")).replace(new RegExp("&lt;/".concat(tag, "&gt;"), 'g'), "</".concat(tag, ">")).replace(new RegExp('&lt;br&gt;', 'g'), '<br>');
+};
+export var formatSize = function formatSize(bytes) {
+  var decimalPoint = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ',';
+  var i = -1,
+    decimals = 0;
+  do {
+    bytes /= 1024;
+    i++;
+  } while (bytes > 999);
+  if (!isInteger(bytes)) {
+    decimals = 1;
+  }
+  var units = map(['k', 'M', 'G', 'T', 'P', 'E'], function (i, prefix) {
+    return prefix + translate('unitByte');
+  });
+  return numberFormat(Math.max(bytes, 0), decimals, true, '', decimalPoint) + ' ' + units[i];
+};
+export var compareMixAlphaDigits = function compareMixAlphaDigits(a, b) {
+  if (a === b) return 0;
+  if (isInteger(a) && isInteger(b)) {
+    return Math.sign(a - b);
+  }
+  var startEq = '';
+  for (var i = 0; i < Math.min(a.length, b.length); i++) {
+    if (a.charAt(i) === b.charAt(i) && !isInteger(a)) {
+      startEq += a.charAt(i);
+    } else {
+      break;
+    }
+  }
+  a = a.slice(startEq.length);
+  b = b.slice(startEq.length);
+  var nbA = '';
+  var idxDigitA = null;
+  each(a, function (i, c) {
+    if (!nbA) {
+      idxDigitA = i;
+      if (c >= '0' && c <= '9') {
+        nbA += c;
+      }
+    } else {
+      if (c >= '0' && c <= '9') {
+        nbA += c;
+        return true;
+      }
+      return false;
+    }
+  });
+  var nbB = '';
+  var idxDigitB = null;
+  each(b, function (i, c) {
+    if (!nbB) {
+      idxDigitB = i;
+      if (c >= '0' && c <= '9') {
+        nbB += c;
+      }
+    } else {
+      if (c >= '0' && c <= '9') {
+        nbB += c;
+        return true;
+      }
+      return false;
+    }
+  });
+  if (nbA.length && nbB.length && idxDigitA === idxDigitB) {
+    if (a.substring(0, idxDigitA) === b.substring(0, idxDigitB)) {
+      return Math.sign(nbA - nbB);
+    }
+  }
+  return a > b ? 1 : -1;
+};
