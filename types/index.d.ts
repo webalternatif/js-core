@@ -61,8 +61,8 @@ declare const webf: {
             [x: string]: string;
         } | string, value?: string): Element | DOMStringMap;
         removeData(el: Element, name: string): Element | any;
-        on(el: Element | Document | Window, event: string, handler: Function, options?: AddEventListenerOptions | false): Element;
-        off(el: Element | Document | Window, event: string, handler: Function, options: Object): Element;
+        on(el: Element | Document | Window, events: string, selector: string | Element, handler: Function, options: AddEventListenerOptions | boolean): Element;
+        off(el: Element | Document | Window, events: string, selector: string | Element, handler: Function, options?: EventListenerOptions | boolean): Element;
         css(el: HTMLElement, style: {
             [x: string]: string;
         } | string, value?: string): Element;
@@ -76,12 +76,19 @@ declare const webf: {
         before(el: Element, newEl: Element): Element;
         empty(el: Element): Element;
         not(el: Element | NodeList, selector: string | Element): Element[];
+        collide(elem1: Element, elem2: Element): boolean;
+        matches(el: Element, selector: string | Element): boolean;
         replaceChild(el: Element, child: Element, oldChild: Element): Element;
         replaceChildren(el: Element, ...children: Element[]): Element;
+        offset(el: Element | Document | Window): {
+            top: number;
+            left: number;
+        };
     };
     isWindow: (o: any) => boolean;
+    isDocument: (o: any) => boolean;
     isDomElement: (o: any) => boolean;
-    getStyle: (elem: any, cssRule: any) => any;
+    getStyle: (el: Element, cssRule: string) => string;
     isString: (str: any) => boolean;
     isObject: (o: any) => boolean;
     isFunction: (f: any) => boolean;

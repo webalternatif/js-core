@@ -36,7 +36,7 @@ export var each = function each(o, callback, context) {
     var arr = o.split('');
     for (var _i = 0; _i < arr.length; _i++) if (false === callback.call(context !== null && context !== void 0 ? context : arr[_i], _i, arr[_i], o, _i)) return;
     return o;
-  } else if (o instanceof Map) {
+  } else if (o instanceof Map || o instanceof WeakMap) {
     var _index = 0;
     var _iterator = _createForOfIteratorHelper(o.entries()),
       _step;

@@ -1,4 +1,4 @@
-import {isArray, isArrayLike, isObject, isString} from "./is.js";
+import {isArray, isArrayLike, isFunction, isObject, isString} from "./is.js";
 import {camelCase} from "./string.js";
 import {each, foreach, map} from "./traversal.js";
 import {inArray} from "./array.js";
@@ -33,26 +33,50 @@ const cssNumber = [
     'strokeOpacity',
 ];
 
+const LISTENERS = new WeakMap();
+
+/**
+ * @param {any} o
+ * @returns {boolean}
+ */
 export const isWindow = function(o) {
     return !!o && o === o.window;
 }
 
+/**
+ * @param {any} o
+ * @returns {boolean}
+ */
+export const isDocument = function(o)
+{
+    return !!o && o.nodeType === 9;
+}
+
+/**
+ * @param {any} o
+ * @returns {boolean}
+ */
 export const isDomElement = function(o) {
     return isObject(o) && o instanceof HTMLElement;
 }
 
-export const getStyle = function(elem, cssRule) {
-    if (!isDomElement(elem)) {
+/**
+ * @param {Element} el
+ * @param {string} cssRule
+ * @returns {string}
+ */
+export const getStyle = function(el, cssRule) {
+    if (!isDomElement(el)) {
         return '';
     }
 
     if (window.getComputedStyle) {
-        const computedStyle = window.getComputedStyle(elem, null);
+        const computedStyle = window.getComputedStyle(el, null);
 
         return computedStyle.getPropertyValue(cssRule) || computedStyle[camelCase(cssRule)] || '';
     }
 
-    return elem.style[camelCase(cssRule)] || '';
+    return el.style[camelCase(cssRule)] || '';
 }
 
 export default {
@@ -584,25 +608,100 @@ export default {
 
     /**
      * @param {Element|Document|Window} el
-     * @param {string} event
+     * @param {string} events
+     * @param {string|Element} selector
      * @param {function} handler
-     * @param {AddEventListenerOptions|false} options
+     * @param {AddEventListenerOptions|boolean} options
      * @returns {Element}
      */
-    on(el, event, handler, options = false) {
-        el.addEventListener(event, handler, options);
+    on(el, events, selector, handler, options) {
+        if (isFunction(selector)) {
+            options = handler;
+            handler = selector;
+            selector = null;
+        }
+
+        foreach(events.split(' '), (event) => {
+            const listener = (ev) => {
+                if (!selector) {
+                    handler.call(el, ev);
+                    return;
+                }
+
+                let currentTarget = ev.target;
+
+                while (currentTarget && currentTarget !== el) {
+                    if (this.matches(currentTarget, selector)) {
+                        const wrappedEv = Object.assign({}, ev, {
+                            originalEvent: ev,
+                            type: ev.type,
+                            currentTarget,
+                            target: ev.target,
+                            relatedTarget: ev.relatedTarget,
+                            button: ev.button,
+                            pageX: ev.pageX,
+                            pageY: ev.pageY,
+                            preventDefault: (...args) => ev.preventDefault(...args),
+                            stopPropagation: (...args) => ev.stopPropagation(...args),
+                            stopImmediatePropagation: (...args) => ev.stopImmediatePropagation(...args),
+                        });
+
+                        handler.call(currentTarget, wrappedEv);
+                        break;
+                    }
+
+                    currentTarget = currentTarget.parentElement;
+                }
+            }
+
+            let store = LISTENERS.get(el);
+            if (!store) {
+                store = [];
+                LISTENERS.set(el, store);
+            }
+
+            store.push({ event, handler, selector, listener, options });
+
+            el.addEventListener(event, listener, options);
+        });
+
         return el;
     },
 
     /**
      * @param {Element|Document|Window} el
-     * @param {string} event
+     * @param {string} events
+     * @param {string|Element} selector
      * @param {function} handler
-     * @param {Object} options
+     * @param {EventListenerOptions|boolean} [options]
      * @returns {Element}
      */
-    off(el, event, handler, options) {
-        el.removeEventListener(event, handler, options);
+    off(el, events, selector, handler, options) {
+        if (isFunction(selector)) {
+            options = handler;
+            handler = selector;
+            selector = null;
+        }
+
+        const store = LISTENERS.get(el);
+        if (!store) return el;
+
+        foreach(events.split(' '), event => {
+            each([...store].reverse(), (i, l) => {
+                if (
+                    l.event === event &&
+                    l.handler === handler &&
+                    l.selector === selector &&
+                    (options === undefined || l.options === options)
+                ) {
+                    el.removeEventListener(event, l.listener, l.options);
+
+                    const index = store.indexOf(l);
+                    index !== -1 && store.splice(index, 1);
+                }
+            });
+        });
+
         return el;
     },
 
@@ -764,6 +863,34 @@ export default {
     },
 
     /**
+     * @param {Element} elem1
+     * @param {Element} elem2
+     * @returns {boolean}
+     */
+    collide(elem1, elem2)
+    {
+        const rect1 = elem1.getBoundingClientRect();
+        const rect2 = elem2.getBoundingClientRect();
+
+        return (
+            rect1.x < rect2.x + rect2.width &&
+            rect1.x + rect1.width > rect2.x &&
+            rect1.y < rect2.y + rect2.height &&
+            rect1.y + rect1.height > rect2.y
+        );
+    },
+
+    /**
+     * @param {Element} el
+     * @param {string|Element} selector
+     */
+    matches(el, selector) {
+        return selector instanceof Element
+            ? selector === el
+            : el.matches(selector);
+    },
+
+    /**
      * @param {Element} el
      * @param {Element} child
      * @param {Element} oldChild
@@ -782,4 +909,32 @@ export default {
 
         return el;
     },
+
+    /**
+     * @param {Element|Document|Window} el
+     * @returns {{top: number, left: number}}
+     */
+    offset(el) {
+        if (isWindow(el)) {
+            return {
+                top: el.scrollY,
+                left: el.scrollX,
+            };
+        }
+
+        else if (isDocument(el)) {
+            return {
+                top: el.documentElement.scrollTop,
+                left: el.documentElement.scrollLeft,
+            };
+        }
+
+        const rect = el.getBoundingClientRect();
+        const wOffset = this.offset(window);
+
+        return {
+            top: rect.top + wOffset.top,
+            left: rect.left + wOffset.left,
+        };
+    }
 }

@@ -40,7 +40,7 @@ export const each = function(o, callback, context) {
         return o;
     }
 
-    else if (o instanceof Map) {
+    else if (o instanceof Map || o instanceof WeakMap) {
         let index = 0;
         for (const [key, value] of o.entries()) {
             if (false === callback.call(context ?? value, key, value, o, index++))

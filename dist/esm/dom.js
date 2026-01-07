@@ -4,26 +4,51 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-import { isArray, isArrayLike, isObject, isString } from "./is.js";
+import { isArray, isArrayLike, isFunction, isObject, isString } from "./is.js";
 import { camelCase } from "./string.js";
 import { each, foreach, map } from "./traversal.js";
 import { inArray } from "./array.js";
 var cssNumber = ['animationIterationCount', 'aspectRatio', 'borderImageSlice', 'columnCount', 'flexGrow', 'flexShrink', 'fontWeight', 'gridArea', 'gridColumn', 'gridColumnEnd', 'gridColumnStart', 'gridRow', 'gridRowEnd', 'gridRowStart', 'lineHeight', 'opacity', 'order', 'orphans', 'scale', 'widows', 'zIndex', 'zoom', 'fillOpacity', 'floodOpacity', 'stopOpacity', 'strokeMiterlimit', 'strokeOpacity'];
+var LISTENERS = new WeakMap();
+
+/**
+ * @param {any} o
+ * @returns {boolean}
+ */
 export var isWindow = function isWindow(o) {
   return !!o && o === o.window;
 };
+
+/**
+ * @param {any} o
+ * @returns {boolean}
+ */
+export var isDocument = function isDocument(o) {
+  return !!o && o.nodeType === 9;
+};
+
+/**
+ * @param {any} o
+ * @returns {boolean}
+ */
 export var isDomElement = function isDomElement(o) {
   return isObject(o) && o instanceof HTMLElement;
 };
-export var getStyle = function getStyle(elem, cssRule) {
-  if (!isDomElement(elem)) {
+
+/**
+ * @param {Element} el
+ * @param {string} cssRule
+ * @returns {string}
+ */
+export var getStyle = function getStyle(el, cssRule) {
+  if (!isDomElement(el)) {
     return '';
   }
   if (window.getComputedStyle) {
-    var computedStyle = window.getComputedStyle(elem, null);
+    var computedStyle = window.getComputedStyle(el, null);
     return computedStyle.getPropertyValue(cssRule) || computedStyle[camelCase(cssRule)] || '';
   }
-  return elem.style[camelCase(cssRule)] || '';
+  return el.style[camelCase(cssRule)] || '';
 };
 export default {
   /**
@@ -463,25 +488,94 @@ export default {
   },
   /**
    * @param {Element|Document|Window} el
-   * @param {string} event
+   * @param {string} events
+   * @param {string|Element} selector
    * @param {function} handler
-   * @param {AddEventListenerOptions|false} options
+   * @param {AddEventListenerOptions|boolean} options
    * @returns {Element}
    */
-  on: function on(el, event, handler) {
-    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    el.addEventListener(event, handler, options);
+  on: function on(el, events, selector, handler, options) {
+    var _this3 = this;
+    if (isFunction(selector)) {
+      options = handler;
+      handler = selector;
+      selector = null;
+    }
+    foreach(events.split(' '), function (event) {
+      var listener = function listener(ev) {
+        if (!selector) {
+          handler.call(el, ev);
+          return;
+        }
+        var currentTarget = ev.target;
+        while (currentTarget && currentTarget !== el) {
+          if (_this3.matches(currentTarget, selector)) {
+            var wrappedEv = Object.assign({}, ev, {
+              originalEvent: ev,
+              type: ev.type,
+              currentTarget: currentTarget,
+              target: ev.target,
+              relatedTarget: ev.relatedTarget,
+              button: ev.button,
+              pageX: ev.pageX,
+              pageY: ev.pageY,
+              preventDefault: function preventDefault() {
+                return ev.preventDefault.apply(ev, arguments);
+              },
+              stopPropagation: function stopPropagation() {
+                return ev.stopPropagation.apply(ev, arguments);
+              },
+              stopImmediatePropagation: function stopImmediatePropagation() {
+                return ev.stopImmediatePropagation.apply(ev, arguments);
+              }
+            });
+            handler.call(currentTarget, wrappedEv);
+            break;
+          }
+          currentTarget = currentTarget.parentElement;
+        }
+      };
+      var store = LISTENERS.get(el);
+      if (!store) {
+        store = [];
+        LISTENERS.set(el, store);
+      }
+      store.push({
+        event: event,
+        handler: handler,
+        selector: selector,
+        listener: listener,
+        options: options
+      });
+      el.addEventListener(event, listener, options);
+    });
     return el;
   },
   /**
    * @param {Element|Document|Window} el
-   * @param {string} event
+   * @param {string} events
+   * @param {string|Element} selector
    * @param {function} handler
-   * @param {Object} options
+   * @param {EventListenerOptions|boolean} [options]
    * @returns {Element}
    */
-  off: function off(el, event, handler, options) {
-    el.removeEventListener(event, handler, options);
+  off: function off(el, events, selector, handler, options) {
+    if (isFunction(selector)) {
+      options = handler;
+      handler = selector;
+      selector = null;
+    }
+    var store = LISTENERS.get(el);
+    if (!store) return el;
+    foreach(events.split(' '), function (event) {
+      each(_toConsumableArray(store).reverse(), function (i, l) {
+        if (l.event === event && l.handler === handler && l.selector === selector && (options === undefined || l.options === options)) {
+          el.removeEventListener(event, l.listener, l.options);
+          var index = store.indexOf(l);
+          index !== -1 && store.splice(index, 1);
+        }
+      });
+    });
     return el;
   },
   /**
@@ -491,7 +585,7 @@ export default {
    * @returns {Element}
    */
   css: function css(el, style, value) {
-    var _this3 = this;
+    var _this4 = this;
     if (isString(style)) {
       var prop = style.startsWith('--') ? style : camelCase(style);
       if (undefined === value) {
@@ -505,7 +599,7 @@ export default {
       }
     } else {
       each(style, function (name, v) {
-        _this3.css(el, name, v);
+        _this4.css(el, name, v);
       });
     }
     return el;
@@ -615,6 +709,23 @@ export default {
     });
   },
   /**
+   * @param {Element} elem1
+   * @param {Element} elem2
+   * @returns {boolean}
+   */
+  collide: function collide(elem1, elem2) {
+    var rect1 = elem1.getBoundingClientRect();
+    var rect2 = elem2.getBoundingClientRect();
+    return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y;
+  },
+  /**
+   * @param {Element} el
+   * @param {string|Element} selector
+   */
+  matches: function matches(el, selector) {
+    return selector instanceof Element ? selector === el : el.matches(selector);
+  },
+  /**
    * @param {Element} el
    * @param {Element} child
    * @param {Element} oldChild
@@ -633,5 +744,28 @@ export default {
     }
     el.replaceChildren.apply(el, children);
     return el;
+  },
+  /**
+   * @param {Element|Document|Window} el
+   * @returns {{top: number, left: number}}
+   */
+  offset: function offset(el) {
+    if (isWindow(el)) {
+      return {
+        top: el.scrollY,
+        left: el.scrollX
+      };
+    } else if (isDocument(el)) {
+      return {
+        top: el.documentElement.scrollTop,
+        left: el.documentElement.scrollLeft
+      };
+    }
+    var rect = el.getBoundingClientRect();
+    var wOffset = this.offset(window);
+    return {
+      top: rect.top + wOffset.top,
+      left: rect.left + wOffset.left
+    };
   }
 };

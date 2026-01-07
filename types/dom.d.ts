@@ -1,6 +1,7 @@
 export function isWindow(o: any): boolean;
+export function isDocument(o: any): boolean;
 export function isDomElement(o: any): boolean;
-export function getStyle(elem: any, cssRule: any): any;
+export function getStyle(el: Element, cssRule: string): string;
 declare namespace _default {
     /**
      * @param {Element} el
@@ -188,20 +189,22 @@ declare namespace _default {
     function removeData(el: Element, name: string): Element | any;
     /**
      * @param {Element|Document|Window} el
-     * @param {string} event
+     * @param {string} events
+     * @param {string|Element} selector
      * @param {function} handler
-     * @param {AddEventListenerOptions|false} options
+     * @param {AddEventListenerOptions|boolean} options
      * @returns {Element}
      */
-    function on(el: Element | Document | Window, event: string, handler: Function, options?: AddEventListenerOptions | false): Element;
+    function on(el: Element | Document | Window, events: string, selector: string | Element, handler: Function, options: AddEventListenerOptions | boolean): Element;
     /**
      * @param {Element|Document|Window} el
-     * @param {string} event
+     * @param {string} events
+     * @param {string|Element} selector
      * @param {function} handler
-     * @param {Object} options
+     * @param {EventListenerOptions|boolean} [options]
      * @returns {Element}
      */
-    function off(el: Element | Document | Window, event: string, handler: Function, options: Object): Element;
+    function off(el: Element | Document | Window, events: string, selector: string | Element, handler: Function, options?: EventListenerOptions | boolean): Element;
     /**
      * @param {HTMLElement} el
      * @param {Object<string, string>|string} style
@@ -270,6 +273,17 @@ declare namespace _default {
      */
     function not(el: Element | NodeList, selector: string | Element): Element[];
     /**
+     * @param {Element} elem1
+     * @param {Element} elem2
+     * @returns {boolean}
+     */
+    function collide(elem1: Element, elem2: Element): boolean;
+    /**
+     * @param {Element} el
+     * @param {string|Element} selector
+     */
+    function matches(el: Element, selector: string | Element): boolean;
+    /**
      * @param {Element} el
      * @param {Element} child
      * @param {Element} oldChild
@@ -281,5 +295,13 @@ declare namespace _default {
      * @returns {Element}
      */
     function replaceChildren(el: Element, ...children: Element[]): Element;
+    /**
+     * @param {Element|Document|Window} el
+     * @returns {{top: number, left: number}}
+     */
+    function offset(el: Element | Document | Window): {
+        top: number;
+        left: number;
+    };
 }
 export default _default;
