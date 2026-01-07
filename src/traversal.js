@@ -98,7 +98,7 @@ export const foreach = function(o, callback, context) {
  * @param {Collection<T>} o
  * @param {(key: number|string, value: T, o: Collection<T>, index: number) => (R|null|false)} callback
  * @param {any} [context] Optional "this" binding for the callback
- * @returns {Array} Returns the resulted array
+ * @returns {Array<R>} Returns the resulted array
  */
 export const map = function(o, callback, context) {
     let results = [];

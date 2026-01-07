@@ -84,7 +84,7 @@ declare const webf: {
     getStyle: (elem: any, cssRule: any) => any;
     each: <T>(o: Collection<T>, callback: (key: number | string, value: T, o: Collection<T>, index: number) => (void | boolean), context?: any) => typeof o;
     foreach: <T>(o: Collection<T>, callback: (value: T, key: number | string, o: Collection<T>, index: number) => (void | boolean), context?: any) => typeof o;
-    map: <T, R>(o: Collection<T>, callback: (key: number | string, value: T, o: Collection<T>, index: number) => (R | null | false), context?: any) => any[];
+    map: <T, R>(o: Collection<T>, callback: (key: number | string, value: T, o: Collection<T>, index: number) => (R | null | false), context?: any) => Array<R>;
     reduce: <T, R>(o: Collection<T>, callback: (accumulator: R | T, value: T, key: any, index: number, o: Collection<T>) => R, initialValue?: R) => R;
     extend: <T>(...args: (boolean | T)[]) => T;
     clone: <T>(o: T) => T;
