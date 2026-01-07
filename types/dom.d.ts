@@ -15,29 +15,29 @@ declare namespace _default {
      */
     function child(el: Element, selector?: string): Element | null;
     /**
-     * @param {Element|Document|string} refEl
-     * @param {string} [selector='*']
-     * @returns {NodeList}
-     */
-    function find(refEl: Element | Document | string, selector?: string): NodeList;
-    /**
-     * @param {Element|Document|string} refEl
-     * @param {string} [selector='*']
+     * @param {Element|Document} refEl
+     * @param {string|Element|NodeList|Array<Element>} [selector]
      * @returns {Element|null}
      */
-    function findOne(refEl: Element | Document | string, selector?: string): Element | null;
+    function findOne(refEl: Element | Document, selector?: string | Element | NodeList | Array<Element>): Element | null;
     /**
-     * @param {Element} el
+     * @param {Element|Document} refEl
+     * @param {string|Element|NodeList|Array<Element>} selector
+     * @returns {Array<Element>}
+     */
+    function find(refEl: Element | Document, selector: string | Element | NodeList | Array<Element>): Array<Element>;
+    /**
+     * @param {Element|NodeList|Array<Element>} el
      * @param {string} className
-     * @returns {Element}
+     * @returns {Element|NodeList|Array<Element>}
      */
-    function addClass(el: Element, className: string): Element;
+    function addClass(el: Element | NodeList | Array<Element>, className: string): Element | NodeList | Array<Element>;
     /**
-     * @param {Element} el
-     * @param {string} classNames
-     * @returns {Element}
+     * @param {Element|NodeList|Array<Element>} el
+     * @param {string} className
+     * @returns {Element|NodeList|Array<Element>}
      */
-    function removeClass(el: Element, classNames: string): Element;
+    function removeClass(el: Element | NodeList | Array<Element>, className: string): Element | NodeList | Array<Element>;
     /**
      * @param {Element} el
      * @param {string} classNames
@@ -52,28 +52,28 @@ declare namespace _default {
      */
     function hasClass(el: Element, classNames: string): boolean;
     /**
-     * @param {Element} el
-     * @param {Element} child
-     * @returns {Element}
+     * @param {Node} node
+     * @param {...Node} children
+     * @returns {Node}
      */
-    function append(el: Element, child: Element): Element;
+    function append(node: Node, ...children: Node[]): Node;
     /**
-     * @param {Element} el
-     * @param {Element} child
-     * @returns {Element}
+     * @param {Node} node
+     * @param {...Node} children
+     * @returns {Node}
      */
-    function prepend(el: Element, child: Element): Element;
+    function prepend(node: Node, ...children: Node[]): Node;
     /**
-     * @param {Element} el
+     * @param {Element|NodeList|Array<Element>|string} els
      * @returns {void}
      */
-    function remove(el: Element): void;
+    function remove(...els: Element | NodeList | Array<Element> | string): void;
     /**
      * @param {Element} el
-     * @param {string} [selector]
+     * @param {string|Element} selector
      * @returns {Element|null}
      */
-    function closest(el: Element, selector?: string): Element | null;
+    function closest(el: Element, selector: string | Element): Element | null;
     /**
      * @param {Element} el
      * @param {string} [selector]
@@ -98,6 +98,18 @@ declare namespace _default {
      * @returns {Element[]}
      */
     function prevAll(el: Element, selector?: string): Element[];
+    /**
+     * @param {Element} el
+     * @param {Element|string} selector
+     * @returns {Element[]}
+     */
+    function nextUntil(el: Element, selector: Element | string): Element[];
+    /**
+     * @param {Element} el
+     * @param {Element|string} selector
+     * @returns {Element[]}
+     */
+    function prevUntil(el: Element, selector: Element | string): Element[];
     /**
      * @param {Element} el
      * @param {Element} wrappingElement
@@ -149,11 +161,11 @@ declare namespace _default {
      * @param {Element} el
      * @param {Object<string, string>|string} name
      * @param {string} [value]
-     * @returns {Element}
+     * @returns {Element|DOMStringMap}
      */
     function data(el: Element, name: {
         [x: string]: string;
-    } | string, value?: string): Element;
+    } | string, value?: string): Element | DOMStringMap;
     /**
      * @param {Element} el
      * @param {string} name
@@ -178,11 +190,11 @@ declare namespace _default {
     function off(el: Element | Document | Window, event: string, handler: Function, options: Object): Element;
     /**
      * @param {HTMLElement} el
-     * @param {Object<string, string>|string} styles
+     * @param {Object<string, string>|string} style
      * @param {string} [value]
      * @returns {Element}
      */
-    function css(el: HTMLElement, styles: {
+    function css(el: HTMLElement, style: {
         [x: string]: string;
     } | string, value?: string): Element;
     /**
@@ -205,15 +217,15 @@ declare namespace _default {
      */
     function first(nodeList: NodeList): Element | null;
     /**
-     * @param {NodeList} nodeList
+     * @param {NodeList|Array<Element>} nodeList
      * @returns {Element|null}
      */
-    function last(nodeList: NodeList): Element | null;
+    function last(nodeList: NodeList | Array<Element>): Element | null;
     /**
      * @param {string} html
-     * @returns {Element}
+     * @returns {Element|null}
      */
-    function create(html: string): Element;
+    function create(html: string): Element | null;
     /**
      * @param {NodeList} nodeList
      * @param {number} [index=0]
@@ -237,5 +249,11 @@ declare namespace _default {
      * @returns {Element}
      */
     function empty(el: Element): Element;
+    /**
+     * @param {Element|NodeList} el
+     * @param {string|Element} selector
+     * @return {Element[]}
+     */
+    function not(el: Element | NodeList, selector: string | Element): Element[];
 }
 export default _default;

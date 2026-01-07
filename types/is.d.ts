@@ -5,6 +5,7 @@ export function isPlainObject(o: any): boolean;
 export function isBoolean(b: any): boolean;
 export function isBool(b: any): boolean;
 export function isUndefined(v: any): v is undefined;
+export function isArrayLike(o: any): boolean;
 export function isArray(a: any): a is any[];
 export function isDate(o: any): boolean;
 export function isEvent(o: any): boolean;
