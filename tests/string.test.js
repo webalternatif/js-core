@@ -855,11 +855,15 @@ describe('String methods', () => {
         });
 
         it('should handle spaces', () => {
-            expect(camelCase('hello world')).toBe('helloWorld');
+            expect(camelCase('  hello world  ')).toBe('helloWorld');
         });
 
         it('should handle mixed case strings', () => {
-            expect(camelCase('HeLLo-WoRLd')).toBe('helloWorld');
+            expect(camelCase('HeLLo-WoRLd')).toBe('heLloWoRld');
+        });
+
+        it('should handle camelCase strings', () => {
+            expect(camelCase('helloWorld')).toBe('helloWorld');
         });
     });
 

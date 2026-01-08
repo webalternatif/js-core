@@ -394,13 +394,44 @@ export const escapeRegex = function(str) {
 }
 
 export const camelCase = function(str) {
-    foreach('-_', (char) => {
-        str = trim(str, char).replace(new RegExp(`${char}+`, 'g'), char);
-    })
+    if (!str) return '';
 
-    str = trim(str).replace(/\s+/g, '-');
+    let prev = '';
+    let prevReplaced = false;
+    let prevIsSeparator = false;
+    let prevIsUpperCase = false;
 
-    return str.toLowerCase().replace(/[_-](\w)/g, (match, p1) => p1.toUpperCase());
+    str = trim(str);
+    str = trim(str, '_');
+    str = trim(str, '-');
+
+    const isUpperCase = c => c === c.toUpperCase() && c !== c.toLowerCase();
+    const isSeparator = c => c === '-' || c === '_' || c === ' ';
+
+    return map(str, (i, c) => {
+        prevIsSeparator = isSeparator(prev);
+        prevIsUpperCase = isUpperCase(prev);
+        prev = c;
+
+        if (isSeparator(c)) {
+            return null;
+        } else if (prevIsSeparator) {
+            c = c.toUpperCase();
+            prevReplaced = true;
+        } else if (isUpperCase(c)) {
+            if (i === 0) {
+                c = c.toLowerCase();
+            } else if (prevIsUpperCase && !prevReplaced) {
+                c = c.toLowerCase();
+            }
+
+            prevReplaced = false;
+        } else {
+            prevReplaced = false;
+        }
+
+        return c;
+    }).join('');
 }
 
 export const format = function(str, ...args) {

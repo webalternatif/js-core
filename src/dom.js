@@ -1,4 +1,4 @@
-import {isArray, isArrayLike, isFunction, isObject, isString} from "./is.js";
+import {isArray, isArrayLike, isFunction, isObject, isPlainObject, isString} from "./is.js";
 import {camelCase} from "./string.js";
 import {each, foreach, map} from "./traversal.js";
 import {inArray} from "./array.js";
@@ -587,8 +587,8 @@ export default {
             return el.dataset;
         }
 
-        if (webf.isPlainObject(name)) {
-            webf.each(name, (k, v) => this.data(el, k, v));
+        if (isPlainObject(name)) {
+            each(name, (k, v) => this.data(el, k, v));
             return el;
         }
 

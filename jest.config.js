@@ -10,5 +10,14 @@ export default {
         'src/**/*.{js,jsx}',
         '!i18n/**',
         '!tests/**/*.js'
-    ]
+    ],
+    transform: {
+        '^.+\\.js$': [
+            'babel-jest', {
+                presets: [
+                    ['@babel/preset-env', { targets: { node: 'current' } }]
+                ]
+            }
+        ]
+    }
 };
