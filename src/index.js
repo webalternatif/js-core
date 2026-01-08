@@ -2,6 +2,7 @@ import * as stringFunctions from './string.js';
 import './stringPrototype.js';
 import * as arrayFunctions from './array.js';
 import * as is from './is.js';
+import * as random from './random.js';
 import * as traversal from './traversal.js';
 import dom, {getStyle, isDomElement, isWindow, isDocument} from './dom.js';
 import * as math from './math.js';
@@ -14,6 +15,7 @@ const webf = {
     ...arrayFunctions,
     ...traversal,
     ...is,
+    ...random,
     dom, isWindow, isDocument, isDomElement, getStyle,
     ...math,
     ...utils,
@@ -28,6 +30,7 @@ export {
     arrayFunctions,
     traversal,
     is,
+    random,
     getStyle,
     dom,
     math,

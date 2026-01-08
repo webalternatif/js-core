@@ -50,8 +50,7 @@ export const sizeOf = function(o) {
  * console.log(result);
  * // Output: [1, 2, 3, 4]
  */
-export const flatten = function(o)
-{
+export const flatten = function(o) {
     if (isObject(o) || isArray(o)) {
         return [].concat.apply([], map(o, (i, val) => flatten(val)))
     }
