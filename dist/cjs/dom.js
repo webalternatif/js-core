@@ -4,7 +4,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-import { isArray, isArrayLike, isFunction, isObject, isString } from "./is.js";
+import { isArray, isArrayLike, isFunction, isObject, isPlainObject, isString } from "./is.js";
 import { camelCase } from "./string.js";
 import { each, foreach, map } from "./traversal.js";
 import { inArray } from "./array.js";
@@ -472,8 +472,8 @@ export default {
     if (undefined === name && undefined === value) {
       return el.dataset;
     }
-    if (webf.isPlainObject(name)) {
-      webf.each(name, function (k, v) {
+    if (isPlainObject(name)) {
+      each(name, function (k, v) {
         return _this4.data(el, k, v);
       });
       return el;

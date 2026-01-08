@@ -28,7 +28,7 @@ export function repeat(str: any, n: any): string;
 export function stripTags(str: any, tag: any): any;
 export function toUrl(str: any): any;
 export function escapeRegex(str: any): any;
-export function camelCase(str: any): any;
+export function camelCase(str: any): string;
 export function format(str: any, ...args: any[]): any;
 export function f(str: any, ...args: any[]): any;
 export function toCssClassName(str: any): any;

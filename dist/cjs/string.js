@@ -318,13 +318,41 @@ export var escapeRegex = function escapeRegex(str) {
   return str.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&").replace(/[\n\t]/g, " ");
 };
 export var camelCase = function camelCase(str) {
-  foreach('-_', function (_char5) {
-    str = trim(str, _char5).replace(new RegExp("".concat(_char5, "+"), 'g'), _char5);
-  });
-  str = trim(str).replace(/\s+/g, '-');
-  return str.toLowerCase().replace(/[_-](\w)/g, function (match, p1) {
-    return p1.toUpperCase();
-  });
+  if (!str) return '';
+  var prev = '';
+  var prevReplaced = false;
+  var prevIsSeparator = false;
+  var prevIsUpperCase = false;
+  str = trim(str);
+  str = trim(str, '_');
+  str = trim(str, '-');
+  var isUpperCase = function isUpperCase(c) {
+    return c === c.toUpperCase() && c !== c.toLowerCase();
+  };
+  var isSeparator = function isSeparator(c) {
+    return c === '-' || c === '_' || c === ' ';
+  };
+  return map(str, function (i, c) {
+    prevIsSeparator = isSeparator(prev);
+    prevIsUpperCase = isUpperCase(prev);
+    prev = c;
+    if (isSeparator(c)) {
+      return null;
+    } else if (prevIsSeparator) {
+      c = c.toUpperCase();
+      prevReplaced = true;
+    } else if (isUpperCase(c)) {
+      if (i === 0) {
+        c = c.toLowerCase();
+      } else if (prevIsUpperCase && !prevReplaced) {
+        c = c.toLowerCase();
+      }
+      prevReplaced = false;
+    } else {
+      prevReplaced = false;
+    }
+    return c;
+  }).join('');
 };
 export var format = function format(str) {
   for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {

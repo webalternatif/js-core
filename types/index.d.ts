@@ -151,7 +151,7 @@ declare const webf: {
     stripTags: (str: any, tag: any) => any;
     toUrl: (str: any) => any;
     escapeRegex: (str: any) => any;
-    camelCase: (str: any) => any;
+    camelCase: (str: any) => string;
     format: (str: any, ...args: any[]) => any;
     f: (str: any, ...args: any[]) => any;
     toCssClassName: (str: any) => any;
