@@ -192,26 +192,38 @@ export default {
   },
   /**
    * @param {Node} node
-   * @param {...Node} children
+   * @param {...(Node|string)} children
    * @returns {Node}
    */
   append: function append(node) {
+    var _this = this;
     for (var _len = arguments.length, children = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       children[_key - 1] = arguments[_key];
     }
-    node.append.apply(node, children);
+    foreach(children, function (child) {
+      if (isString(child)) {
+        child = _this.create(child);
+      }
+      child && node.append(child);
+    });
     return node;
   },
   /**
    * @param {Node} node
-   * @param {...Node} children
+   * @param {...(Node|string)} children
    * @returns {Node}
    */
   prepend: function prepend(node) {
+    var _this2 = this;
     for (var _len2 = arguments.length, children = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
       children[_key2 - 1] = arguments[_key2];
     }
-    node.prepend.apply(node, children);
+    foreach(children, function (child) {
+      if (isString(child)) {
+        child = _this2.create(child);
+      }
+      child && node.prepend(child);
+    });
     return node;
   },
   /**
@@ -219,7 +231,7 @@ export default {
    * @returns {void}
    */
   remove: function remove() {
-    var _this = this;
+    var _this3 = this;
     for (var _len3 = arguments.length, els = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
       els[_key3] = arguments[_key3];
     }
@@ -231,7 +243,7 @@ export default {
           return e.remove();
         });
       } else {
-        _this.remove(_this.find(el));
+        _this3.remove(_this3.find(el));
       }
     });
   },
@@ -456,13 +468,13 @@ export default {
    * @returns {Element|DOMStringMap}
    */
   data: function data(el, name, value) {
-    var _this2 = this;
+    var _this4 = this;
     if (undefined === name && undefined === value) {
       return el.dataset;
     }
     if (webf.isPlainObject(name)) {
       webf.each(name, function (k, v) {
-        return _this2.data(el, k, v);
+        return _this4.data(el, k, v);
       });
       return el;
     }
@@ -495,7 +507,7 @@ export default {
    * @returns {Element}
    */
   on: function on(el, events, selector, handler, options) {
-    var _this3 = this;
+    var _this5 = this;
     if (isFunction(selector)) {
       options = handler;
       handler = selector;
@@ -509,7 +521,7 @@ export default {
         }
         var currentTarget = ev.target;
         while (currentTarget && currentTarget !== el) {
-          if (_this3.matches(currentTarget, selector)) {
+          if (_this5.matches(currentTarget, selector)) {
             var wrappedEv = Object.assign({}, ev, {
               originalEvent: ev,
               type: ev.type,
@@ -585,7 +597,7 @@ export default {
    * @returns {Element}
    */
   css: function css(el, style, value) {
-    var _this4 = this;
+    var _this6 = this;
     if (isString(style)) {
       var prop = style.startsWith('--') ? style : camelCase(style);
       if (undefined === value) {
@@ -599,7 +611,7 @@ export default {
       }
     } else {
       each(style, function (name, v) {
-        _this4.css(el, name, v);
+        _this6.css(el, name, v);
       });
     }
     return el;
@@ -635,16 +647,18 @@ export default {
    * @returns {Element|null}
    */
   first: function first(nodeList) {
+    var _Array$from$;
     if (nodeList instanceof Element) return nodeList;
-    return nodeList.length ? Array.from(nodeList)[0] : null;
+    return (_Array$from$ = Array.from(nodeList)[0]) !== null && _Array$from$ !== void 0 ? _Array$from$ : null;
   },
   /**
    * @param {NodeList|Array<Element>} nodeList
    * @returns {Element|null}
    */
   last: function last(nodeList) {
-    var arr = Array.from(nodeList)[0];
-    return arr[arr.length - 1];
+    var _arr;
+    var arr = Array.from(nodeList);
+    return (_arr = arr[arr.length - 1]) !== null && _arr !== void 0 ? _arr : null;
   },
   /**
    * @param {string} html
@@ -657,32 +671,42 @@ export default {
     return (_tpl$content$firstEle = tpl.content.firstElementChild) !== null && _tpl$content$firstEle !== void 0 ? _tpl$content$firstEle : null;
   },
   /**
-   * @param {NodeList} nodeList
+   * @param {NodeList|Array<Element>} nodeList
    * @param {number} [index=0]
    * @returns {Element|null}
    */
   eq: function eq(nodeList) {
+    var _nodeList$index;
     var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+    nodeList = Array.from(nodeList);
     if (Math.abs(index) >= nodeList.length) return null;
     if (index < 0) {
       index = nodeList.length + index;
     }
-    return nodeList.item(index);
+    return (_nodeList$index = nodeList[index]) !== null && _nodeList$index !== void 0 ? _nodeList$index : null;
   },
   /**
    * @param {Element} el
-   * @param {Element} newEl
-   * @returns {Element}
+   * @param {Element|string} newEl
+   * @returns {Element|null}
    */
   after: function after(el, newEl) {
+    if (!el.parentElement) return null;
+    if (isString(newEl)) {
+      newEl = this.create(newEl);
+    }
     return el.parentElement.insertBefore(newEl, el.nextElementSibling);
   },
   /**
    * @param {Element} el
-   * @param {Element} newEl
-   * @returns {Element}
+   * @param {Element|string} newEl
+   * @returns {Element|null}
    */
   before: function before(el, newEl) {
+    if (!el.parentElement) return null;
+    if (isString(newEl)) {
+      newEl = this.create(newEl);
+    }
     return el.parentElement.insertBefore(newEl, el);
   },
   /**

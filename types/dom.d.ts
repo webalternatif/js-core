@@ -68,16 +68,16 @@ declare namespace _default {
     function hasClass(el: Element, classNames: string): boolean;
     /**
      * @param {Node} node
-     * @param {...Node} children
+     * @param {...(Node|string)} children
      * @returns {Node}
      */
-    function append(node: Node, ...children: Node[]): Node;
+    function append(node: Node, ...children: (Node | string)[]): Node;
     /**
      * @param {Node} node
-     * @param {...Node} children
+     * @param {...(Node|string)} children
      * @returns {Node}
      */
-    function prepend(node: Node, ...children: Node[]): Node;
+    function prepend(node: Node, ...children: (Node | string)[]): Node;
     /**
      * @param {Element|NodeList|Array<Element>|string} els
      * @returns {void}
@@ -244,23 +244,23 @@ declare namespace _default {
      */
     function create(html: string): Element | null;
     /**
-     * @param {NodeList} nodeList
+     * @param {NodeList|Array<Element>} nodeList
      * @param {number} [index=0]
      * @returns {Element|null}
      */
-    function eq(nodeList: NodeList, index?: number): Element | null;
+    function eq(nodeList: NodeList | Array<Element>, index?: number): Element | null;
     /**
      * @param {Element} el
-     * @param {Element} newEl
-     * @returns {Element}
+     * @param {Element|string} newEl
+     * @returns {Element|null}
      */
-    function after(el: Element, newEl: Element): Element;
+    function after(el: Element, newEl: Element | string): Element | null;
     /**
      * @param {Element} el
-     * @param {Element} newEl
-     * @returns {Element}
+     * @param {Element|string} newEl
+     * @returns {Element|null}
      */
-    function before(el: Element, newEl: Element): Element;
+    function before(el: Element, newEl: Element | string): Element | null;
     /**
      * @param {Element} el
      * @returns {Element}

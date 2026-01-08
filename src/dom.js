@@ -254,21 +254,35 @@ export default {
 
     /**
      * @param {Node} node
-     * @param {...Node} children
+     * @param {...(Node|string)} children
      * @returns {Node}
      */
     append(node, ...children) {
-        node.append(...children);
+        foreach(children, (child) => {
+            if (isString(child)) {
+                child = this.create(child);
+            }
+
+            child && node.append(child);
+        });
+
         return node;
     },
 
     /**
      * @param {Node} node
-     * @param {...Node} children
+     * @param {...(Node|string)} children
      * @returns {Node}
      */
     prepend(node, ...children) {
-        node.prepend(...children);
+        foreach(children, (child) => {
+            if (isString(child)) {
+                child = this.create(child);
+            }
+
+            child && node.prepend(child);
+        });
+
         return node;
     },
 
@@ -774,7 +788,7 @@ export default {
      */
     first(nodeList) {
         if (nodeList instanceof Element) return nodeList
-        return nodeList.length ? Array.from(nodeList)[0] : null;
+        return Array.from(nodeList)[0] ?? null;
     },
 
     /**
@@ -782,8 +796,8 @@ export default {
      * @returns {Element|null}
      */
     last(nodeList) {
-        const arr = Array.from(nodeList)[0];
-        return arr[arr.length - 1];
+        const arr = Array.from(nodeList);
+        return arr[arr.length - 1] ?? null;
     },
 
     /**
@@ -797,35 +811,49 @@ export default {
     },
 
     /**
-     * @param {NodeList} nodeList
+     * @param {NodeList|Array<Element>} nodeList
      * @param {number} [index=0]
      * @returns {Element|null}
      */
     eq(nodeList, index = 0) {
+        nodeList = Array.from(nodeList);
+
         if (Math.abs(index) >= nodeList.length) return null;
 
         if (index < 0) {
             index = nodeList.length + index;
         }
 
-        return nodeList.item(index);
+        return nodeList[index] ?? null;
     },
 
     /**
      * @param {Element} el
-     * @param {Element} newEl
-     * @returns {Element}
+     * @param {Element|string} newEl
+     * @returns {Element|null}
      */
     after(el, newEl) {
+        if (!el.parentElement) return null;
+
+        if (isString(newEl)) {
+            newEl = this.create(newEl);
+        }
+
         return el.parentElement.insertBefore(newEl, el.nextElementSibling);
     },
 
     /**
      * @param {Element} el
-     * @param {Element} newEl
-     * @returns {Element}
+     * @param {Element|string} newEl
+     * @returns {Element|null}
      */
     before(el, newEl) {
+        if (!el.parentElement) return null;
+
+        if (isString(newEl)) {
+            newEl = this.create(newEl);
+        }
+
         return el.parentElement.insertBefore(newEl, el);
     },
 

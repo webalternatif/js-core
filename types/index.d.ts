@@ -39,8 +39,8 @@ declare const webf: {
         removeClass(el: Element | NodeList | Array<Element>, className: string): Element | NodeList | Array<Element>;
         toggleClass(el: Element, classNames: string, force?: boolean): Element;
         hasClass(el: Element, classNames: string): boolean;
-        append(node: Node, ...children: Node[]): Node;
-        prepend(node: Node, ...children: Node[]): Node;
+        append(node: Node, ...children: (Node | string)[]): Node;
+        prepend(node: Node, ...children: (Node | string)[]): Node;
         remove(...els: Element | NodeList | Array<Element> | string): void;
         closest(el: Element, selector: string | Element): Element | null;
         next(el: Element, selector?: string): Element | null;
@@ -71,9 +71,9 @@ declare const webf: {
         first(nodeList: NodeList | Element | Array<Element>): Element | null;
         last(nodeList: NodeList | Array<Element>): Element | null;
         create(html: string): Element | null;
-        eq(nodeList: NodeList, index?: number): Element | null;
-        after(el: Element, newEl: Element): Element;
-        before(el: Element, newEl: Element): Element;
+        eq(nodeList: NodeList | Array<Element>, index?: number): Element | null;
+        after(el: Element, newEl: Element | string): Element | null;
+        before(el: Element, newEl: Element | string): Element | null;
         empty(el: Element): Element;
         not(el: Element | NodeList, selector: string | Element): Element[];
         collide(elem1: Element, elem2: Element): boolean;
