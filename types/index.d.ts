@@ -162,9 +162,10 @@ declare const webf: {
 import * as stringFunctions from './string.js';
 import * as arrayFunctions from './array.js';
 import * as traversal from './traversal.js';
+import * as is from './is.js';
 import { getStyle } from './dom.js';
 import dom from './dom.js';
 import * as math from './math.js';
 import * as utils from './utils.js';
 import eventDispatcher from './eventDispatcher.js';
-export { stringFunctions, arrayFunctions, traversal, getStyle, dom, math, utils, eventDispatcher };
+export { stringFunctions, arrayFunctions, traversal, is, getStyle, dom, math, utils, eventDispatcher };

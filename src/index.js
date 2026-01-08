@@ -27,6 +27,7 @@ export {
     stringFunctions,
     arrayFunctions,
     traversal,
+    is,
     getStyle,
     dom,
     math,

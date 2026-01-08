@@ -24,4 +24,4 @@ var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread
   eventDispatcher: eventDispatcher
 });
 export default webf;
-export { stringFunctions, arrayFunctions, traversal, getStyle, dom, math, utils, eventDispatcher };
+export { stringFunctions, arrayFunctions, traversal, is, getStyle, dom, math, utils, eventDispatcher };
