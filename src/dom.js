@@ -684,7 +684,7 @@ export default {
 
     /**
      * @param {Element|Document|Window} el
-     * @param {string} events
+     * @param {string} [events]
      * @param {string|Element|function} selector
      * @param {function|AddEventListenerOptions|boolean} [handler]
      * @param {AddEventListenerOptions|boolean} [options]
@@ -700,13 +700,15 @@ export default {
         const store = LISTENERS.get(el);
         if (!store) return el;
 
-        foreach(events.split(' '), event => {
+        const evts = events ? events.split(' ') : [undefined];
+
+        foreach(evts.split(' '), event => {
             each([...store].reverse(), (i, l) => {
                 if (
-                    l.event === event &&
-                    l.handler === handler &&
-                    l.selector === selector &&
-                    (options === undefined || l.options === options)
+                    (undefined === event || l.event === event) &&
+                    (undefined === handler || l.handler === handler) &&
+                    (undefined === selector || l.selector === selector) &&
+                    (undefined === options || l.options === options)
                 ) {
                     el.removeEventListener(event, l.listener, l.options);
 
