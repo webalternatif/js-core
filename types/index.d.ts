@@ -31,7 +31,7 @@ declare const webf: {
     dom: {
         children(el: Element, selector?: string): NodeList;
         child(el: Element, selector?: string): Element | null;
-        findOne(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Element | null;
+        findOne(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Element;
         find(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Array<Element>;
         findOneByData(el: Element | string, data: string, value?: string): Element | null;
         findByData(el: Element | string, data: string, value?: string): Element[];
@@ -42,7 +42,7 @@ declare const webf: {
         append(node: Node, ...children: (Node | string)[]): Node;
         prepend(node: Node, ...children: (Node | string)[]): Node;
         remove(...els: Element | NodeList | Array<Element> | string): void;
-        closest(el: Element, selector: string | Element): Element | null;
+        closest(el: Element, selector?: string | Element): Element | null;
         next(el: Element, selector?: string): Element | null;
         prev(el: Element, selector?: string | null): Element | null;
         nextAll(el: Element, selector?: string): Element[];

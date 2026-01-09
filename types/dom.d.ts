@@ -17,10 +17,10 @@ declare namespace _default {
     function child(el: Element, selector?: string): Element | null;
     /**
      * @param {Element|Document|string} refEl
-     * @param {string|Element|NodeList|Array<Element>} [selector]
-     * @returns {Element|null}
+     * @param {string|Element|NodeList|Array<Element>} selector
+     * @returns {Element}
      */
-    function findOne(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Element | null;
+    function findOne(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Element;
     /**
      * @param {Element|Document|string} refEl
      * @param {string|Element|NodeList|Array<Element>} selector
@@ -85,10 +85,10 @@ declare namespace _default {
     function remove(...els: Element | NodeList | Array<Element> | string): void;
     /**
      * @param {Element} el
-     * @param {string|Element} selector
+     * @param {string|Element} [selector]
      * @returns {Element|null}
      */
-    function closest(el: Element, selector: string | Element): Element | null;
+    function closest(el: Element, selector?: string | Element): Element | null;
     /**
      * @param {Element} el
      * @param {string} [selector]

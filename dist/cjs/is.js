@@ -24,7 +24,9 @@ export var isUndefined = function isUndefined(v) {
   return typeof v === 'undefined';
 };
 export var isArrayLike = function isArrayLike(o) {
-  return null !== o && !isString(o) && !isFunction(o) && isInt(o.length) && o.length >= 0 && Number.isFinite(o.length);
+  return !!o && !isString(o) && !isFunction(o) && isInt(o.length)
+  // && o.length >= 0
+  && Number.isFinite(o.length);
 };
 export var isArray = function isArray(a) {
   return Array.isArray(a);

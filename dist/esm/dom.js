@@ -69,8 +69,8 @@ export default {
   },
   /**
    * @param {Element|Document|string} refEl
-   * @param {string|Element|NodeList|Array<Element>} [selector]
-   * @returns {Element|null}
+   * @param {string|Element|NodeList|Array<Element>} selector
+   * @returns {Element}
    */
   findOne: function findOne(refEl, selector) {
     var _this$find$;
@@ -97,7 +97,11 @@ export default {
         return null;
       });
     }
-    return Array.from(refEl.querySelectorAll(selector));
+    try {
+      return refEl.querySelectorAll(selector);
+    } catch (e) {
+      return [];
+    }
   },
   /**
    * @param {Element|string} el
@@ -218,7 +222,7 @@ export default {
     for (var _len2 = arguments.length, children = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
       children[_key2 - 1] = arguments[_key2];
     }
-    foreach(children, function (child) {
+    foreach([].concat(children).reverse(), function (child) {
       if (isString(child)) {
         child = _this2.create(child);
       }
@@ -249,7 +253,7 @@ export default {
   },
   /**
    * @param {Element} el
-   * @param {string|Element} selector
+   * @param {string|Element} [selector]
    * @returns {Element|null}
    */
   closest: function closest(el, selector) {
@@ -265,6 +269,9 @@ export default {
         parentEl = parentEl.parentElement;
       }
       return null;
+    }
+    if (undefined === selector) {
+      return el;
     }
     return el.closest(selector);
   },

@@ -68,8 +68,8 @@ export var each = function each(o, callback, context) {
       _iterator2.f();
     }
   } else if (isArrayLike(o)) {
-    o = Array.from(o);
-    for (var _i2 = 0; _i2 < o.length; _i2++) if (false === callback.call(context || o[_i2], _i2, o[_i2], o, _i2)) return;
+    var _arr = Array.from(o);
+    for (var _i2 = 0; _i2 < _arr.length; _i2++) if (false === callback.call(context || _arr[_i2], _i2, _arr[_i2], _arr, _i2)) return;
   }
   return o;
 };
