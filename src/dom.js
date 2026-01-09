@@ -101,16 +101,16 @@ export default {
     },
 
     /**
-     * @param {Element|Document} refEl
-     * @param {string|Element|NodeList|Array<Element>} [selector]
-     * @returns {Element|null}
+     * @param {Element|Document|string} refEl
+     * @param {string|Element|NodeList|Array<Element>} selector
+     * @returns {Element}
      */
     findOne(refEl, selector) {
         return this.find(refEl, selector)[0] ?? null;
     },
 
     /**
-     * @param {Element|Document} refEl
+     * @param {Element|Document|string} refEl
      * @param {string|Element|NodeList|Array<Element>} selector
      * @returns {Array<Element>}
      */
@@ -134,13 +134,17 @@ export default {
             })
         }
 
-        return Array.from(refEl.querySelectorAll(selector));
+        try {
+            return refEl.querySelectorAll(selector);
+        } catch (e) {
+            return [];
+        }
     },
 
     /**
-     * @param {Element} el
+     * @param {Element|string} el
      * @param {string} data
-     * @param {string} value
+     * @param {string} [value]
      * @returns {Element|null}
      */
     findOneByData(el, data, value) {
@@ -148,9 +152,9 @@ export default {
     },
 
     /**
-     * @param {Element} el
+     * @param {Element|string} el
      * @param {string} data
-     * @param {string} value
+     * @param {string} [value]
      * @returns {Element[]}
      */
     findByData(el, data, value) {
@@ -275,7 +279,7 @@ export default {
      * @returns {Node}
      */
     prepend(node, ...children) {
-        foreach(children, (child) => {
+        foreach([...children].reverse(), (child) => {
             if (isString(child)) {
                 child = this.create(child);
             }
@@ -304,7 +308,7 @@ export default {
 
     /**
      * @param {Element} el
-     * @param {string|Element} selector
+     * @param {string|Element} [selector]
      * @returns {Element|null}
      */
     closest(el, selector) {
@@ -324,6 +328,10 @@ export default {
             }
 
             return null;
+        }
+
+        if (undefined === selector) {
+            return el;
         }
 
         return el.closest(selector);

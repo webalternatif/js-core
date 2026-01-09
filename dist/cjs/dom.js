@@ -68,7 +68,7 @@ export default {
     return this.first(this.children(el, selector));
   },
   /**
-   * @param {Element|Document} refEl
+   * @param {Element|Document|string} refEl
    * @param {string|Element|NodeList|Array<Element>} [selector]
    * @returns {Element|null}
    */
@@ -77,7 +77,7 @@ export default {
     return (_this$find$ = this.find(refEl, selector)[0]) !== null && _this$find$ !== void 0 ? _this$find$ : null;
   },
   /**
-   * @param {Element|Document} refEl
+   * @param {Element|Document|string} refEl
    * @param {string|Element|NodeList|Array<Element>} selector
    * @returns {Array<Element>}
    */
@@ -100,9 +100,9 @@ export default {
     return Array.from(refEl.querySelectorAll(selector));
   },
   /**
-   * @param {Element} el
+   * @param {Element|string} el
    * @param {string} data
-   * @param {string} value
+   * @param {string} [value]
    * @returns {Element|null}
    */
   findOneByData: function findOneByData(el, data, value) {
@@ -110,9 +110,9 @@ export default {
     return (_this$findByData$ = this.findByData(el, data, value)[0]) !== null && _this$findByData$ !== void 0 ? _this$findByData$ : null;
   },
   /**
-   * @param {Element} el
+   * @param {Element|string} el
    * @param {string} data
-   * @param {string} value
+   * @param {string} [value]
    * @returns {Element[]}
    */
   findByData: function findByData(el, data, value) {

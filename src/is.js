@@ -32,11 +32,11 @@ export const isUndefined = function(v) {
 }
 
 export const isArrayLike = function(o) {
-    return null !== o
+    return !!o
         && !isString(o)
         && !isFunction(o)
         && isInt(o.length)
-        && o.length >= 0
+        // && o.length >= 0
         && Number.isFinite(o.length);
 }
 

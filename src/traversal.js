@@ -59,10 +59,10 @@ export const each = function(o, callback, context) {
     }
 
     else if (isArrayLike(o)) {
-        o = Array.from(o);
+        const arr = Array.from(o);
 
-        for (let i = 0; i < o.length; i++)
-            if (false === callback.call(context || o[i], i, o[i], o, i))
+        for (let i = 0; i < arr.length; i++)
+            if (false === callback.call(context || arr[i], i, arr[i], arr, i))
                 return;
     }
 

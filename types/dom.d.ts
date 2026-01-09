@@ -16,31 +16,31 @@ declare namespace _default {
      */
     function child(el: Element, selector?: string): Element | null;
     /**
-     * @param {Element|Document} refEl
+     * @param {Element|Document|string} refEl
      * @param {string|Element|NodeList|Array<Element>} [selector]
      * @returns {Element|null}
      */
-    function findOne(refEl: Element | Document, selector?: string | Element | NodeList | Array<Element>): Element | null;
+    function findOne(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Element | null;
     /**
-     * @param {Element|Document} refEl
+     * @param {Element|Document|string} refEl
      * @param {string|Element|NodeList|Array<Element>} selector
      * @returns {Array<Element>}
      */
-    function find(refEl: Element | Document, selector: string | Element | NodeList | Array<Element>): Array<Element>;
+    function find(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Array<Element>;
     /**
-     * @param {Element} el
+     * @param {Element|string} el
      * @param {string} data
-     * @param {string} value
+     * @param {string} [value]
      * @returns {Element|null}
      */
-    function findOneByData(el: Element, data: string, value: string): Element | null;
+    function findOneByData(el: Element | string, data: string, value?: string): Element | null;
     /**
-     * @param {Element} el
+     * @param {Element|string} el
      * @param {string} data
-     * @param {string} value
+     * @param {string} [value]
      * @returns {Element[]}
      */
-    function findByData(el: Element, data: string, value: string): Element[];
+    function findByData(el: Element | string, data: string, value?: string): Element[];
     /**
      * @param {Element|NodeList|Array<Element>} el
      * @param {string} className

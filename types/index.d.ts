@@ -31,10 +31,10 @@ declare const webf: {
     dom: {
         children(el: Element, selector?: string): NodeList;
         child(el: Element, selector?: string): Element | null;
-        findOne(refEl: Element | Document, selector?: string | Element | NodeList | Array<Element>): Element | null;
-        find(refEl: Element | Document, selector: string | Element | NodeList | Array<Element>): Array<Element>;
-        findOneByData(el: Element, data: string, value: string): Element | null;
-        findByData(el: Element, data: string, value: string): Element[];
+        findOne(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Element | null;
+        find(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Array<Element>;
+        findOneByData(el: Element | string, data: string, value?: string): Element | null;
+        findByData(el: Element | string, data: string, value?: string): Element[];
         addClass(el: Element | NodeList | Array<Element>, className: string): Element | NodeList | Array<Element>;
         removeClass(el: Element | NodeList | Array<Element>, className: string): Element | NodeList | Array<Element>;
         toggleClass(el: Element, classNames: string, force?: boolean): Element;

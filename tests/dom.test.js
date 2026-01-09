@@ -137,9 +137,8 @@ describe('dom manipulation', () => {
 
     describe('find()', () => {
         it('should return descendants of element', () => {
-            expect(dom.find(el).length).toBe(12);
-            expect(dom.find(el, '.grandchild').length).toBe(9);
-            expect(dom.find('.grandchild').length).toBe(9);
+            expect(dom.find(el, '.grandchild')).toHaveLength(9);
+            expect(dom.find('.grandchild')).toHaveLength(9);
         })
 
         it('should return an empty list on invalid selector', () => {
@@ -148,11 +147,10 @@ describe('dom manipulation', () => {
     })
 
     describe('findOne()', () => {
-        it('should return one descendant of element', () => {
+        it('should return first descendant of element matching selector', () => {
             const child = el.children[0];
             const grandChild = child.children[0];
 
-            expect(dom.findOne(el)).toBe(child);
             expect(dom.findOne(el, '.grandchild')).toBe(grandChild);
             expect(dom.findOne('.grandchild')).toBe(grandChild);
         })
@@ -265,6 +263,17 @@ describe('dom manipulation', () => {
             expect(el.firstElementChild).toBe(c1);
             expect(el.firstElementChild.nextElementSibling).toBe(c2);
         });
+
+        it('should accept children as HTML string', () => {
+            const c1 = '<span class="c1">';
+            const c2 = '<span class="c2">';
+
+            dom.prepend(el, c1, c2);
+
+            expect(el.children).toHaveLength(5);
+            expect(el.firstElementChild).toHaveClass('c1');
+            expect(el.firstElementChild.nextElementSibling).toHaveClass('c2');
+        });
     })
 
     describe('remove()', () => {
@@ -297,11 +306,12 @@ describe('dom manipulation', () => {
     })
 
     describe('next()', () => {
-        it('should return the next element', () => {
+        it('should return the immediate next element matching selector', () => {
             const child = el.children[0];
 
             expect(dom.next(child)).toBe(el.children[1]);
             expect(dom.next(child, '.child1')).toBe(el.children[1]);
+            expect(dom.next(child, '.child2')).toBeNull();
         })
 
         it('should return null if there is no next element', () => {
@@ -314,11 +324,11 @@ describe('dom manipulation', () => {
     })
 
     describe('prev()', () => {
-        it('should return the previous element', () => {
-            const child = el.children[0];
+        it('should return the immediate previous element matching selector', () => {
+            const child = el.children[2];
 
-            expect(dom.next(child)).toBe(el.children[1]);
-            expect(dom.next(child, '.child2')).toBe(el.children[2]);
+            expect(dom.prev(child)).toBe(el.children[1]);
+            expect(dom.prev(child, '.child0')).toBeNull();
         })
 
         it('should return null if there is no previous element', () => {

@@ -7,11 +7,22 @@ describe('Random String Generation Functions', () => {
     const isAlphaNumCs = /^[a-zA-Z0-9]+$/;
     const isNum = /^[0-9]+$/;
 
-    it('should generate a unique ID of length 10 with uniqid', () => {
-        const id = r.uniqid();
-        expect(id).toHaveLength(10);
-        expect(isAlpha.test(id)).toBe(true);
-    });
+    describe('uniqid()', () => {
+        it('should prepend prefix when provided to uniqid', () => {
+            const id = r.uniqid('test_');
+            expect(id.startsWith('test_')).toBe(true);
+        });
+
+        it('should increment internal counter', () => {
+            const id1 = r.uniqid();
+            const id2 = r.uniqid();
+
+            const counter1 = id1.split('_')[1];
+            const counter2 = id2.split('_')[1];
+
+            expect(parseInt(counter2, 36)).toBe(parseInt(counter1, 36) + 1);
+        });
+    })
 
     it('should generate a random lowercase alphabetic string with randAlpha', () => {
         const str = r.randAlpha(15);

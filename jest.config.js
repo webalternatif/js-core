@@ -5,7 +5,10 @@ export default {
     coverageDirectory: 'coverage',
     moduleFileExtensions: ['js'],
     coverageReporters: ['text-summary', 'html'],
-    roots: ['<rootDir>/tests'],
+    roots: [
+        '<rootDir>/tests',
+        '<rootDir>/src'
+    ],
     collectCoverageFrom: [
         'src/**/*.{js,jsx}',
         '!i18n/**',
@@ -19,5 +22,6 @@ export default {
                 ]
             }
         ]
-    }
+    },
+    setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 };
