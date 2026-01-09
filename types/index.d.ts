@@ -62,7 +62,7 @@ declare const webf: {
         } | string, value?: string): Element | DOMStringMap;
         removeData(el: Element, name: string): Element | any;
         on(el: Element | Document | Window, events: string, selector: string | Element | Function, handler?: Function | AddEventListenerOptions | boolean, options?: AddEventListenerOptions | boolean): Element;
-        off(el: Element | Document | Window, events?: string, selector: string | Element | Function, handler?: Function | AddEventListenerOptions | boolean, options?: AddEventListenerOptions | boolean): Element;
+        off(el: Element | Document | Window, events?: string, selector?: string | Element | Function, handler?: Function | AddEventListenerOptions | boolean, options?: AddEventListenerOptions | boolean): Element;
         css(el: HTMLElement, style: {
             [x: string]: string;
         } | string, value?: string): Element;

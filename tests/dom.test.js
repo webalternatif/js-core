@@ -1,4 +1,4 @@
-import dom, {isWindow, isDomElement, getStyle} from "../src/dom.js";
+import dom, {isWindow, isDocument, isDomElement, getStyle} from "../src/dom.js";
 
 describe('dom methods', () => {
     describe('isWindow()', () => {
@@ -15,6 +15,23 @@ describe('dom methods', () => {
             expect(isWindow(123)).toBe(false);
             expect(isWindow(null)).toBe(false);
             expect(isWindow('string')).toBe(false);
+        });
+    });
+
+    describe('isDocument()', () => {
+        it('should returns true for document object', () => {
+            expect(isDocument(document)).toBe(true);
+        });
+
+        it('should return false for a DOM element', () => {
+            const div = document.createElement('div');
+            expect(isDocument(div)).toBe(false);
+        });
+
+        it('should return false for primitives', () => {
+            expect(isDocument(123)).toBe(false);
+            expect(isDocument(null)).toBe(false);
+            expect(isDocument('string')).toBe(false);
         });
     });
 
@@ -406,16 +423,236 @@ describe('dom manipulation', () => {
     describe('removeData()', () => {
     })
 
-    describe('on()', () => {
-    })
+    describe('on(), off()', () => {
+        it('should attach an event listener', () => {
+            const handler = jest.fn();
 
-    describe('on()', () => {
-    })
+            dom.on(el, 'click', handler);
 
-    describe('on()', () => {
-    })
+            el.dispatchEvent(new MouseEvent('click'));
 
-    describe('off()', () => {
+            expect(handler).toHaveBeenCalledTimes(1);
+            expect(handler).toHaveBeenCalledWith(expect.any(MouseEvent));
+        });
+
+        it('should detach an event listener', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+            dom.off(el, 'click', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should support multiple events', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click mouseenter', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+            el.dispatchEvent(new MouseEvent('mouseenter'));
+
+            expect(handler).toHaveBeenCalledTimes(2);
+        });
+
+        it('should remove handler for multiple events', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click mouseenter', handler);
+            dom.off(el, 'click mouseenter', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+            el.dispatchEvent(new MouseEvent('mouseenter'));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should call handler when delegated target matches selector', () => {
+            const handler = jest.fn();
+
+            const child1 = el.querySelector('.child1');
+
+            dom.on(el, 'click', '.child1', handler);
+
+            child1.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(handler).toHaveBeenCalledTimes(1);
+
+            const ev = handler.mock.calls[0][0];
+            expect(ev.target).toBe(child1);
+        });
+
+        it('should not call handler when delegated target does not match selector', () => {
+            const handler = jest.fn();
+
+            const child2 = el.querySelector('.child2');
+
+            dom.on(el, 'click', '.child1', handler);
+
+            child2.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should match delegated selector on ancestors', () => {
+            const handler = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+
+            dom.on(el, 'click', '.child1', handler);
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(handler).toHaveBeenCalledTimes(1);
+        });
+
+        it('should set currentTarget to matched element', () => {
+            const handler = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+            const child1 = el.querySelector('.child1');
+
+            dom.on(el, 'click', '.child1', handler);
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            const ev = handler.mock.calls[0][0];
+            expect(ev.currentTarget).toBe(child1);
+            expect(ev.originalEvent).toBeInstanceOf(MouseEvent);
+        });
+
+        it('should remove delegated handler only', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+
+            dom.on(el, 'click', '.child1', h1);
+            dom.on(el, 'click', '.child1', h2);
+
+            dom.off(el, 'click', '.child1', h1);
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).toHaveBeenCalledTimes(1);
+        });
+
+        it('should remove all delegated handlers for selector', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+
+            dom.on(el, 'click', '.child1', h1);
+            dom.on(el, 'click', '.child1', h2);
+
+            dom.off(el, 'click', '.child1');
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).not.toHaveBeenCalled();
+        });
+
+        it('should not remove direct handler when removing delegated one', () => {
+            const direct = jest.fn();
+            const delegated = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+
+            dom.on(el, 'click', direct);
+            dom.on(el, 'click', '.child1', delegated);
+
+            dom.off(el, 'click', '.child1', delegated);
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(direct).toHaveBeenCalledTimes(1);
+            expect(delegated).not.toHaveBeenCalled();
+        });
+
+        it('should be safe to call off multiple times', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+            dom.off(el, 'click', handler);
+            dom.off(el, 'click', handler);
+            dom.off(el, 'click');
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should bind same handler twice', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+            dom.on(el, 'click', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(handler).toHaveBeenCalledTimes(2);
+        });
+
+        it('should remove all occurrences of handler', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+            dom.on(el, 'click', handler);
+
+            dom.off(el, 'click', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should call handlers in registration order', () => {
+            const calls = [];
+
+            dom.on(el, 'click', () => calls.push(1));
+            dom.on(el, 'click', () => calls.push(2));
+            dom.on(el, 'click', () => calls.push(3));
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(calls).toEqual([1, 2, 3]);
+        });
+
+        it('should remove only handlers for given event', () => {
+            const click = jest.fn();
+            const enter = jest.fn();
+
+            dom.on(el, 'click', click);
+            dom.on(el, 'mouseenter', enter);
+
+            dom.off(el, 'click');
+
+            el.dispatchEvent(new MouseEvent('click'));
+            el.dispatchEvent(new MouseEvent('mouseenter'));
+
+            expect(click).not.toHaveBeenCalled();
+            expect(enter).toHaveBeenCalledTimes(1);
+        });
+
+        it('should remove all handlers when calling off(el)', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            dom.on(el, 'click', h1);
+            // dom.on(el, 'click', '.child1', h2);
+
+            dom.off(el);
+
+            el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(h1).not.toHaveBeenCalled();
+            // expect(h2).not.toHaveBeenCalled();
+        });
     })
 
     describe('css()', () => {

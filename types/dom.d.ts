@@ -199,12 +199,12 @@ declare namespace _default {
     /**
      * @param {Element|Document|Window} el
      * @param {string} [events]
-     * @param {string|Element|function} selector
+     * @param {string|Element|function} [selector]
      * @param {function|AddEventListenerOptions|boolean} [handler]
      * @param {AddEventListenerOptions|boolean} [options]
      * @returns {Element}
      */
-    function off(el: Element | Document | Window, events?: string, selector: string | Element | Function, handler?: Function | AddEventListenerOptions | boolean, options?: AddEventListenerOptions | boolean): Element;
+    function off(el: Element | Document | Window, events?: string, selector?: string | Element | Function, handler?: Function | AddEventListenerOptions | boolean, options?: AddEventListenerOptions | boolean): Element;
     /**
      * @param {HTMLElement} el
      * @param {Object<string, string>|string} style

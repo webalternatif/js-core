@@ -33,7 +33,7 @@ const cssNumber = [
     'strokeOpacity',
 ];
 
-const LISTENERS = new WeakMap();
+const LISTENERS = new Map();
 
 /**
  * @param {any} o
@@ -654,11 +654,11 @@ export default {
 
                 while (currentTarget && currentTarget !== el) {
                     if (this.matches(currentTarget, selector)) {
-                        const wrappedEv = Object.assign({}, ev, {
+                        const wrappedEv = {
                             originalEvent: ev,
                             type: ev.type,
-                            currentTarget,
                             target: ev.target,
+                            currentTarget,
                             relatedTarget: ev.relatedTarget,
                             button: ev.button,
                             pageX: ev.pageX,
@@ -666,7 +666,7 @@ export default {
                             preventDefault: (...args) => ev.preventDefault(...args),
                             stopPropagation: (...args) => ev.stopPropagation(...args),
                             stopImmediatePropagation: (...args) => ev.stopImmediatePropagation(...args),
-                        });
+                        };
 
                         handler.call(currentTarget, wrappedEv);
                         break;
@@ -687,13 +687,17 @@ export default {
             el.addEventListener(event, listener, options);
         });
 
+        // foreach(LISTENERS, (store) => {
+        //     console.log(store)
+        // })
+
         return el;
     },
 
     /**
      * @param {Element|Document|Window} el
      * @param {string} [events]
-     * @param {string|Element|function} selector
+     * @param {string|Element|function} [selector]
      * @param {function|AddEventListenerOptions|boolean} [handler]
      * @param {AddEventListenerOptions|boolean} [options]
      * @returns {Element}
@@ -710,7 +714,7 @@ export default {
 
         const evts = events ? events.split(' ') : [undefined];
 
-        foreach(evts.split(' '), event => {
+        foreach(evts, event => {
             each([...store].reverse(), (i, l) => {
                 if (
                     (undefined === event || l.event === event) &&
@@ -718,7 +722,7 @@ export default {
                     (undefined === selector || l.selector === selector) &&
                     (undefined === options || l.options === options)
                 ) {
-                    el.removeEventListener(event, l.listener, l.options);
+                    el.removeEventListener(l.event, l.listener, l.options);
 
                     const index = store.indexOf(l);
                     index !== -1 && store.splice(index, 1);

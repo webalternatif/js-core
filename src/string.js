@@ -289,44 +289,44 @@ export const addUrlParam = function(url, param, value = null) {
         each(param, (key, val) => {
             url = addUrlParam(url, key, val);
         });
-    } else {
-        let parseUrl = parse_url(url), pos, hash = "";
 
-        if ((pos = url.indexOf("#")) > -1) {
-            hash = url.slice(pos);
-        }
+        return url;
+    }
 
-        if (hash) {
-            url = url.slice(0, url.lastIndexOf(hash));
-        }
+    let parseUrl = parse_url(url), pos, hash = "";
 
-        if (!parseUrl.query) {
-            url += "?" + param + "=" + value + hash;
-        } else {
-            const params = parseUrl.query.split('&');
-            let param_exists = false;
+    if ((pos = url.indexOf("#")) > -1) {
+        hash = url.slice(pos);
+        url = url.slice(0, pos);
+    }
 
-            for (let i = 0; i < params.length; i++) {
-                if (params[i].indexOf(param + "=") > -1) {
-                    param_exists = true;
-                    params[i] = param + "=" + value;
-                    break;
-                }
-            }
+    const key = encodeURIComponent(param);
+    const val = value === null ? '' : encodeURIComponent(value);
 
-            if (false === param_exists) {
-                params.push(param + "=" + value);
-            }
+    if (!parseUrl.query) {
+        return url + "?" + key + "=" + val + hash;
+    }
 
-            if (parseUrl.scheme && parseUrl.host) {
-                url = parseUrl.scheme + '://' + parseUrl.host + (parseUrl.path || '') + "?" + params.join("&") + hash;
-            } else {
-                url = (parseUrl.host || '') + parseUrl.path + "?" + params.join("&") + hash;
-            }
+    const params = parseUrl.query.split('&');
+    let param_exists = false;
+
+    for (let i = 0; i < params.length; i++) {
+        if (params[i].startsWith(key + "=")) {
+            params[i] = key + "=" + val;
+            param_exists = true;
+            break;
         }
     }
 
-    return url;
+    if (!param_exists) {
+        params.push(key + "=" + val);
+    }
+
+    if (parseUrl.scheme && parseUrl.host) {
+        return parseUrl.scheme + '://' + parseUrl.host + (parseUrl.path || '') + "?" + params.join("&") + hash;
+    }
+
+    return (parseUrl.host || '') + parseUrl.path + "?" + params.join("&") + hash;
 }
 
 export const decodeHtml = function(str) {

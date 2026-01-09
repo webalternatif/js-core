@@ -43,6 +43,34 @@ describe('traversal methods', () => {
             expect(mockCallback).toHaveBeenCalledWith(1, 2, array, 1);
         });
 
+        it('should allow stopping iteration on Map when callback returns false', () => {
+            const map = new Map([
+                ['a', 1],
+                ['b', 2],
+                ['c', 3],
+            ]);
+
+            const mockCallback = jest.fn((key, value) => value !== 2);
+
+            each(map, mockCallback);
+
+            expect(mockCallback).toHaveBeenCalledTimes(2);
+            expect(mockCallback).toHaveBeenCalledWith('a', 1, map, 0);
+            expect(mockCallback).toHaveBeenCalledWith('b', 2, map, 1);
+        });
+
+        it('should allow stopping iteration on Set when callback returns false', () => {
+            const set = new Set([1, 2, 3]);
+
+            const mockCallback = jest.fn((index, value) => value !== 2);
+
+            each(set, mockCallback);
+
+            expect(mockCallback).toHaveBeenCalledTimes(2);
+            expect(mockCallback).toHaveBeenCalledWith(0, 1, set, 0);
+            expect(mockCallback).toHaveBeenCalledWith(1, 2, set, 1);
+        });
+
         it('should handle string inputs by treating them as arrays of characters', () => {
             const mockCallback = jest.fn((key, value) => value !== 2);
             const str = 'abc';
@@ -76,6 +104,17 @@ describe('traversal methods', () => {
 
             expect(returnedArray).toBe(array);
             expect(returnedObj).toBe(obj);
+        });
+
+        it('should skip inherited properties and do nothing', () => {
+            const prototype = { inheritedKey: 'value' };
+            const obj = Object.create(prototype);
+
+            const mockCallback = jest.fn();
+
+            each(obj, mockCallback);
+
+            expect(mockCallback).not.toHaveBeenCalled();
         });
 
         it('should skip inherited properties and do nothing', () => {

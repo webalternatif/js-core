@@ -9,7 +9,7 @@ import { camelCase } from "./string.js";
 import { each, foreach, map } from "./traversal.js";
 import { inArray } from "./array.js";
 var cssNumber = ['animationIterationCount', 'aspectRatio', 'borderImageSlice', 'columnCount', 'flexGrow', 'flexShrink', 'fontWeight', 'gridArea', 'gridColumn', 'gridColumnEnd', 'gridColumnStart', 'gridRow', 'gridRowEnd', 'gridRowStart', 'lineHeight', 'opacity', 'order', 'orphans', 'scale', 'widows', 'zIndex', 'zoom', 'fillOpacity', 'floodOpacity', 'stopOpacity', 'strokeMiterlimit', 'strokeOpacity'];
-var LISTENERS = new WeakMap();
+var LISTENERS = new Map();
 
 /**
  * @param {any} o
@@ -529,11 +529,11 @@ export default {
         var currentTarget = ev.target;
         while (currentTarget && currentTarget !== el) {
           if (_this5.matches(currentTarget, selector)) {
-            var wrappedEv = Object.assign({}, ev, {
+            var wrappedEv = {
               originalEvent: ev,
               type: ev.type,
-              currentTarget: currentTarget,
               target: ev.target,
+              currentTarget: currentTarget,
               relatedTarget: ev.relatedTarget,
               button: ev.button,
               pageX: ev.pageX,
@@ -547,7 +547,7 @@ export default {
               stopImmediatePropagation: function stopImmediatePropagation() {
                 return ev.stopImmediatePropagation.apply(ev, arguments);
               }
-            });
+            };
             handler.call(currentTarget, wrappedEv);
             break;
           }
@@ -568,12 +568,17 @@ export default {
       });
       el.addEventListener(event, listener, options);
     });
+
+    // foreach(LISTENERS, (store) => {
+    //     console.log(store)
+    // })
+
     return el;
   },
   /**
    * @param {Element|Document|Window} el
    * @param {string} [events]
-   * @param {string|Element|function} selector
+   * @param {string|Element|function} [selector]
    * @param {function|AddEventListenerOptions|boolean} [handler]
    * @param {AddEventListenerOptions|boolean} [options]
    * @returns {Element}
@@ -587,10 +592,10 @@ export default {
     var store = LISTENERS.get(el);
     if (!store) return el;
     var evts = events ? events.split(' ') : [undefined];
-    foreach(evts.split(' '), function (event) {
+    foreach(evts, function (event) {
       each(_toConsumableArray(store).reverse(), function (i, l) {
         if ((undefined === event || l.event === event) && (undefined === handler || l.handler === handler) && (undefined === selector || l.selector === selector) && (undefined === options || l.options === options)) {
-          el.removeEventListener(event, l.listener, l.options);
+          el.removeEventListener(l.event, l.listener, l.options);
           var index = store.indexOf(l);
           index !== -1 && store.splice(index, 1);
         }

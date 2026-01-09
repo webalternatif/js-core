@@ -34,9 +34,9 @@ export var each = function each(o, callback, context) {
     for (var i in o) if (o.hasOwnProperty(i) && false === callback.call(context !== null && context !== void 0 ? context : o[i], i, o[i], o, ++index)) return;
   } else if (isString(o)) {
     var arr = o.split('');
-    for (var _i = 0; _i < arr.length; _i++) if (false === callback.call(context !== null && context !== void 0 ? context : arr[_i], _i, arr[_i], o, _i)) return;
+    for (var _i = 0; _i < arr.length; _i++) if (false === callback.call(context !== null && context !== void 0 ? context : arr[_i], _i, arr[_i], o, _i)) return o;
     return o;
-  } else if (o instanceof Map || o instanceof WeakMap) {
+  } else if (o instanceof Map) {
     var _index = 0;
     var _iterator = _createForOfIteratorHelper(o.entries()),
       _step;
@@ -45,7 +45,7 @@ export var each = function each(o, callback, context) {
         var _step$value = _slicedToArray(_step.value, 2),
           key = _step$value[0],
           value = _step$value[1];
-        if (false === callback.call(context !== null && context !== void 0 ? context : value, key, value, o, _index++)) return;
+        if (false === callback.call(context !== null && context !== void 0 ? context : value, key, value, o, _index++)) return o;
       }
     } catch (err) {
       _iterator.e(err);
@@ -59,7 +59,7 @@ export var each = function each(o, callback, context) {
     try {
       for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
         var _value = _step2.value;
-        if (false === callback.call(context !== null && context !== void 0 ? context : _value, _index2, _value, o, _index2)) return;
+        if (false === callback.call(context !== null && context !== void 0 ? context : _value, _index2, _value, o, _index2)) return o;
         _index2++;
       }
     } catch (err) {
@@ -69,7 +69,7 @@ export var each = function each(o, callback, context) {
     }
   } else if (isArrayLike(o)) {
     var _arr = Array.from(o);
-    for (var _i2 = 0; _i2 < _arr.length; _i2++) if (false === callback.call(context || _arr[_i2], _i2, _arr[_i2], _arr, _i2)) return;
+    for (var _i2 = 0; _i2 < _arr.length; _i2++) if (false === callback.call(context || _arr[_i2], _i2, _arr[_i2], _arr, _i2)) return o;
   }
   return o;
 };
@@ -111,7 +111,8 @@ export var map = function map(o, callback, context) {
   var results = [];
   each(o, function (index, value, o, i) {
     var response = callback.call(context, index, value, o, i);
-    if (false === response) return false;
+
+    // if (false === response) return false;
     if (null !== response) results.push(response);
   });
   return results;

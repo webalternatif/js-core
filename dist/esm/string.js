@@ -248,39 +248,36 @@ var _addUrlParam = function addUrlParam(url, param) {
     each(param, function (key, val) {
       url = _addUrlParam(url, key, val);
     });
-  } else {
-    var parseUrl = parse_url(url),
-      pos,
-      hash = "";
-    if ((pos = url.indexOf("#")) > -1) {
-      hash = url.slice(pos);
-    }
-    if (hash) {
-      url = url.slice(0, url.lastIndexOf(hash));
-    }
-    if (!parseUrl.query) {
-      url += "?" + param + "=" + value + hash;
-    } else {
-      var params = parseUrl.query.split('&');
-      var param_exists = false;
-      for (var i = 0; i < params.length; i++) {
-        if (params[i].indexOf(param + "=") > -1) {
-          param_exists = true;
-          params[i] = param + "=" + value;
-          break;
-        }
-      }
-      if (false === param_exists) {
-        params.push(param + "=" + value);
-      }
-      if (parseUrl.scheme && parseUrl.host) {
-        url = parseUrl.scheme + '://' + parseUrl.host + (parseUrl.path || '') + "?" + params.join("&") + hash;
-      } else {
-        url = (parseUrl.host || '') + parseUrl.path + "?" + params.join("&") + hash;
-      }
+    return url;
+  }
+  var parseUrl = parse_url(url),
+    pos,
+    hash = "";
+  if ((pos = url.indexOf("#")) > -1) {
+    hash = url.slice(pos);
+    url = url.slice(0, pos);
+  }
+  var key = encodeURIComponent(param);
+  var val = value === null ? '' : encodeURIComponent(value);
+  if (!parseUrl.query) {
+    return url + "?" + key + "=" + val + hash;
+  }
+  var params = parseUrl.query.split('&');
+  var param_exists = false;
+  for (var i = 0; i < params.length; i++) {
+    if (params[i].startsWith(key + "=")) {
+      params[i] = key + "=" + val;
+      param_exists = true;
+      break;
     }
   }
-  return url;
+  if (!param_exists) {
+    params.push(key + "=" + val);
+  }
+  if (parseUrl.scheme && parseUrl.host) {
+    return parseUrl.scheme + '://' + parseUrl.host + (parseUrl.path || '') + "?" + params.join("&") + hash;
+  }
+  return (parseUrl.host || '') + parseUrl.path + "?" + params.join("&") + hash;
 };
 export { _addUrlParam as addUrlParam };
 export var decodeHtml = function decodeHtml(str) {

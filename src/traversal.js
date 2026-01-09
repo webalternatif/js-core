@@ -35,16 +35,16 @@ export const each = function(o, callback, context) {
 
         for (let i = 0; i < arr.length; i++)
             if (false === callback.call(context ?? arr[i], i, arr[i], o, i))
-                return;
+                return o;
 
         return o;
     }
 
-    else if (o instanceof Map || o instanceof WeakMap) {
+    else if (o instanceof Map) {
         let index = 0;
         for (const [key, value] of o.entries()) {
             if (false === callback.call(context ?? value, key, value, o, index++))
-                return;
+                return o;
         }
     }
 
@@ -52,7 +52,7 @@ export const each = function(o, callback, context) {
         let index = 0;
         for (const value of o.values()) {
             if (false === callback.call(context ?? value, index, value, o, index))
-                return;
+                return o;
 
             index++;
         }
@@ -63,7 +63,7 @@ export const each = function(o, callback, context) {
 
         for (let i = 0; i < arr.length; i++)
             if (false === callback.call(context || arr[i], i, arr[i], arr, i))
-                return;
+                return o;
     }
 
     return o;
@@ -106,7 +106,7 @@ export const map = function(o, callback, context) {
     each(o, function(index, value, o, i) {
         const response = callback.call(context, index, value, o, i);
 
-        if (false === response) return false;
+        // if (false === response) return false;
         if (null !== response) results.push(response);
     });
 
