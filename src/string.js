@@ -2,7 +2,7 @@ import {isArray, isFloat, isInteger, isObject, isPlainObject, isString, isUndefi
 import {dec2hex, hex2dec, round} from "./math.js";
 import {inArray} from "./array.js";
 import {each, foreach, map} from "./traversal.js";
-import {translate} from "./i18n.js";
+// import {translate} from "./Translator.js";
 
 export const trim = function (str, char = '\\s') {
     return ltrim(rtrim(str, char), char);
@@ -533,7 +533,7 @@ export const formatSize = function(bytes, decimalPoint = ',')
     }
 
     const units = map(['k', 'M', 'G', 'T', 'P', 'E'], (i, prefix) => {
-        return prefix + translate('unitByte');
+        return prefix + 'B';
     })
 
     return numberFormat(Math.max(bytes, 0), decimals, true, '', decimalPoint) + ' ' + units[i];

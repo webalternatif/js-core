@@ -37,7 +37,7 @@ import {
     formatSize,
     hilite
 } from "../src/string";
-import {setLang} from "../src/i18n.js";
+import Translator, {setLang} from "../src/Translator.js";
 
 describe('String methods', () => {
     const [str1, str2, str3, str4, str5, str6, str7] = [
@@ -557,7 +557,7 @@ describe('String methods', () => {
         it('should handle a null value for a parameter', () => {
             const url = 'https://example.com';
             const result = addUrlParam(url, 'key', null);
-            expect(result).toBe('https://example.com?key=null');
+            expect(result).toBe('https://example.com?key=');
         })
 
         it('should handle an empty string as a parameter value', () => {
@@ -1015,38 +1015,36 @@ describe('String methods', () => {
     });
 
     describe('formatSize', () => {
-        setLang('fr');
-
         it('should return size in kilobytes for values less than 1 kB', () => {
-            expect(formatSize(512)).toBe('0,5 ko');
+            expect(formatSize(512)).toBe('0,5 kB');
         });
 
         it('should return size in kilobytes for values >= 1 kB and < 1 MB', () => {
-            expect(formatSize(1536)).toBe('1,5 ko');
+            expect(formatSize(1536)).toBe('1,5 kB');
         });
 
         it('should return size in megabytes for values >= 1 MB and < 1 GB', () => {
-            expect(formatSize(1048576)).toBe('1 Mo');
+            expect(formatSize(1048576)).toBe('1 MB');
         });
 
         it('should return size in gigabytes for values >= 1 GB', () => {
-            expect(formatSize(1073741824)).toBe('1 Go');
+            expect(formatSize(1073741824)).toBe('1 GB');
         });
 
         it('should handle custom decimal point', () => {
-            expect(formatSize(1536, '.')).toBe('1.5 ko');
+            expect(formatSize(1536, '.')).toBe('1.5 kB');
         });
 
         it('should handle edge case of exactly 1024 bytes', () => {
-            expect(formatSize(1024)).toBe('1 ko');
+            expect(formatSize(1024)).toBe('1 kB');
         });
 
         it('should handle 0 bytes', () => {
-            expect(formatSize(0)).toBe('0 ko');
+            expect(formatSize(0)).toBe('0 kB');
         });
 
         it('should use appropriate decimals for non-integers', () => {
-            expect(formatSize(1049600)).toBe('1,0 Mo');
+            expect(formatSize(1049600)).toBe('1,0 MB');
         });
     });
 

@@ -2,6 +2,7 @@ import {isArray, isArrayLike, isFunction, isObject, isPlainObject, isString} fro
 import {camelCase} from "./string.js";
 import {each, foreach, map} from "./traversal.js";
 import {inArray} from "./array.js";
+import Mouse from "./Mouse.js";
 
 const cssNumber = [
     'animationIterationCount',
@@ -34,6 +35,116 @@ const cssNumber = [
 ];
 
 const LISTENERS = new Map();
+const CUSTOM_EVENTS = [
+    'longtap',
+    'dbltap'
+]
+const ENABLED_EVENTS = new Set();
+
+let teardownLongTap = null;
+let teardownDblTap = null;
+
+const supplyEvent = function (event) {
+    if (ENABLED_EVENTS?.has(event)) return;
+
+    if (event === 'longtap') enableLongTap();
+    if (event === 'dbltap') enableDblTap();
+
+    ENABLED_EVENTS.add(event);
+}
+
+const enableLongTap = function () {
+    const LONGPRESS_DELAY = 800;
+    const MOVE_TOLERANCE = 8;
+
+    let timer = null;
+    let startX = 0;
+    let startY = 0;
+    let target = null;
+
+    const start = (ev) => {
+        target = ev.target;
+
+        const pos = Mouse.getViewportPosition(ev);
+        startX = pos.x;
+        startY = pos.y;
+
+        timer = setTimeout(() => {
+            target.dispatchEvent(new CustomEvent('longtap', {
+                bubbles: true,
+                cancelable: true,
+                detail: {originalEvent: ev}
+            }));
+
+            timer = null;
+        }, LONGPRESS_DELAY);
+    };
+
+    const move = (ev) => {
+        if (!timer) return;
+
+        const pos = Mouse.getViewportPosition(ev)
+
+        if (Math.hypot(pos.x - startX, pos.y - startY) > MOVE_TOLERANCE) {
+            clearTimeout(timer);
+            timer = null;
+        }
+    };
+
+    const end = () => {
+        if (timer) clearTimeout(timer);
+        timer = null;
+    };
+
+    document.addEventListener('touchstart', start, {passive: true});
+    document.addEventListener('touchmove', move, {passive: true});
+    document.addEventListener('touchend', end);
+    document.addEventListener('touchcancel', end);
+
+    teardownLongTap = () => {
+        document.removeEventListener('touchstart', start, { passive: true });
+        document.removeEventListener('touchmove', move, { passive: true });
+        document.removeEventListener('touchend', end);
+        document.removeEventListener('touchcancel', end);
+        teardownLongTap = null;
+    };
+}
+
+const enableDblTap = function () {
+    const DBLTAP_DELAY = 300;
+    const MOVE_TOLERANCE = 8;
+    let lastTapTime = 0;
+    let lastPos = null;
+
+    const start = (ev) => {
+        const target = ev.target;
+
+        if (Date.now() - lastTapTime > DBLTAP_DELAY) {
+            lastTapTime = Date.now()
+            lastPos = Mouse.getViewportPosition(ev)
+        } else {
+            const pos = Mouse.getViewportPosition(ev);
+
+            if (Math.hypot(pos.x - lastPos.x, pos.y - lastPos.y) <= MOVE_TOLERANCE) {
+                target.dispatchEvent(new CustomEvent('dbltap', {
+                    bubbles: true,
+                    cancelable: true,
+                    detail: { originalEvent: ev }
+                }));
+            }
+
+            lastTapTime = Date.now();
+            lastPos = pos;
+        }
+    };
+
+    document.addEventListener('touchstart', start, { passive: true });
+
+    teardownDblTap = () => {
+        document.removeEventListener('touchstart', start, { passive: true });
+        teardownDblTap = null;
+    };
+}
 
 /**
  * @param {any} o
@@ -79,7 +190,7 @@ export const getStyle = function(el, cssRule) {
     return el.style[camelCase(cssRule)] || '';
 }
 
-export default {
+const dom = {
     /**
      * @param {Element} el
      * @param {string} [selector]
@@ -135,7 +246,7 @@ export default {
         }
 
         try {
-            return refEl.querySelectorAll(selector);
+            return Array.from(refEl.querySelectorAll(selector));
         } catch (e) {
             return [];
         }
@@ -643,7 +754,9 @@ export default {
             selector = null;
         }
 
-        foreach(events.split(' '), (event) => {
+        foreach(events.split(' '), (rawEvent) => {
+            const [event, namespace] = rawEvent.split('.');
+
             const listener = (ev) => {
                 if (!selector) {
                     handler.call(el, ev);
@@ -682,14 +795,14 @@ export default {
                 LISTENERS.set(el, store);
             }
 
-            store.push({ event, handler, selector, listener, options });
+            store.push({ event, handler, selector, listener, namespace, options });
+
+            if (inArray(event, CUSTOM_EVENTS)) {
+                supplyEvent(event);
+            }
 
             el.addEventListener(event, listener, options);
         });
-
-        // foreach(LISTENERS, (store) => {
-        //     console.log(store)
-        // })
 
         return el;
     },
@@ -714,13 +827,28 @@ export default {
 
         const evts = events ? events.split(' ') : [undefined];
 
-        foreach(evts, event => {
-            each([...store].reverse(), (i, l) => {
+        foreach(evts, rawEvent => {
+            let [event, namespace] = undefined === rawEvent ? [undefined, undefined] : rawEvent.split('.');
+
+            event = !event ? undefined : event;
+
+            const hasEvent = undefined !== event;
+            const hasNs = undefined !== namespace;
+
+            foreach([...store].reverse(), (l) => {
+                const match =
+                    (!hasEvent  && !hasNs) ||
+                    (hasEvent   && !hasNs && l.event === event) ||
+                    (!hasEvent  && hasNs  && l.namespace === namespace) ||
+                    (hasEvent   && hasNs  && l.event === event && l.namespace === namespace);
+
                 if (
-                    (undefined === event || l.event === event) &&
-                    (undefined === handler || l.handler === handler) &&
-                    (undefined === selector || l.selector === selector) &&
-                    (undefined === options || l.options === options)
+                    match &&
+                    (undefined === event     || l.event === event) &&
+                    (undefined === handler   || l.handler === handler) &&
+                    (undefined === selector  || l.selector === selector) &&
+                    (undefined === namespace || l.namespace === namespace) &&
+                    (undefined === options   || l.options === options)
                 ) {
                     el.removeEventListener(l.event, l.listener, l.options);
 
@@ -768,7 +896,7 @@ export default {
      * @param {Element} el
      * @param {string} selectorClosest
      * @param {string} selectorFind
-     * @returns {NodeList|null}
+     * @returns {Array<Element>}
      */
     closestFind(el, selectorClosest, selectorFind) {
         const closest = this.closest(el, selectorClosest);
@@ -777,7 +905,7 @@ export default {
             return this.find(closest, selectorFind);
         }
 
-        return null;
+        return [];
     },
 
     /**
@@ -810,18 +938,36 @@ export default {
      * @returns {Element|null}
      */
     last(nodeList) {
+        if (nodeList instanceof Element) return nodeList
         const arr = Array.from(nodeList);
         return arr[arr.length - 1] ?? null;
     },
 
     /**
      * @param {string} html
-     * @returns {Element|null}
+     * @returns {Element|DocumentFragment|null}
      */
     create(html) {
+        html += '';
+
+        const isTagName = (s) => /^[A-Za-z][A-Za-z0-9-]*$/.test(s);
+
+        if (isTagName(html)) {
+            return document.createElement(html);
+        }
+
         const tpl = document.createElement('template');
         tpl.innerHTML = html.trim();
-        return tpl.content.firstElementChild ?? null;
+
+        const frag = tpl.content;
+
+        if (frag.childElementCount === 1 && frag.children.length === 1) {
+            return frag.firstElementChild;
+        }
+
+        if (!frag.firstChild) return null;
+
+        return frag.cloneNode(true);
     },
 
     /**
@@ -884,16 +1030,16 @@ export default {
     },
 
     /**
-     * @param {Element|NodeList} el
+     * @param {Element|NodeList|Array<Element>} el
      * @param {string|Element} selector
-     * @return {Element[]}
+     * @return {Array<Element>}
      */
     not(el, selector) {
         const elements = (el instanceof Element)
             ? [el]
             : Array.from(el);
 
-        const selectorIsString = webf.isString(selector);
+        const selectorIsString = isString(selector);
 
         return elements.filter(e => {
             if (!(e instanceof Element)) return false
@@ -927,6 +1073,8 @@ export default {
      * @param {string|Element} selector
      */
     matches(el, selector) {
+        if (!el) return false;
+
         return selector instanceof Element
             ? selector === el
             : el.matches(selector);
@@ -943,12 +1091,21 @@ export default {
 
     /**
      * @param {Element} el
-     * @param {Element[]} children
+     * @param {NodeList|Array<Element>|string[]} children
      * @returns {Element}
      */
     replaceChildren(el, ...children) {
-        el.replaceChildren(...children);
+        const nodes = [];
 
+        foreach(children, (child) => {
+            if (isString(child)) {
+                child = this.create(child);
+            }
+
+            if (child) nodes.push(child);
+        });
+
+        el.replaceChildren(...nodes);
         return el;
     },
 
@@ -980,3 +1137,13 @@ export default {
         };
     }
 }
+
+if ('test' === process.env.NODE_ENV) {
+    dom.__resetCustomEventsForTests = function () {
+        ENABLED_EVENTS.clear();
+        teardownLongTap?.();
+        teardownDblTap?.();
+    };
+}
+
+export default dom

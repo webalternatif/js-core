@@ -13,8 +13,9 @@ import * as traversal from './traversal.js';
 import dom, { getStyle, isDomElement, isWindow, isDocument } from './dom.js';
 import * as math from './math.js';
 import * as utils from './utils.js';
-import * as i18n from './i18n.js';
+import * as i18n from './Translator.js';
 import eventDispatcher from './eventDispatcher.js';
+import Mouse from './Mouse.js';
 var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, stringFunctions), arrayFunctions), traversal), is), random), {}, {
   dom: dom,
   isWindow: isWindow,
@@ -22,7 +23,8 @@ var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread
   isDomElement: isDomElement,
   getStyle: getStyle
 }, math), utils), i18n), {}, {
-  eventDispatcher: eventDispatcher
+  eventDispatcher: eventDispatcher,
+  Mouse: Mouse
 });
 export default webf;
-export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher };
+export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher, Mouse };

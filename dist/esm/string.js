@@ -8,7 +8,8 @@ import { isArray, isFloat, isInteger, isObject, isPlainObject, isString, isUndef
 import { dec2hex, hex2dec, round } from "./math.js";
 import { inArray } from "./array.js";
 import { each, foreach, map } from "./traversal.js";
-import { translate } from "./i18n.js";
+// import {translate} from "./Translator.js";
+
 export var trim = function trim(str) {
   var _char = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '\\s';
   return ltrim(rtrim(str, _char), _char);
@@ -435,7 +436,7 @@ export var formatSize = function formatSize(bytes) {
     decimals = 1;
   }
   var units = map(['k', 'M', 'G', 'T', 'P', 'E'], function (i, prefix) {
-    return prefix + translate('unitByte');
+    return prefix + 'B';
   });
   return numberFormat(Math.max(bytes, 0), decimals, true, '', decimalPoint) + ' ' + units[i];
 };

@@ -2,7 +2,8 @@ export function isWindow(o: any): boolean;
 export function isDocument(o: any): boolean;
 export function isDomElement(o: any): boolean;
 export function getStyle(el: Element, cssRule: string): string;
-declare namespace _default {
+export default dom;
+declare namespace dom {
     /**
      * @param {Element} el
      * @param {string} [selector]
@@ -218,9 +219,9 @@ declare namespace _default {
      * @param {Element} el
      * @param {string} selectorClosest
      * @param {string} selectorFind
-     * @returns {NodeList|null}
+     * @returns {Array<Element>}
      */
-    function closestFind(el: Element, selectorClosest: string, selectorFind: string): NodeList | null;
+    function closestFind(el: Element, selectorClosest: string, selectorFind: string): Array<Element>;
     /**
      * @param {Element} el
      * @param {string} selectorClosest
@@ -240,9 +241,9 @@ declare namespace _default {
     function last(nodeList: NodeList | Array<Element>): Element | null;
     /**
      * @param {string} html
-     * @returns {Element|null}
+     * @returns {Element|DocumentFragment|null}
      */
-    function create(html: string): Element | null;
+    function create(html: string): Element | DocumentFragment | null;
     /**
      * @param {NodeList|Array<Element>} nodeList
      * @param {number} [index=0]
@@ -267,11 +268,11 @@ declare namespace _default {
      */
     function empty(el: Element): Element;
     /**
-     * @param {Element|NodeList} el
+     * @param {Element|NodeList|Array<Element>} el
      * @param {string|Element} selector
-     * @return {Element[]}
+     * @return {Array<Element>}
      */
-    function not(el: Element | NodeList, selector: string | Element): Element[];
+    function not(el: Element | NodeList | Array<Element>, selector: string | Element): Array<Element>;
     /**
      * @param {Element} elem1
      * @param {Element} elem2
@@ -291,10 +292,10 @@ declare namespace _default {
     function replaceChild(el: Element, child: Element, oldChild: Element): Element;
     /**
      * @param {Element} el
-     * @param {Element[]} children
+     * @param {NodeList|Array<Element>|string[]} children
      * @returns {Element}
      */
-    function replaceChildren(el: Element, ...children: Element[]): Element;
+    function replaceChildren(el: Element, ...children: NodeList | Array<Element> | string[]): Element;
     /**
      * @param {Element|Document|Window} el
      * @returns {{top: number, left: number}}
@@ -304,4 +305,3 @@ declare namespace _default {
         left: number;
     };
 }
-export default _default;

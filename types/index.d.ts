@@ -1,7 +1,7 @@
 export default webf;
 declare const webf: {
     eventDispatcher: {
-        "__#1@#listeners": {};
+        "__#3@#listeners": {};
         addListener(eventsName: any, callback: any, context: any, ...args: any[]): /*elided*/ any;
         addListenerOnce(eventsName: any, callback: any, context: any, ...listenerArgs: any[]): /*elided*/ any;
         dispatch(eventsName: any, ...args: any[]): /*elided*/ any;
@@ -10,10 +10,8 @@ declare const webf: {
         getListeners(eventName: any): any;
         reset(): void;
     };
-    translate: (lang: any, ns: any, label: any) => any;
-    _: (lang: any, ns: any, label: any) => any;
-    getLang: () => any;
-    setLang: (lang: any) => void;
+    Mouse: typeof Mouse;
+    default: typeof i18n.default;
     equals: (o1: any, o2: any, seen?: WeakMap<WeakKey, any>) => any;
     noop: () => void;
     sizeOf: (o: any) => number;
@@ -66,20 +64,20 @@ declare const webf: {
         css(el: HTMLElement, style: {
             [x: string]: string;
         } | string, value?: string): Element;
-        closestFind(el: Element, selectorClosest: string, selectorFind: string): NodeList | null;
+        closestFind(el: Element, selectorClosest: string, selectorFind: string): Array<Element>;
         closestFindOne(el: Element, selectorClosest: string, selectorFindOne: string): Element | null;
         first(nodeList: NodeList | Element | Array<Element>): Element | null;
         last(nodeList: NodeList | Array<Element>): Element | null;
-        create(html: string): Element | null;
+        create(html: string): Element | DocumentFragment | null;
         eq(nodeList: NodeList | Array<Element>, index?: number): Element | null;
         after(el: Element, newEl: Element | string): Element | null;
         before(el: Element, newEl: Element | string): Element | null;
         empty(el: Element): Element;
-        not(el: Element | NodeList, selector: string | Element): Element[];
+        not(el: Element | NodeList | Array<Element>, selector: string | Element): Array<Element>;
         collide(elem1: Element, elem2: Element): boolean;
         matches(el: Element, selector: string | Element): boolean;
         replaceChild(el: Element, child: Element, oldChild: Element): Element;
-        replaceChildren(el: Element, ...children: Element[]): Element;
+        replaceChildren(el: Element, ...children: NodeList | Array<Element> | string[]): Element;
         offset(el: Element | Document | Window): {
             top: number;
             left: number;
@@ -176,4 +174,6 @@ import dom from './dom.js';
 import * as math from './math.js';
 import * as utils from './utils.js';
 import eventDispatcher from './eventDispatcher.js';
-export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher };
+import Mouse from './Mouse.js';
+import * as i18n from './Translator.js';
+export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher, Mouse };

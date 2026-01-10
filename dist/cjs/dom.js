@@ -1,3 +1,7 @@
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -8,8 +12,109 @@ import { isArray, isArrayLike, isFunction, isObject, isPlainObject, isString } f
 import { camelCase } from "./string.js";
 import { each, foreach, map } from "./traversal.js";
 import { inArray } from "./array.js";
+import Mouse from "./Mouse.js";
 var cssNumber = ['animationIterationCount', 'aspectRatio', 'borderImageSlice', 'columnCount', 'flexGrow', 'flexShrink', 'fontWeight', 'gridArea', 'gridColumn', 'gridColumnEnd', 'gridColumnStart', 'gridRow', 'gridRowEnd', 'gridRowStart', 'lineHeight', 'opacity', 'order', 'orphans', 'scale', 'widows', 'zIndex', 'zoom', 'fillOpacity', 'floodOpacity', 'stopOpacity', 'strokeMiterlimit', 'strokeOpacity'];
 var LISTENERS = new Map();
+var CUSTOM_EVENTS = ['longtap', 'dbltap'];
+var ENABLED_EVENTS = new Set();
+var _teardownLongTap = null;
+var _teardownDblTap = null;
+var supplyEvent = function supplyEvent(event) {
+  if (ENABLED_EVENTS !== null && ENABLED_EVENTS !== void 0 && ENABLED_EVENTS.has(event)) return;
+  if (event === 'longtap') enableLongTap();
+  if (event === 'dbltap') enableDblTap();
+  ENABLED_EVENTS.add(event);
+};
+var enableLongTap = function enableLongTap() {
+  var LONGPRESS_DELAY = 800;
+  var MOVE_TOLERANCE = 8;
+  var timer = null;
+  var startX = 0;
+  var startY = 0;
+  var target = null;
+  var start = function start(ev) {
+    target = ev.target;
+    var pos = Mouse.getViewportPosition(ev);
+    startX = pos.x;
+    startY = pos.y;
+    timer = setTimeout(function () {
+      target.dispatchEvent(new CustomEvent('longtap', {
+        bubbles: true,
+        cancelable: true,
+        detail: {
+          originalEvent: ev
+        }
+      }));
+      timer = null;
+    }, LONGPRESS_DELAY);
+  };
+  var move = function move(ev) {
+    if (!timer) return;
+    var pos = Mouse.getViewportPosition(ev);
+    if (Math.hypot(pos.x - startX, pos.y - startY) > MOVE_TOLERANCE) {
+      clearTimeout(timer);
+      timer = null;
+    }
+  };
+  var end = function end() {
+    if (timer) clearTimeout(timer);
+    timer = null;
+  };
+  document.addEventListener('touchstart', start, {
+    passive: true
+  });
+  document.addEventListener('touchmove', move, {
+    passive: true
+  });
+  document.addEventListener('touchend', end);
+  document.addEventListener('touchcancel', end);
+  _teardownLongTap = function teardownLongTap() {
+    document.removeEventListener('touchstart', start, {
+      passive: true
+    });
+    document.removeEventListener('touchmove', move, {
+      passive: true
+    });
+    document.removeEventListener('touchend', end);
+    document.removeEventListener('touchcancel', end);
+    _teardownLongTap = null;
+  };
+};
+var enableDblTap = function enableDblTap() {
+  var DBLTAP_DELAY = 300;
+  var MOVE_TOLERANCE = 8;
+  var lastTapTime = 0;
+  var lastPos = null;
+  var start = function start(ev) {
+    var target = ev.target;
+    if (Date.now() - lastTapTime > DBLTAP_DELAY) {
+      lastTapTime = Date.now();
+      lastPos = Mouse.getViewportPosition(ev);
+    } else {
+      var pos = Mouse.getViewportPosition(ev);
+      if (Math.hypot(pos.x - lastPos.x, pos.y - lastPos.y) <= MOVE_TOLERANCE) {
+        target.dispatchEvent(new CustomEvent('dbltap', {
+          bubbles: true,
+          cancelable: true,
+          detail: {
+            originalEvent: ev
+          }
+        }));
+      }
+      lastTapTime = Date.now();
+      lastPos = pos;
+    }
+  };
+  document.addEventListener('touchstart', start, {
+    passive: true
+  });
+  _teardownDblTap = function teardownDblTap() {
+    document.removeEventListener('touchstart', start, {
+      passive: true
+    });
+    _teardownDblTap = null;
+  };
+};
 
 /**
  * @param {any} o
@@ -50,7 +155,7 @@ export var getStyle = function getStyle(el, cssRule) {
   }
   return el.style[camelCase(cssRule)] || '';
 };
-export default {
+var dom = {
   /**
    * @param {Element} el
    * @param {string} [selector]
@@ -98,7 +203,7 @@ export default {
       });
     }
     try {
-      return refEl.querySelectorAll(selector);
+      return Array.from(refEl.querySelectorAll(selector));
     } catch (e) {
       return [];
     }
@@ -520,7 +625,11 @@ export default {
       handler = selector;
       selector = null;
     }
-    foreach(events.split(' '), function (event) {
+    foreach(events.split(' '), function (rawEvent) {
+      var _rawEvent$split = rawEvent.split('.'),
+        _rawEvent$split2 = _slicedToArray(_rawEvent$split, 2),
+        event = _rawEvent$split2[0],
+        namespace = _rawEvent$split2[1];
       var listener = function listener(ev) {
         if (!selector) {
           handler.call(el, ev);
@@ -564,15 +673,14 @@ export default {
         handler: handler,
         selector: selector,
         listener: listener,
+        namespace: namespace,
         options: options
       });
+      if (inArray(event, CUSTOM_EVENTS)) {
+        supplyEvent(event);
+      }
       el.addEventListener(event, listener, options);
     });
-
-    // foreach(LISTENERS, (store) => {
-    //     console.log(store)
-    // })
-
     return el;
   },
   /**
@@ -592,9 +700,17 @@ export default {
     var store = LISTENERS.get(el);
     if (!store) return el;
     var evts = events ? events.split(' ') : [undefined];
-    foreach(evts, function (event) {
-      each(_toConsumableArray(store).reverse(), function (i, l) {
-        if ((undefined === event || l.event === event) && (undefined === handler || l.handler === handler) && (undefined === selector || l.selector === selector) && (undefined === options || l.options === options)) {
+    foreach(evts, function (rawEvent) {
+      var _ref = undefined === rawEvent ? [undefined, undefined] : rawEvent.split('.'),
+        _ref2 = _slicedToArray(_ref, 2),
+        event = _ref2[0],
+        namespace = _ref2[1];
+      event = !event ? undefined : event;
+      var hasEvent = undefined !== event;
+      var hasNs = undefined !== namespace;
+      foreach(_toConsumableArray(store).reverse(), function (l) {
+        var match = !hasEvent && !hasNs || hasEvent && !hasNs && l.event === event || !hasEvent && hasNs && l.namespace === namespace || hasEvent && hasNs && l.event === event && l.namespace === namespace;
+        if (match && (undefined === event || l.event === event) && (undefined === handler || l.handler === handler) && (undefined === selector || l.selector === selector) && (undefined === namespace || l.namespace === namespace) && (undefined === options || l.options === options)) {
           el.removeEventListener(l.event, l.listener, l.options);
           var index = store.indexOf(l);
           index !== -1 && store.splice(index, 1);
@@ -633,14 +749,14 @@ export default {
    * @param {Element} el
    * @param {string} selectorClosest
    * @param {string} selectorFind
-   * @returns {NodeList|null}
+   * @returns {Array<Element>}
    */
   closestFind: function closestFind(el, selectorClosest, selectorFind) {
     var closest = this.closest(el, selectorClosest);
     if (closest) {
       return this.find(closest, selectorFind);
     }
-    return null;
+    return [];
   },
   /**
    * @param {Element} el
@@ -670,18 +786,30 @@ export default {
    */
   last: function last(nodeList) {
     var _arr;
+    if (nodeList instanceof Element) return nodeList;
     var arr = Array.from(nodeList);
     return (_arr = arr[arr.length - 1]) !== null && _arr !== void 0 ? _arr : null;
   },
   /**
    * @param {string} html
-   * @returns {Element|null}
+   * @returns {Element|DocumentFragment|null}
    */
   create: function create(html) {
-    var _tpl$content$firstEle;
+    html += '';
+    var isTagName = function isTagName(s) {
+      return /^[A-Za-z][A-Za-z0-9-]*$/.test(s);
+    };
+    if (isTagName(html)) {
+      return document.createElement(html);
+    }
     var tpl = document.createElement('template');
     tpl.innerHTML = html.trim();
-    return (_tpl$content$firstEle = tpl.content.firstElementChild) !== null && _tpl$content$firstEle !== void 0 ? _tpl$content$firstEle : null;
+    var frag = tpl.content;
+    if (frag.childElementCount === 1 && frag.children.length === 1) {
+      return frag.firstElementChild;
+    }
+    if (!frag.firstChild) return null;
+    return frag.cloneNode(true);
   },
   /**
    * @param {NodeList|Array<Element>} nodeList
@@ -733,13 +861,13 @@ export default {
     return el;
   },
   /**
-   * @param {Element|NodeList} el
+   * @param {Element|NodeList|Array<Element>} el
    * @param {string|Element} selector
-   * @return {Element[]}
+   * @return {Array<Element>}
    */
   not: function not(el, selector) {
     var elements = el instanceof Element ? [el] : Array.from(el);
-    var selectorIsString = webf.isString(selector);
+    var selectorIsString = isString(selector);
     return elements.filter(function (e) {
       if (!(e instanceof Element)) return false;
       return selectorIsString ? !e.matches(selector) : e !== selector;
@@ -760,6 +888,7 @@ export default {
    * @param {string|Element} selector
    */
   matches: function matches(el, selector) {
+    if (!el) return false;
     return selector instanceof Element ? selector === el : el.matches(selector);
   },
   /**
@@ -772,14 +901,22 @@ export default {
   },
   /**
    * @param {Element} el
-   * @param {Element[]} children
+   * @param {NodeList|Array<Element>|string[]} children
    * @returns {Element}
    */
   replaceChildren: function replaceChildren(el) {
+    var _this7 = this;
+    var nodes = [];
     for (var _len4 = arguments.length, children = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
       children[_key4 - 1] = arguments[_key4];
     }
-    el.replaceChildren.apply(el, children);
+    foreach(children, function (child) {
+      if (isString(child)) {
+        child = _this7.create(child);
+      }
+      if (child) nodes.push(child);
+    });
+    el.replaceChildren.apply(el, nodes);
     return el;
   },
   /**
@@ -806,3 +943,12 @@ export default {
     };
   }
 };
+if ('test' === process.env.NODE_ENV) {
+  dom.__resetCustomEventsForTests = function () {
+    var _teardownLongTap2, _teardownDblTap2;
+    ENABLED_EVENTS.clear();
+    (_teardownLongTap2 = _teardownLongTap) === null || _teardownLongTap2 === void 0 || _teardownLongTap2();
+    (_teardownDblTap2 = _teardownDblTap) === null || _teardownDblTap2 === void 0 || _teardownDblTap2();
+  };
+}
+export default dom;

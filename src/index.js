@@ -7,8 +7,9 @@ import * as traversal from './traversal.js';
 import dom, {getStyle, isDomElement, isWindow, isDocument} from './dom.js';
 import * as math from './math.js';
 import * as utils from './utils.js';
-import * as i18n from './i18n.js';
+import * as i18n from './Translator.js';
 import eventDispatcher from './eventDispatcher.js'
+import Mouse from './Mouse.js'
 
 const webf = {
     ...stringFunctions,
@@ -20,7 +21,8 @@ const webf = {
     ...math,
     ...utils,
     ...i18n,
-    eventDispatcher
+    eventDispatcher,
+    Mouse,
 }
 
 export default webf
@@ -36,4 +38,5 @@ export {
     math,
     utils,
     eventDispatcher,
+    Mouse,
 };
