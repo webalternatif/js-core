@@ -10,6 +10,7 @@ import * as utils from './utils.js';
 import * as i18n from './Translator.js';
 import eventDispatcher from './eventDispatcher.js'
 import Mouse from './Mouse.js'
+import Translator from './Translator.js'
 
 const webf = {
     ...stringFunctions,
@@ -21,8 +22,6 @@ const webf = {
     ...math,
     ...utils,
     ...i18n,
-    eventDispatcher,
-    Mouse,
 }
 
 export default webf
@@ -39,4 +38,5 @@ export {
     utils,
     eventDispatcher,
     Mouse,
+    Translator,
 };
