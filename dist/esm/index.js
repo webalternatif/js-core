@@ -16,15 +16,13 @@ import * as utils from './utils.js';
 import * as i18n from './Translator.js';
 import eventDispatcher from './eventDispatcher.js';
 import Mouse from './Mouse.js';
-var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, stringFunctions), arrayFunctions), traversal), is), random), {}, {
+import Translator from './Translator.js';
+var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, stringFunctions), arrayFunctions), traversal), is), random), {}, {
   dom: dom,
   isWindow: isWindow,
   isDocument: isDocument,
   isDomElement: isDomElement,
   getStyle: getStyle
-}, math), utils), i18n), {}, {
-  eventDispatcher: eventDispatcher,
-  Mouse: Mouse
-});
+}, math), utils), i18n);
 export default webf;
-export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher, Mouse };
+export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher, Mouse, Translator };

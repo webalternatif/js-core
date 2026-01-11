@@ -1,13 +1,19 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.throttle = exports.strParseFloat = exports.sizeOf = exports.noop = exports.flatten = exports.equals = exports.debounce = void 0;
+var _traversal = require("./traversal.js");
+var _is = require("./is.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-import { each, map } from "./traversal.js";
-import { isArray, isFunction, isObject, isUndefined } from "./is.js";
-var _equals = function equals(o1, o2) {
+var _equals = exports.equals = function equals(o1, o2) {
   var seen = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new WeakMap();
   if (o1 === o2) return true;
   if (_typeof(o1) !== _typeof(o2) || o1 == null || o2 == null) {
     return false;
   }
-  if (isObject(o1)) {
+  if ((0, _is.isObject)(o1)) {
     if (seen.has(o1)) {
       return seen.get(o1) === o2;
     }
@@ -23,10 +29,9 @@ var _equals = function equals(o1, o2) {
   }
   return false;
 };
-export { _equals as equals };
-export var noop = function noop() {};
-export var sizeOf = function sizeOf(o) {
-  return map(o, noop).length;
+var noop = exports.noop = function noop() {};
+var sizeOf = exports.sizeOf = function sizeOf(o) {
+  return (0, _traversal.map)(o, noop).length;
 };
 
 /**
@@ -45,20 +50,19 @@ export var sizeOf = function sizeOf(o) {
  * console.log(result);
  * // Output: [1, 2, 3, 4]
  */
-var _flatten = function flatten(o) {
-  if (isObject(o) || isArray(o)) {
-    return [].concat.apply([], map(o, function (i, val) {
+var _flatten = exports.flatten = function flatten(o) {
+  if ((0, _is.isObject)(o) || (0, _is.isArray)(o)) {
+    return [].concat.apply([], (0, _traversal.map)(o, function (i, val) {
       return _flatten(val);
     }));
   }
   return o;
 };
-export { _flatten as flatten };
-export var strParseFloat = function strParseFloat(val) {
+var strParseFloat = exports.strParseFloat = function strParseFloat(val) {
   if (!val) return 0;
   return parseFloat((val + '').replace(/\s/g, '').replace(',', '.'));
 };
-export var throttle = function throttle(func, wait) {
+var throttle = exports.throttle = function throttle(func, wait) {
   var leading = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
   var trailing = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true;
   var context = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
@@ -97,7 +101,7 @@ export var throttle = function throttle(func, wait) {
  * @param {Object} [context=null] - The context to bind to `func`.
  * @returns {Function} The debounced function.
  */
-export var debounce = function debounce(func, wait) {
+var debounce = exports.debounce = function debounce(func, wait) {
   var immediate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
   var context = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
   var timeout = null;

@@ -1,4 +1,12 @@
+"use strict";
+
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+var _is = require("./is.js");
+var _traversal = require("./traversal.js");
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
@@ -10,28 +18,22 @@ function _checkPrivateRedeclaration(e, t) { if (t.has(e)) throw new TypeError("C
 function _classPrivateFieldGet(s, a) { return s.get(_assertClassBrand(s, a)); }
 function _classPrivateFieldSet(s, a, r) { return s.set(_assertClassBrand(s, a), r), r; }
 function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.has(t)) return arguments.length < 3 ? t : n; throw new TypeError("Private element is not present on this object"); }
-import { isFunction, isPlainObject } from "./is.js";
-import { each, extend } from "./traversal.js";
-
 /**
  * @typedef {string | (() => string)} TranslatorValue
  */
-
 /**
  * @typedef {Record<string, Record<string, Record<string, TranslatorValue>>>} TranslatorNsMapping
  */
-
 /**
  * @typedef {Record<string, Record<string, TranslatorValue>>} TranslatorCoreMapping
  */
-
 /**
  * @typedef {TranslatorNsMapping | TranslatorCoreMapping} TranslatorMapping
  */
 var _lang = /*#__PURE__*/new WeakMap();
 var _mapping = /*#__PURE__*/new WeakMap();
 var _Translator_brand = /*#__PURE__*/new WeakSet();
-var Translator = /*#__PURE__*/function () {
+var Translator = exports["default"] = /*#__PURE__*/function () {
   /**
    * @param {TranslatorMapping} mapping
    * @param {string} [defaultLang]
@@ -61,7 +63,7 @@ var Translator = /*#__PURE__*/function () {
       var translationExists = undefined !== _classPrivateFieldGet(_mapping, this)[namespace] && undefined !== _classPrivateFieldGet(_mapping, this)[namespace][lang] && undefined !== _classPrivateFieldGet(_mapping, this)[namespace][lang][label];
       if (translationExists) {
         var tr = _classPrivateFieldGet(_mapping, this)[namespace][lang][label];
-        return isFunction(tr) ? tr() : tr;
+        return (0, _is.isFunction)(tr) ? tr() : tr;
       }
       return 'en' !== lang ? this.translate(label, namespace, 'en') : label;
     }
@@ -92,9 +94,9 @@ var Translator = /*#__PURE__*/function () {
 function _setMapping(mapping) {
   var nsMapping = {},
     coreMapping = {};
-  each(mapping, function (ns, langs) {
-    each(langs, function (lang, trads) {
-      if (isPlainObject(trads)) {
+  (0, _traversal.each)(mapping, function (ns, langs) {
+    (0, _traversal.each)(langs, function (lang, trads) {
+      if ((0, _is.isPlainObject)(trads)) {
         if (undefined === nsMapping[ns]) nsMapping[ns] = {};
         nsMapping[ns][lang] = trads;
       } else {
@@ -103,8 +105,7 @@ function _setMapping(mapping) {
       }
     });
   });
-  _classPrivateFieldSet(_mapping, this, extend(true, nsMapping, {
-    core: extend({}, nsMapping.core || {}, coreMapping)
+  _classPrivateFieldSet(_mapping, this, (0, _traversal.extend)(true, nsMapping, {
+    core: (0, _traversal.extend)({}, nsMapping.core || {}, coreMapping)
   }));
 }
-export { Translator as default };

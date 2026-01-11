@@ -1,16 +1,5 @@
 export default webf;
 declare const webf: {
-    eventDispatcher: {
-        "__#3@#listeners": {};
-        addListener(eventsName: any, callback: any, context: any, ...args: any[]): /*elided*/ any;
-        addListenerOnce(eventsName: any, callback: any, context: any, ...listenerArgs: any[]): /*elided*/ any;
-        dispatch(eventsName: any, ...args: any[]): /*elided*/ any;
-        hasListener(eventName: any, callback: any, context: any): boolean;
-        removeListener(eventName: any, callback: any, context: any): /*elided*/ any;
-        getListeners(eventName: any): any;
-        reset(): void;
-    };
-    Mouse: typeof Mouse;
     default: typeof i18n.default;
     equals: (o1: any, o2: any, seen?: WeakMap<WeakKey, any>) => any;
     noop: () => void;
@@ -175,5 +164,6 @@ import * as math from './math.js';
 import * as utils from './utils.js';
 import eventDispatcher from './eventDispatcher.js';
 import Mouse from './Mouse.js';
+import Translator from './Translator.js';
 import * as i18n from './Translator.js';
-export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher, Mouse };
+export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher, Mouse, Translator };

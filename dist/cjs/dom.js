@@ -1,3 +1,15 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.isWindow = exports.isDomElement = exports.isDocument = exports.getStyle = exports["default"] = void 0;
+var _is = require("./is.js");
+var _string = require("./string.js");
+var _traversal = require("./traversal.js");
+var _array = require("./array.js");
+var _Mouse = _interopRequireDefault(require("./Mouse.js"));
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
@@ -8,11 +20,6 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-import { isArray, isArrayLike, isFunction, isObject, isPlainObject, isString } from "./is.js";
-import { camelCase } from "./string.js";
-import { each, foreach, map } from "./traversal.js";
-import { inArray } from "./array.js";
-import Mouse from "./Mouse.js";
 var cssNumber = ['animationIterationCount', 'aspectRatio', 'borderImageSlice', 'columnCount', 'flexGrow', 'flexShrink', 'fontWeight', 'gridArea', 'gridColumn', 'gridColumnEnd', 'gridColumnStart', 'gridRow', 'gridRowEnd', 'gridRowStart', 'lineHeight', 'opacity', 'order', 'orphans', 'scale', 'widows', 'zIndex', 'zoom', 'fillOpacity', 'floodOpacity', 'stopOpacity', 'strokeMiterlimit', 'strokeOpacity'];
 var LISTENERS = new Map();
 var CUSTOM_EVENTS = ['longtap', 'dbltap'];
@@ -34,7 +41,7 @@ var enableLongTap = function enableLongTap() {
   var target = null;
   var start = function start(ev) {
     target = ev.target;
-    var pos = Mouse.getViewportPosition(ev);
+    var pos = _Mouse["default"].getViewportPosition(ev);
     startX = pos.x;
     startY = pos.y;
     timer = setTimeout(function () {
@@ -50,7 +57,7 @@ var enableLongTap = function enableLongTap() {
   };
   var move = function move(ev) {
     if (!timer) return;
-    var pos = Mouse.getViewportPosition(ev);
+    var pos = _Mouse["default"].getViewportPosition(ev);
     if (Math.hypot(pos.x - startX, pos.y - startY) > MOVE_TOLERANCE) {
       clearTimeout(timer);
       timer = null;
@@ -89,9 +96,9 @@ var enableDblTap = function enableDblTap() {
     var target = ev.target;
     if (Date.now() - lastTapTime > DBLTAP_DELAY) {
       lastTapTime = Date.now();
-      lastPos = Mouse.getViewportPosition(ev);
+      lastPos = _Mouse["default"].getViewportPosition(ev);
     } else {
-      var pos = Mouse.getViewportPosition(ev);
+      var pos = _Mouse["default"].getViewportPosition(ev);
       if (Math.hypot(pos.x - lastPos.x, pos.y - lastPos.y) <= MOVE_TOLERANCE) {
         target.dispatchEvent(new CustomEvent('dbltap', {
           bubbles: true,
@@ -120,7 +127,7 @@ var enableDblTap = function enableDblTap() {
  * @param {any} o
  * @returns {boolean}
  */
-export var isWindow = function isWindow(o) {
+var isWindow = exports.isWindow = function isWindow(o) {
   return !!o && o === o.window;
 };
 
@@ -128,7 +135,7 @@ export var isWindow = function isWindow(o) {
  * @param {any} o
  * @returns {boolean}
  */
-export var isDocument = function isDocument(o) {
+var isDocument = exports.isDocument = function isDocument(o) {
   return !!o && o.nodeType === 9;
 };
 
@@ -136,8 +143,8 @@ export var isDocument = function isDocument(o) {
  * @param {any} o
  * @returns {boolean}
  */
-export var isDomElement = function isDomElement(o) {
-  return isObject(o) && o instanceof HTMLElement;
+var isDomElement = exports.isDomElement = function isDomElement(o) {
+  return (0, _is.isObject)(o) && o instanceof HTMLElement;
 };
 
 /**
@@ -145,15 +152,15 @@ export var isDomElement = function isDomElement(o) {
  * @param {string} cssRule
  * @returns {string}
  */
-export var getStyle = function getStyle(el, cssRule) {
+var getStyle = exports.getStyle = function getStyle(el, cssRule) {
   if (!isDomElement(el)) {
     return '';
   }
   if (window.getComputedStyle) {
     var computedStyle = window.getComputedStyle(el, null);
-    return computedStyle.getPropertyValue(cssRule) || computedStyle[camelCase(cssRule)] || '';
+    return computedStyle.getPropertyValue(cssRule) || computedStyle[(0, _string.camelCase)(cssRule)] || '';
   }
-  return el.style[camelCase(cssRule)] || '';
+  return el.style[(0, _string.camelCase)(cssRule)] || '';
 };
 var dom = {
   /**
@@ -194,8 +201,8 @@ var dom = {
     if (selector instanceof Element) {
       selector = [selector];
     }
-    if (isArrayLike(selector)) {
-      return map(Array.from(selector), function (i, el) {
+    if ((0, _is.isArrayLike)(selector)) {
+      return (0, _traversal.map)(Array.from(selector), function (i, el) {
         if (el instanceof Element) {
           return refEl === el || refEl.contains(el) ? el : null;
         }
@@ -273,7 +280,7 @@ var dom = {
    * @returns {Element}
    */
   toggleClass: function toggleClass(el, classNames, force) {
-    foreach(classNames.split(' ').map(function (c) {
+    (0, _traversal.foreach)(classNames.split(' ').map(function (c) {
       return c.trim();
     }).filter(Boolean), function (c) {
       return el.classList.toggle(c, force);
@@ -288,7 +295,7 @@ var dom = {
   hasClass: function hasClass(el, classNames) {
     if (!classNames) return false;
     var foundClasses = true;
-    foreach(classNames.split(' ').map(function (c) {
+    (0, _traversal.foreach)(classNames.split(' ').map(function (c) {
       return c.trim();
     }).filter(Boolean), function (c) {
       if (el.classList.contains(c)) {
@@ -309,8 +316,8 @@ var dom = {
     for (var _len = arguments.length, children = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       children[_key - 1] = arguments[_key];
     }
-    foreach(children, function (child) {
-      if (isString(child)) {
+    (0, _traversal.foreach)(children, function (child) {
+      if ((0, _is.isString)(child)) {
         child = _this.create(child);
       }
       child && node.append(child);
@@ -327,8 +334,8 @@ var dom = {
     for (var _len2 = arguments.length, children = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
       children[_key2 - 1] = arguments[_key2];
     }
-    foreach([].concat(children).reverse(), function (child) {
-      if (isString(child)) {
+    (0, _traversal.foreach)([].concat(children).reverse(), function (child) {
+      if ((0, _is.isString)(child)) {
         child = _this2.create(child);
       }
       child && node.prepend(child);
@@ -347,7 +354,7 @@ var dom = {
     els.forEach(function (el) {
       if (el instanceof Element) {
         el.remove();
-      } else if (el instanceof NodeList || isArray(el)) {
+      } else if (el instanceof NodeList || (0, _is.isArray)(el)) {
         Array.from(el).forEach(function (e) {
           return e.remove();
         });
@@ -584,14 +591,14 @@ var dom = {
     if (undefined === name && undefined === value) {
       return el.dataset;
     }
-    if (isPlainObject(name)) {
-      each(name, function (k, v) {
+    if ((0, _is.isPlainObject)(name)) {
+      (0, _traversal.each)(name, function (k, v) {
         return _this4.data(el, k, v);
       });
       return el;
     }
     var isAttr = /^data-/.test(name + '');
-    var key = camelCase(isAttr ? (name + '').replace(/^data-/, '') : name + '');
+    var key = (0, _string.camelCase)(isAttr ? (name + '').replace(/^data-/, '') : name + '');
     if (undefined === value) return el.dataset[key];
     if (null === value) {
       this.removeData(el, key);
@@ -606,7 +613,7 @@ var dom = {
    * @returns {Element|*}
    */
   removeData: function removeData(el, name) {
-    var key = camelCase((name + '').replace(/^data-/, ''));
+    var key = (0, _string.camelCase)((name + '').replace(/^data-/, ''));
     delete el.dataset[key];
     return el;
   },
@@ -620,12 +627,12 @@ var dom = {
    */
   on: function on(el, events, selector, handler, options) {
     var _this5 = this;
-    if (isFunction(selector)) {
+    if ((0, _is.isFunction)(selector)) {
       options = handler;
       handler = selector;
       selector = null;
     }
-    foreach(events.split(' '), function (rawEvent) {
+    (0, _traversal.foreach)(events.split(' '), function (rawEvent) {
       var _rawEvent$split = rawEvent.split('.'),
         _rawEvent$split2 = _slicedToArray(_rawEvent$split, 2),
         event = _rawEvent$split2[0],
@@ -676,7 +683,7 @@ var dom = {
         namespace: namespace,
         options: options
       });
-      if (inArray(event, CUSTOM_EVENTS)) {
+      if ((0, _array.inArray)(event, CUSTOM_EVENTS)) {
         supplyEvent(event);
       }
       el.addEventListener(event, listener, options);
@@ -692,7 +699,7 @@ var dom = {
    * @returns {Element}
    */
   off: function off(el, events, selector, handler, options) {
-    if (isFunction(selector)) {
+    if ((0, _is.isFunction)(selector)) {
       options = handler;
       handler = selector;
       selector = null;
@@ -700,7 +707,7 @@ var dom = {
     var store = LISTENERS.get(el);
     if (!store) return el;
     var evts = events ? events.split(' ') : [undefined];
-    foreach(evts, function (rawEvent) {
+    (0, _traversal.foreach)(evts, function (rawEvent) {
       var _ref = undefined === rawEvent ? [undefined, undefined] : rawEvent.split('.'),
         _ref2 = _slicedToArray(_ref, 2),
         event = _ref2[0],
@@ -708,7 +715,7 @@ var dom = {
       event = !event ? undefined : event;
       var hasEvent = undefined !== event;
       var hasNs = undefined !== namespace;
-      foreach(_toConsumableArray(store).reverse(), function (l) {
+      (0, _traversal.foreach)(_toConsumableArray(store).reverse(), function (l) {
         var match = !hasEvent && !hasNs || hasEvent && !hasNs && l.event === event || !hasEvent && hasNs && l.namespace === namespace || hasEvent && hasNs && l.event === event && l.namespace === namespace;
         if (match && (undefined === event || l.event === event) && (undefined === handler || l.handler === handler) && (undefined === selector || l.selector === selector) && (undefined === namespace || l.namespace === namespace) && (undefined === options || l.options === options)) {
           el.removeEventListener(l.event, l.listener, l.options);
@@ -727,19 +734,19 @@ var dom = {
    */
   css: function css(el, style, value) {
     var _this6 = this;
-    if (isString(style)) {
-      var prop = style.startsWith('--') ? style : camelCase(style);
+    if ((0, _is.isString)(style)) {
+      var prop = style.startsWith('--') ? style : (0, _string.camelCase)(style);
       if (undefined === value) {
         return getStyle(el, prop);
       }
       if (prop.startsWith('--')) {
         el.style.setProperty(prop, String(value));
       } else {
-        if (typeof value === "number" && !inArray(prop, cssNumber)) value += 'px';
+        if (typeof value === "number" && !(0, _array.inArray)(prop, cssNumber)) value += 'px';
         el.style[prop] = value;
       }
     } else {
-      each(style, function (name, v) {
+      (0, _traversal.each)(style, function (name, v) {
         _this6.css(el, name, v);
       });
     }
@@ -833,7 +840,7 @@ var dom = {
    */
   after: function after(el, newEl) {
     if (!el.parentElement) return null;
-    if (isString(newEl)) {
+    if ((0, _is.isString)(newEl)) {
       newEl = this.create(newEl);
     }
     return el.parentElement.insertBefore(newEl, el.nextElementSibling);
@@ -845,7 +852,7 @@ var dom = {
    */
   before: function before(el, newEl) {
     if (!el.parentElement) return null;
-    if (isString(newEl)) {
+    if ((0, _is.isString)(newEl)) {
       newEl = this.create(newEl);
     }
     return el.parentElement.insertBefore(newEl, el);
@@ -867,7 +874,7 @@ var dom = {
    */
   not: function not(el, selector) {
     var elements = el instanceof Element ? [el] : Array.from(el);
-    var selectorIsString = isString(selector);
+    var selectorIsString = (0, _is.isString)(selector);
     return elements.filter(function (e) {
       if (!(e instanceof Element)) return false;
       return selectorIsString ? !e.matches(selector) : e !== selector;
@@ -910,8 +917,8 @@ var dom = {
     for (var _len4 = arguments.length, children = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
       children[_key4 - 1] = arguments[_key4];
     }
-    foreach(children, function (child) {
-      if (isString(child)) {
+    (0, _traversal.foreach)(children, function (child) {
+      if ((0, _is.isString)(child)) {
         child = _this7.create(child);
       }
       if (child) nodes.push(child);
@@ -951,4 +958,4 @@ if ('test' === process.env.NODE_ENV) {
     (_teardownDblTap2 = _teardownDblTap) === null || _teardownDblTap2 === void 0 || _teardownDblTap2();
   };
 }
-export default dom;
+var _default = exports["default"] = dom;

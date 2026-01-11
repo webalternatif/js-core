@@ -7,4 +7,4 @@ export function clone<T>(o: T): T;
 export function merge<T>(first: Collection<T>, second?: Collection<T>, ...args: Collection<T>[]): Array<T>;
 export type Collection<T> = Array<T> | Set<T> | Map<any, T> | {
     [x: string]: T;
-} | string;
+} | string | string[];

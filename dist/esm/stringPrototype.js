@@ -1,6 +1,6 @@
-import { each } from "./traversal.js";
+import { foreach } from "./traversal.js";
 import * as stringFunctions from "./string.js";
-each(Object.keys(stringFunctions), function (i, name) {
+foreach(Object.keys(stringFunctions), function (name) {
   var f = stringFunctions[name],
     p = String.prototype;
   var origSF = p[name];

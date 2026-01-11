@@ -1,25 +1,31 @@
-import { each } from "./traversal.js";
-import { isArray, isFunction, isObject } from "./is.js";
-import { reverse } from "./string.js";
-export var round = function round(val) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.round = exports.plancher = exports.min = exports.max = exports.hex2dec = exports.floorTo = exports.dec2hex = void 0;
+var _traversal = require("./traversal.js");
+var _is = require("./is.js");
+var _string = require("./string.js");
+var round = exports.round = function round(val) {
   var precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   return Math.round(val * Math.pow(10, precision)) / Math.pow(10, precision);
 };
-export var floorTo = function floorTo(n, precision) {
+var floorTo = exports.floorTo = function floorTo(n, precision) {
   if (precision <= 0) throw new Error('Precision must be greater than 0');
   return round(Math.floor(n / precision) * precision, 6);
 };
-export var plancher = floorTo;
-export var min = function min(list, cmp_func) {
-  if (isArray(list)) {
+var plancher = exports.plancher = floorTo;
+var min = exports.min = function min(list, cmp_func) {
+  if ((0, _is.isArray)(list)) {
     return Math.min.apply(null, list);
   }
   var min;
-  cmp_func = isFunction(cmp_func) ? cmp_func : function (a, b) {
+  cmp_func = (0, _is.isFunction)(cmp_func) ? cmp_func : function (a, b) {
     return a < b ? -1 : 1;
   };
-  if (isObject(list)) {
-    each(list, function (key, val, obj, index) {
+  if ((0, _is.isObject)(list)) {
+    (0, _traversal.each)(list, function (key, val, obj, index) {
       if (index === 0) {
         min = val;
       } else {
@@ -29,16 +35,16 @@ export var min = function min(list, cmp_func) {
   }
   return min;
 };
-export var max = function max(list, cmp_func) {
-  if (isArray(list)) {
+var max = exports.max = function max(list, cmp_func) {
+  if ((0, _is.isArray)(list)) {
     return Math.max.apply(null, list);
   }
   var max;
-  cmp_func = isFunction(cmp_func) ? cmp_func : function (a, b) {
+  cmp_func = (0, _is.isFunction)(cmp_func) ? cmp_func : function (a, b) {
     return b - a;
   };
-  if (isObject(list)) {
-    each(list, function (key, val, obj, index) {
+  if ((0, _is.isObject)(list)) {
+    (0, _traversal.each)(list, function (key, val, obj, index) {
       if (index === 0) {
         max = val;
       } else {
@@ -55,7 +61,7 @@ export var max = function max(list, cmp_func) {
  * @param {number} n
  * @returns {string}
  */
-export var dec2hex = function dec2hex(n) {
+var dec2hex = exports.dec2hex = function dec2hex(n) {
   return n.toString(16);
 };
 
@@ -65,11 +71,11 @@ export var dec2hex = function dec2hex(n) {
  * @param {string} hex
  * @returns {number}
  */
-export var hex2dec = function hex2dec(hex) {
-  hex = reverse(hex + '').toUpperCase();
+var hex2dec = exports.hex2dec = function hex2dec(hex) {
+  hex = (0, _string.reverse)(hex + '').toUpperCase();
   var c = '0123456789ABCDEF';
   var value = 0;
-  each(hex, function (i, _char) {
+  (0, _traversal.each)(hex, function (i, _char) {
     var index = c.indexOf(_char);
     if (index === -1) {
       value = 0;

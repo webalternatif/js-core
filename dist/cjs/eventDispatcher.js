@@ -1,4 +1,12 @@
+"use strict";
+
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+var _is = require("./is.js");
+var _traversal = require("./traversal.js");
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
@@ -9,8 +17,6 @@ function _checkPrivateRedeclaration(e, t) { if (t.has(e)) throw new TypeError("C
 function _classPrivateFieldSet(s, a, r) { return s.set(_assertClassBrand(s, a), r), r; }
 function _classPrivateFieldGet(s, a) { return s.get(_assertClassBrand(s, a)); }
 function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.has(t)) return arguments.length < 3 ? t : n; throw new TypeError("Private element is not present on this object"); }
-import { isFunction, isString, isUndefined } from "./is.js";
-import { each, map } from "./traversal.js";
 var _listeners = /*#__PURE__*/new WeakMap();
 var EventDispatcher = /*#__PURE__*/function () {
   function EventDispatcher() {
@@ -21,10 +27,10 @@ var EventDispatcher = /*#__PURE__*/function () {
     key: "addListener",
     value: function addListener(eventsName, callback, context) {
       var _this = this;
-      if (!isFunction(callback)) {
+      if (!(0, _is.isFunction)(callback)) {
         throw new Error('Callback must be a function.');
       }
-      if (!isString(eventsName)) {
+      if (!(0, _is.isString)(eventsName)) {
         throw new Error('Events name must be a string separated by comma.');
       }
       for (var _len = arguments.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
@@ -35,7 +41,7 @@ var EventDispatcher = /*#__PURE__*/function () {
         context: context,
         args: args
       };
-      each(eventsName.split(','), function (i, eventName) {
+      (0, _traversal.each)(eventsName.split(','), function (i, eventName) {
         if (!eventName) return true; // continue
 
         eventName = eventName.trim();
@@ -54,7 +60,7 @@ var EventDispatcher = /*#__PURE__*/function () {
       for (var _len2 = arguments.length, listenerArgs = new Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
         listenerArgs[_key2 - 3] = arguments[_key2];
       }
-      each(eventsName.split(','), function (i, eventName) {
+      (0, _traversal.each)(eventsName.split(','), function (i, eventName) {
         eventName = eventName.trim();
         if (!eventName) return true; // continue
 
@@ -76,10 +82,10 @@ var EventDispatcher = /*#__PURE__*/function () {
       for (var _len4 = arguments.length, args = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
         args[_key4 - 1] = arguments[_key4];
       }
-      if (!isString(eventsName)) {
+      if (!(0, _is.isString)(eventsName)) {
         throw new Error('Events name must be a string seperated by comma.');
       }
-      each(eventsName.split(','), function (i, eventName) {
+      (0, _traversal.each)(eventsName.split(','), function (i, eventName) {
         eventName = eventName.trim();
         if (!eventName) return true; // continue
 
@@ -87,7 +93,7 @@ var EventDispatcher = /*#__PURE__*/function () {
           console.warn("No listeners found for event: ".concat(eventName));
           return true; // continue
         }
-        each(_classPrivateFieldGet(_listeners, _this3)[eventName], function (i, listener) {
+        (0, _traversal.each)(_classPrivateFieldGet(_listeners, _this3)[eventName], function (i, listener) {
           listener.callback.apply(listener.context, [eventName].concat(listener.args).concat(args));
         });
       });
@@ -96,10 +102,10 @@ var EventDispatcher = /*#__PURE__*/function () {
   }, {
     key: "hasListener",
     value: function hasListener(eventName, callback, context) {
-      if (isUndefined(callback)) {
-        return !isUndefined(_classPrivateFieldGet(_listeners, this)[eventName]);
+      if ((0, _is.isUndefined)(callback)) {
+        return !(0, _is.isUndefined)(_classPrivateFieldGet(_listeners, this)[eventName]);
       }
-      return !!map(_classPrivateFieldGet(_listeners, this)[eventName], function (i, listener) {
+      return !!(0, _traversal.map)(_classPrivateFieldGet(_listeners, this)[eventName], function (i, listener) {
         return listener.callback === callback && listener.context === context ? true : null;
       }).length;
     }
@@ -108,10 +114,10 @@ var EventDispatcher = /*#__PURE__*/function () {
     value: function removeListener(eventName, callback, context) {
       var _this4 = this;
       if (this.hasListener(eventName, callback, context)) {
-        if (isUndefined(callback)) {
+        if ((0, _is.isUndefined)(callback)) {
           _classPrivateFieldGet(_listeners, this)[eventName].splice(0);
         } else {
-          each(_classPrivateFieldGet(_listeners, this)[eventName], function (i) {
+          (0, _traversal.each)(_classPrivateFieldGet(_listeners, this)[eventName], function (i) {
             _classPrivateFieldGet(_listeners, _this4)[eventName].splice(i, 1);
             delete _classPrivateFieldGet(_listeners, _this4)[eventName];
             return false; // break
@@ -133,4 +139,4 @@ var EventDispatcher = /*#__PURE__*/function () {
   }]);
 }();
 var eventDispatcher = new EventDispatcher();
-export default eventDispatcher;
+var _default = exports["default"] = eventDispatcher;

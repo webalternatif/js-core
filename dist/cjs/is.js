@@ -1,54 +1,60 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.isUndefined = exports.isTouchDevice = exports.isString = exports.isScalar = exports.isPlainObject = exports.isObject = exports.isInteger = exports.isInt = exports.isFunction = exports.isFloat = exports.isEventSupported = exports.isEvent = exports.isDate = exports.isBoolean = exports.isBool = exports.isArrayLike = exports.isArray = void 0;
+var _array = require("./array.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-import { inArray } from "./array.js";
-export var isString = function isString(str) {
+var isString = exports.isString = function isString(str) {
   return typeof str == 'string' || Object.prototype.toString.call(str) === '[object String]';
 };
-export var isObject = function isObject(o) {
+var isObject = exports.isObject = function isObject(o) {
   return !!o && !isArray(o) && _typeof(o) === 'object';
 };
-export var isFunction = function isFunction(f) {
+var isFunction = exports.isFunction = function isFunction(f) {
   return !!f && typeof f === 'function';
 };
-export var isPlainObject = function isPlainObject(o) {
+var isPlainObject = exports.isPlainObject = function isPlainObject(o) {
   if (false === isObject(o)) return false;
   if (undefined === o.constructor) return true;
   if (false === isObject(o.constructor.prototype)) return false;
   if (o.constructor.prototype.hasOwnProperty('isPrototypeOf') === false) return false;
   return true;
 };
-export var isBoolean = function isBoolean(b) {
+var isBoolean = exports.isBoolean = function isBoolean(b) {
   return b === true || b === false;
 };
-export var isBool = isBoolean;
-export var isUndefined = function isUndefined(v) {
+var isBool = exports.isBool = isBoolean;
+var isUndefined = exports.isUndefined = function isUndefined(v) {
   return typeof v === 'undefined';
 };
-export var isArrayLike = function isArrayLike(o) {
+var isArrayLike = exports.isArrayLike = function isArrayLike(o) {
   return !!o && !isString(o) && !isFunction(o) && isInt(o.length)
   // && o.length >= 0
   && Number.isFinite(o.length);
 };
-export var isArray = function isArray(a) {
+var isArray = exports.isArray = function isArray(a) {
   return Array.isArray(a);
 };
-export var isDate = function isDate(o) {
+var isDate = exports.isDate = function isDate(o) {
   return !!o && Object.prototype.toString.call(o) === '[object Date]';
 };
-export var isEvent = function isEvent(o) {
+var isEvent = exports.isEvent = function isEvent(o) {
   return isObject(o) && (!!o.preventDefault || /\[object Event\]/.test(o.constructor.toString()));
 };
-export var isInteger = function isInteger(n) {
+var isInteger = exports.isInteger = function isInteger(n) {
   return /^[\-]?\d+$/.test(n + '');
 };
-export var isInt = isInteger;
-export var isFloat = function isFloat(n) {
+var isInt = exports.isInt = isInteger;
+var isFloat = exports.isFloat = function isFloat(n) {
   return /^[\-]?\d+(\.\d+)?$/.test(n + '');
 };
-export var isScalar = function isScalar(value) {
+var isScalar = exports.isScalar = function isScalar(value) {
   var type = _typeof(value);
-  return value === null || inArray(type, ['string', 'number', 'bigint', 'symbol', 'boolean']);
+  return value === null || (0, _array.inArray)(type, ['string', 'number', 'bigint', 'symbol', 'boolean']);
 };
-export var isEventSupported = function () {
+var isEventSupported = exports.isEventSupported = function () {
   var TAGNAMES = {
     select: 'input',
     change: 'input',
@@ -67,6 +73,6 @@ export var isEventSupported = function () {
   }
   return isEventSupported;
 }();
-export var isTouchDevice = function isTouchDevice() {
+var isTouchDevice = exports.isTouchDevice = function isTouchDevice() {
   return isEventSupported('touchstart');
 };
