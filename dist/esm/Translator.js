@@ -51,19 +51,43 @@ var Translator = /*#__PURE__*/function () {
     value:
     /**
      * @param {string} label
-     * @param {string} [namespace]
      * @param {string} [lang]
+     * @param {string} [namespace='core']
      * @returns {string}
      */
-    function translate(label, namespace, lang) {
+    function translate(label, lang) {
+      var namespace = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'core';
       lang = undefined === lang ? this.getLang() : lang;
-      namespace = undefined === namespace ? 'core' : namespace;
       var translationExists = undefined !== _classPrivateFieldGet(_mapping, this)[namespace] && undefined !== _classPrivateFieldGet(_mapping, this)[namespace][lang] && undefined !== _classPrivateFieldGet(_mapping, this)[namespace][lang][label];
       if (translationExists) {
-        var tr = _classPrivateFieldGet(_mapping, this)[namespace][lang][label];
-        return isFunction(tr) ? tr() : tr;
+        var entry = _classPrivateFieldGet(_mapping, this)[namespace][lang][label];
+        return _assertClassBrand(_Translator_brand, this, _resolve).call(this, entry);
       }
       return 'en' !== lang ? this.translate(label, namespace, 'en') : label;
+    }
+
+    /**
+     * @param {string} label
+     * @param {string} from - Language from.
+     * @param {string} to - Language to.
+     * @param {string} [namespace='core']
+     */
+  }, {
+    key: "translateFrom",
+    value: function translateFrom(label, from, to) {
+      var _classPrivateFieldGet2;
+      var namespace = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'core';
+      if (!label) return label;
+      var mapNs = (_classPrivateFieldGet2 = _classPrivateFieldGet(_mapping, this)) === null || _classPrivateFieldGet2 === void 0 ? void 0 : _classPrivateFieldGet2[namespace];
+      if (!mapNs) return label;
+      var mapFrom = mapNs === null || mapNs === void 0 ? void 0 : mapNs[from];
+      var mapTo = mapNs === null || mapNs === void 0 ? void 0 : mapNs[to];
+      if (!mapFrom || !mapTo) return label;
+      var key = _assertClassBrand(_Translator_brand, this, _findKeyByValue).call(this, mapFrom, label);
+      if (!key) return label;
+      var entryTo = mapTo[key];
+      var resolvedTo = _assertClassBrand(_Translator_brand, this, _resolve).call(this, entryTo);
+      return resolvedTo !== null && resolvedTo !== void 0 ? resolvedTo : label;
     }
   }, {
     key: "_",
@@ -106,5 +130,22 @@ function _setMapping(mapping) {
   _classPrivateFieldSet(_mapping, this, extend(true, nsMapping, {
     core: extend({}, nsMapping.core || {}, coreMapping)
   }));
+}
+function _findKeyByValue(entries, label) {
+  for (var key in entries) {
+    var resolved = _assertClassBrand(_Translator_brand, this, _resolve).call(this, entries[key]);
+    if (resolved === label) return key;
+  }
+  return null;
+}
+function _resolve(entry) {
+  if (isFunction(entry)) {
+    try {
+      return entry();
+    } catch (e) {
+      return null;
+    }
+  }
+  return entry;
 }
 export { Translator as default };

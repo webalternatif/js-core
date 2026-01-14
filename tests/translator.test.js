@@ -40,17 +40,17 @@ describe('Translation system', () => {
     })
 
     it('should return the correct translation for a given language and namespace', () => {
-        expect(translator.translate('today', 'date', 'en')).toBe('Today');
-        expect(translator.translate('tomorrow', 'date', 'fr')).toBe('Demain');
-        expect(translator.translate('tomorrow', 'date', 'en')).toBe('Tomorrow');
+        expect(translator.translate('today', 'en', 'date')).toBe('Today');
+        expect(translator.translate('tomorrow', 'fr', 'date')).toBe('Demain');
+        expect(translator.translate('tomorrow', 'en', 'date')).toBe('Tomorrow');
     })
 
     it('should fallback to English if translation is missing in the given language', () => {
-        expect(translator.translate('goodbye', 'core', 'fr')).toBe('Goodbye');
+        expect(translator.translate('goodbye', 'fr')).toBe('Goodbye');
     })
 
     it('should fallback to the label if the translation is missing in all languages', () => {
-        expect(translator.translate('unknown', 'core', 'fr')).toBe('unknown');
+        expect(translator.translate('unknown', 'fr')).toBe('unknown');
     })
 
     it('should default to the current language when no language is specified', () => {
@@ -63,7 +63,7 @@ describe('Translation system', () => {
     })
 
     it('should return the same result for translate and _', () => {
-        expect(translator.translate('hello', 'core', 'en')).toBe(translator._('hello', 'core', 'en'));
+        expect(translator.translate('hello', 'en')).toBe(translator._('hello', 'en'));
     })
 })
 
@@ -142,3 +142,29 @@ describe('Language detection and setting', () => {
         expect(translator.getLang()).toBe('fr');
     })
 })
+
+
+describe('Translation from one lang to another', () => {
+    it('should return Hello from Bonjour', () => {
+        expect(translator.translateFrom('Bonjour', 'fr', 'en')).toBe('Hello');
+    })
+
+    it('should resolve function entries', () => {
+        expect(translator.translateFrom('Demain', 'fr', 'en', 'date')).toBe('Tomorrow');
+    })
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

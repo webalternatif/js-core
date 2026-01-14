@@ -18,11 +18,18 @@ export default class Translator {
     constructor(mapping: TranslatorMapping, defaultLang?: string);
     /**
      * @param {string} label
-     * @param {string} [namespace]
      * @param {string} [lang]
+     * @param {string} [namespace='core']
      * @returns {string}
      */
-    translate(label: string, namespace?: string, lang?: string): string;
+    translate(label: string, lang?: string, namespace?: string): string;
+    /**
+     * @param {string} label
+     * @param {string} from - Language from.
+     * @param {string} to - Language to.
+     * @param {string} [namespace='core']
+     */
+    translateFrom(label: string, from: string, to: string, namespace?: string): any;
     _(...args: any[]): string;
     getLang(): string;
     setLang(lang: any): void;

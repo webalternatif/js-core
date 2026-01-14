@@ -54,13 +54,12 @@ export default class Translator {
 
     /**
      * @param {string} label
-     * @param {string} [namespace]
      * @param {string} [lang]
+     * @param {string} [namespace='core']
      * @returns {string}
      */
-    translate(label, namespace, lang) {
+    translate(label, lang, namespace = 'core') {
         lang = undefined === lang ? this.getLang() : lang;
-        namespace = undefined === namespace ? 'core' : namespace;
 
         const translationExists =
             undefined !== this.#mapping[namespace] &&
@@ -68,11 +67,36 @@ export default class Translator {
             undefined !== this.#mapping[namespace][lang][label];
 
         if (translationExists) {
-            const tr = this.#mapping[namespace][lang][label];
-            return isFunction(tr) ? tr() : tr;
+            const entry = this.#mapping[namespace][lang][label];
+            return this.#resolve(entry);
         }
 
         return 'en' !== lang ? this.translate(label, namespace, 'en') : label;
+    }
+
+    /**
+     * @param {string} label
+     * @param {string} from - Language from.
+     * @param {string} to - Language to.
+     * @param {string} [namespace='core']
+     */
+    translateFrom(label, from, to, namespace = 'core') {
+        if (!label) return label;
+
+        const mapNs = this.#mapping?.[namespace];
+        if (!mapNs) return label;
+
+        const mapFrom = mapNs?.[from];
+        const mapTo = mapNs?.[to];
+        if (!mapFrom || !mapTo) return label;
+
+        const key = this.#findKeyByValue(mapFrom, label);
+        if (!key) return label;
+
+        const entryTo = mapTo[key];
+        const resolvedTo = this.#resolve(entryTo);
+
+        return resolvedTo ?? label;
     }
 
     _(...args) {
@@ -93,5 +117,26 @@ export default class Translator {
         }
 
         this.#lang = (lang || 'en').trim().toLowerCase().slice(0, 2);
+    }
+
+    #findKeyByValue(entries, label) {
+        for (const key in entries) {
+            const resolved = this.#resolve(entries[key]);
+            if (resolved === label) return key;
+        }
+
+        return null;
+    }
+
+    #resolve(entry) {
+        if (isFunction(entry)) {
+            try {
+                return entry();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        return entry;
     }
 }
