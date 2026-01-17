@@ -8,7 +8,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-import { isArray, isArrayLike, isFunction, isObject, isPlainObject, isString } from "./is.js";
+import { isArray, isArrayLike, isFunction, isObject, isPlainObject, isString, isTouchDevice } from "./is.js";
 import { camelCase } from "./string.js";
 import { each, foreach, map } from "./traversal.js";
 import { inArray } from "./array.js";
@@ -82,9 +82,18 @@ var enableLongTap = function enableLongTap() {
 };
 var enableDblTap = function enableDblTap() {
   var DBLTAP_DELAY = 300;
-  var MOVE_TOLERANCE = 8;
+  var MOVE_TOLERANCE = 40;
   var lastTapTime = 0;
   var lastPos = null;
+  if (isTouchDevice()) {
+    document.addEventListener('dblclick', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+    }, {
+      capture: true
+    });
+  }
   var start = function start(ev) {
     var target = ev.target;
     if (Date.now() - lastTapTime > DBLTAP_DELAY) {

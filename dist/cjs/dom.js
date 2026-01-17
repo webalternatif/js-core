@@ -89,9 +89,18 @@ var enableLongTap = function enableLongTap() {
 };
 var enableDblTap = function enableDblTap() {
   var DBLTAP_DELAY = 300;
-  var MOVE_TOLERANCE = 8;
+  var MOVE_TOLERANCE = 40;
   var lastTapTime = 0;
   var lastPos = null;
+  if ((0, _is.isTouchDevice)()) {
+    document.addEventListener('dblclick', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      ev.stopImmediatePropagation();
+    }, {
+      capture: true
+    });
+  }
   var start = function start(ev) {
     var target = ev.target;
     if (Date.now() - lastTapTime > DBLTAP_DELAY) {

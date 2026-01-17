@@ -1,4 +1,4 @@
-import {isArray, isArrayLike, isFunction, isObject, isPlainObject, isString} from "./is.js";
+import {isArray, isArrayLike, isFunction, isObject, isPlainObject, isString, isTouchDevice} from "./is.js";
 import {camelCase} from "./string.js";
 import {each, foreach, map} from "./traversal.js";
 import {inArray} from "./array.js";
@@ -112,9 +112,17 @@ const enableLongTap = function () {
 
 const enableDblTap = function () {
     const DBLTAP_DELAY = 300;
-    const MOVE_TOLERANCE = 8;
+    const MOVE_TOLERANCE = 40;
     let lastTapTime = 0;
     let lastPos = null;
+
+    if (isTouchDevice()) {
+        document.addEventListener('dblclick', (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            ev.stopImmediatePropagation();
+        }, { capture: true });
+    }
 
     const start = (ev) => {
         const target = ev.target;
