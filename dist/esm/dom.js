@@ -663,7 +663,6 @@ var dom = {
                 stopPropagation: function stopPropagation() {
                   return ev.stopPropagation.apply(ev, arguments);
                 },
-                // stopImmediatePropagation: (...args) => ev.stopImmediatePropagation(...args),
                 stopImmediatePropagation: function stopImmediatePropagation() {
                   wrappedEv._immediateStopped = true;
                   ev.stopImmediatePropagation.apply(ev, arguments);
