@@ -849,6 +849,60 @@ describe('dom manipulation', () => {
         });
     });
 
+    describe('dom.on delegated events propagation', () => {
+        let root, parent, child;
+
+        beforeEach(() => {
+            document.body.innerHTML = `
+              <div id="root">
+                <div id="parent">
+                  <div class="name" contenteditable="true">test</div>
+                </div>
+              </div>
+            `;
+
+            root = document.querySelector('#root');
+            parent = document.querySelector('#parent');
+            child = document.querySelector('.name');
+        });
+
+        it('stopImmediatePropagation should prevents other delegated handlers on same container', () => {
+            const calls = [];
+
+            dom.on(root, 'keydown', '.name[contenteditable="true"]', (ev) => {
+                calls.push('name');
+                ev.stopImmediatePropagation();
+            });
+
+            dom.on(root, 'keydown', '#parent', (ev) => {
+                calls.push('parent');
+            });
+
+            const e = new KeyboardEvent('keydown', {key: 'Enter', bubbles: true});
+            child.dispatchEvent(e);
+
+            expect(calls).toEqual(['name']);
+        });
+
+        it('stopPropagation should not prevent other delegated handlers on same container', () => {
+            const calls = [];
+
+            dom.on(root, 'keydown', '.name[contenteditable="true"]', (ev) => {
+                calls.push('name');
+                ev.stopPropagation();
+            });
+
+            dom.on(root, 'keydown', '#parent', (ev) => {
+                calls.push('parent');
+            });
+
+            const e = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+            child.dispatchEvent(e);
+
+            expect(calls).toEqual(['name', 'parent']);
+        });
+    });
+
     describe('closestFind()', () => {
         it('should return an array of matches', () => {
             const grandChild0 = el.querySelectorAll('.grandchild0').item(0);

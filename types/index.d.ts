@@ -18,8 +18,8 @@ declare const webf: {
     dom: {
         children(el: Element, selector?: string): NodeList;
         child(el: Element, selector?: string): Element | null;
-        findOne(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Element;
-        find(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Array<Element>;
+        findOne(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Element;
+        find(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Array<Element>;
         findOneByData(el: Element | string, data: string, value?: string): Element | null;
         findByData(el: Element | string, data: string, value?: string): Element[];
         addClass(el: Element | NodeList | Array<Element>, className: string): Element | NodeList | Array<Element>;
@@ -61,7 +61,7 @@ declare const webf: {
         eq(nodeList: NodeList | Array<Element>, index?: number): Element | null;
         after(el: Element, newEl: Element | string): Element | null;
         before(el: Element, newEl: Element | string): Element | null;
-        empty(el: Element): Element;
+        empty(el: Element | string): Element;
         not(el: Element | NodeList | Array<Element>, selector: string | Element): Array<Element>;
         collide(elem1: Element, elem2: Element): boolean;
         matches(el: Element, selector: string | Element): boolean;

@@ -183,7 +183,7 @@ var dom = {
   },
   /**
    * @param {Element|Document|string} refEl
-   * @param {string|Element|NodeList|Array<Element>} selector
+   * @param {string|Element|NodeList|Array<Element>} [selector]
    * @returns {Element}
    */
   findOne: function findOne(refEl, selector) {
@@ -192,7 +192,7 @@ var dom = {
   },
   /**
    * @param {Element|Document|string} refEl
-   * @param {string|Element|NodeList|Array<Element>} selector
+   * @param {string|Element|NodeList|Array<Element>} [selector]
    * @returns {Array<Element>}
    */
   find: function find(refEl, selector) {
@@ -645,31 +645,45 @@ var dom = {
           return;
         }
         var currentTarget = ev.target;
-        while (currentTarget && currentTarget !== el) {
-          if (_this5.matches(currentTarget, selector)) {
-            var wrappedEv = {
-              originalEvent: ev,
-              type: ev.type,
-              target: ev.target,
-              currentTarget: currentTarget,
-              relatedTarget: ev.relatedTarget,
-              button: ev.button,
-              pageX: ev.pageX,
-              pageY: ev.pageY,
-              preventDefault: function preventDefault() {
-                return ev.preventDefault.apply(ev, arguments);
-              },
-              stopPropagation: function stopPropagation() {
-                return ev.stopPropagation.apply(ev, arguments);
-              },
-              stopImmediatePropagation: function stopImmediatePropagation() {
-                return ev.stopImmediatePropagation.apply(ev, arguments);
+        var _loop = function _loop() {
+            if (_this5.matches(currentTarget, selector)) {
+              var wrappedEv = {
+                _immediateStopped: false,
+                originalEvent: ev,
+                type: ev.type,
+                target: ev.target,
+                currentTarget: currentTarget,
+                relatedTarget: ev.relatedTarget,
+                button: ev.button,
+                pageX: ev.pageX,
+                pageY: ev.pageY,
+                preventDefault: function preventDefault() {
+                  return ev.preventDefault.apply(ev, arguments);
+                },
+                stopPropagation: function stopPropagation() {
+                  return ev.stopPropagation.apply(ev, arguments);
+                },
+                // stopImmediatePropagation: (...args) => ev.stopImmediatePropagation(...args),
+                stopImmediatePropagation: function stopImmediatePropagation() {
+                  wrappedEv._immediateStopped = true;
+                  ev.stopImmediatePropagation.apply(ev, arguments);
+                }
+              };
+              handler.call(currentTarget, wrappedEv);
+              if (wrappedEv._immediateStopped) {
+                return {
+                  v: void 0
+                };
               }
-            };
-            handler.call(currentTarget, wrappedEv);
-            break;
-          }
-          currentTarget = currentTarget.parentElement;
+              return 0; // break
+            }
+            currentTarget = currentTarget.parentElement;
+          },
+          _ret;
+        while (currentTarget && currentTarget !== el) {
+          _ret = _loop();
+          if (_ret === 0) break;
+          if (_ret) return _ret.v;
         }
       };
       var store = LISTENERS.get(el);
@@ -860,10 +874,13 @@ var dom = {
     return el.parentElement.insertBefore(newEl, el);
   },
   /**
-   * @param {Element} el
+   * @param {Element|string} el
    * @returns {Element}
    */
   empty: function empty(el) {
+    if (isString(el)) {
+      el = this.findOne(el);
+    }
     while (el.firstChild) {
       el.removeChild(el.firstChild);
     }

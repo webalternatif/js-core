@@ -18,16 +18,16 @@ declare namespace dom {
     function child(el: Element, selector?: string): Element | null;
     /**
      * @param {Element|Document|string} refEl
-     * @param {string|Element|NodeList|Array<Element>} selector
+     * @param {string|Element|NodeList|Array<Element>} [selector]
      * @returns {Element}
      */
-    function findOne(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Element;
+    function findOne(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Element;
     /**
      * @param {Element|Document|string} refEl
-     * @param {string|Element|NodeList|Array<Element>} selector
+     * @param {string|Element|NodeList|Array<Element>} [selector]
      * @returns {Array<Element>}
      */
-    function find(refEl: Element | Document | string, selector: string | Element | NodeList | Array<Element>): Array<Element>;
+    function find(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Array<Element>;
     /**
      * @param {Element|string} el
      * @param {string} data
@@ -263,10 +263,10 @@ declare namespace dom {
      */
     function before(el: Element, newEl: Element | string): Element | null;
     /**
-     * @param {Element} el
+     * @param {Element|string} el
      * @returns {Element}
      */
-    function empty(el: Element): Element;
+    function empty(el: Element | string): Element;
     /**
      * @param {Element|NodeList|Array<Element>} el
      * @param {string|Element} selector

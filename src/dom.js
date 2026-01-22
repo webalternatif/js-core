@@ -221,7 +221,7 @@ const dom = {
 
     /**
      * @param {Element|Document|string} refEl
-     * @param {string|Element|NodeList|Array<Element>} selector
+     * @param {string|Element|NodeList|Array<Element>} [selector]
      * @returns {Element}
      */
     findOne(refEl, selector) {
@@ -230,7 +230,7 @@ const dom = {
 
     /**
      * @param {Element|Document|string} refEl
-     * @param {string|Element|NodeList|Array<Element>} selector
+     * @param {string|Element|NodeList|Array<Element>} [selector]
      * @returns {Array<Element>}
      */
     find(refEl, selector) {
@@ -776,6 +776,7 @@ const dom = {
                 while (currentTarget && currentTarget !== el) {
                     if (this.matches(currentTarget, selector)) {
                         const wrappedEv = {
+                            _immediateStopped: false,
                             originalEvent: ev,
                             type: ev.type,
                             target: ev.target,
@@ -786,10 +787,18 @@ const dom = {
                             pageY: ev.pageY,
                             preventDefault: (...args) => ev.preventDefault(...args),
                             stopPropagation: (...args) => ev.stopPropagation(...args),
-                            stopImmediatePropagation: (...args) => ev.stopImmediatePropagation(...args),
+                            stopImmediatePropagation: (...args) => {
+                                wrappedEv._immediateStopped = true;
+                                ev.stopImmediatePropagation(...args);
+                            },
                         };
 
                         handler.call(currentTarget, wrappedEv);
+
+                        if (wrappedEv._immediateStopped) {
+                            return;
+                        }
+
                         break;
                     }
 
@@ -1026,10 +1035,14 @@ const dom = {
     },
 
     /**
-     * @param {Element} el
+     * @param {Element|string} el
      * @returns {Element}
      */
     empty(el) {
+        if (isString(el)) {
+            el = this.findOne(el);
+        }
+
         while (el.firstChild) {
             el.removeChild(el.firstChild);
         }

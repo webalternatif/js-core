@@ -171,6 +171,7 @@ describe('String methods', () => {
         it('should return the substring up to the specified positive index', () => {
             expect(substringIndex('a-b-c-d-e', '-', 3)).toBe('a-b-c');
             expect(substringIndex('apple.orange.banana', '.', 2)).toBe('apple.orange');
+            expect(substringIndex('abc/def/ghf', '/', 1)).toBe('abc');
         })
 
         it('should return the substring starting from the specified negative index', () => {
