@@ -11,20 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Récupérer le code
+      - name: Get code
         uses: actions/checkout@v4
 
-      - name: Installer Node.js
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'yarn'
 
-      - name: Installer les dépendances
+      - name: Install dependencie
         run: yarn install --frozen-lockfile
 
-      - name: Lancer les tests
+      - name: Launch tests
         run: yarn test
 
-      - name: Build de la lib
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+
+      - name: Build
         run: yarn build

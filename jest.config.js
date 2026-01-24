@@ -4,7 +4,7 @@ export default {
     collectCoverage: true,
     coverageDirectory: 'coverage',
     moduleFileExtensions: ['js'],
-    coverageReporters: ['text-summary', 'html'],
+    coverageReporters: ['text', 'lcov', 'html'],
     roots: [
         '<rootDir>/tests',
         '<rootDir>/src'
