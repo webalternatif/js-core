@@ -71,7 +71,7 @@ export default class Translator {
             return this.#resolve(entry);
         }
 
-        return 'en' !== lang ? this.translate(label, namespace, 'en') : label;
+        return 'en' !== lang ? this.translate(label, 'en', namespace) : label;
     }
 
     /**

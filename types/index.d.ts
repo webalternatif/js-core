@@ -48,8 +48,6 @@ declare const webf: {
             [x: string]: string;
         } | string, value?: string): Element | DOMStringMap;
         removeData(el: Element, name: string): Element | any;
-        on(el: Element | Document | Window, events: string, selector: string | Element | Function, handler?: Function | AddEventListenerOptions | boolean, options?: AddEventListenerOptions | boolean): Element;
-        off(el: Element | Document | Window, events?: string, selector?: string | Element | Function, handler?: Function | AddEventListenerOptions | boolean, options?: AddEventListenerOptions | boolean): Element;
         css(el: HTMLElement, style: {
             [x: string]: string;
         } | string, value?: string): Element;
@@ -71,6 +69,8 @@ declare const webf: {
             top: number;
             left: number;
         };
+        on: typeof import("./onOff.js").on;
+        off: typeof import("./onOff.js").off;
     };
     isWindow: (o: any) => boolean;
     isDocument: (o: any) => boolean;

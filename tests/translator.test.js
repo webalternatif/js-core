@@ -17,6 +17,7 @@ const mapping = {
     }
 };
 
+/** @type Translator */
 let translator;
 
 beforeEach(() => {

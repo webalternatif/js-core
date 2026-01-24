@@ -65,7 +65,7 @@ var Translator = exports["default"] = /*#__PURE__*/function () {
         var entry = _classPrivateFieldGet(_mapping, this)[namespace][lang][label];
         return _assertClassBrand(_Translator_brand, this, _resolve).call(this, entry);
       }
-      return 'en' !== lang ? this.translate(label, namespace, 'en') : label;
+      return 'en' !== lang ? this.translate(label, 'en', namespace) : label;
     }
 
     /**

@@ -3,6 +3,7 @@ import {camelCase} from "./string.js";
 import {each, foreach, map} from "./traversal.js";
 import {inArray} from "./array.js";
 import Mouse from "./Mouse.js";
+import {on, off, __resetCustomEventsForTests} from './onOff.js';
 
 const cssNumber = [
     'animationIterationCount',
@@ -33,126 +34,6 @@ const cssNumber = [
     'strokeMiterlimit',
     'strokeOpacity',
 ];
-
-const LISTENERS = new Map();
-const CUSTOM_EVENTS = [
-    'longtap',
-    'dbltap'
-]
-const ENABLED_EVENTS = new Set();
-
-let teardownLongTap = null;
-let teardownDblTap = null;
-
-const supplyEvent = function (event) {
-    if (ENABLED_EVENTS?.has(event)) return;
-
-    if (event === 'longtap') enableLongTap();
-    if (event === 'dbltap') enableDblTap();
-
-    ENABLED_EVENTS.add(event);
-}
-
-const enableLongTap = function () {
-    const LONGPRESS_DELAY = 800;
-    const MOVE_TOLERANCE = 8;
-
-    let timer = null;
-    let startX = 0;
-    let startY = 0;
-    let target = null;
-
-    const start = (ev) => {
-        target = ev.target;
-
-        const pos = Mouse.getViewportPosition(ev);
-        startX = pos.x;
-        startY = pos.y;
-
-        timer = setTimeout(() => {
-            target.dispatchEvent(new CustomEvent('longtap', {
-                bubbles: true,
-                cancelable: true,
-                detail: {originalEvent: ev}
-            }));
-
-            timer = null;
-        }, LONGPRESS_DELAY);
-    };
-
-    const move = (ev) => {
-        if (!timer) return;
-
-        const pos = Mouse.getViewportPosition(ev)
-
-        if (Math.hypot(pos.x - startX, pos.y - startY) > MOVE_TOLERANCE) {
-            clearTimeout(timer);
-            timer = null;
-        }
-    };
-
-    const end = () => {
-        if (timer) clearTimeout(timer);
-        timer = null;
-    };
-
-    document.addEventListener('touchstart', start, {passive: true});
-    document.addEventListener('touchmove', move, {passive: true});
-    document.addEventListener('touchend', end);
-    document.addEventListener('touchcancel', end);
-
-    teardownLongTap = () => {
-        document.removeEventListener('touchstart', start, { passive: true });
-        document.removeEventListener('touchmove', move, { passive: true });
-        document.removeEventListener('touchend', end);
-        document.removeEventListener('touchcancel', end);
-        teardownLongTap = null;
-    };
-}
-
-const enableDblTap = function () {
-    const DBLTAP_DELAY = 300;
-    const MOVE_TOLERANCE = 40;
-    let lastTapTime = 0;
-    let lastPos = null;
-
-    if (isTouchDevice()) {
-        document.addEventListener('dblclick', (ev) => {
-            ev.preventDefault();
-            ev.stopPropagation();
-            ev.stopImmediatePropagation();
-        }, { capture: true });
-    }
-
-    const start = (ev) => {
-        const target = ev.target;
-
-        if (Date.now() - lastTapTime > DBLTAP_DELAY) {
-            lastTapTime = Date.now()
-            lastPos = Mouse.getViewportPosition(ev)
-        } else {
-            const pos = Mouse.getViewportPosition(ev);
-
-            if (Math.hypot(pos.x - lastPos.x, pos.y - lastPos.y) <= MOVE_TOLERANCE) {
-                target.dispatchEvent(new CustomEvent('dbltap', {
-                    bubbles: true,
-                    cancelable: true,
-                    detail: { originalEvent: ev }
-                }));
-            }
-
-            lastTapTime = Date.now();
-            lastPos = pos;
-        }
-    };
-
-    document.addEventListener('touchstart', start, { passive: true });
-
-    teardownDblTap = () => {
-        document.removeEventListener('touchstart', start, { passive: true });
-        teardownDblTap = null;
-    };
-}
 
 /**
  * @param {any} o
@@ -748,137 +629,6 @@ const dom = {
     },
 
     /**
-     * @param {Element|Document|Window} el
-     * @param {string} events
-     * @param {string|Element|function} selector
-     * @param {function|AddEventListenerOptions|boolean} [handler]
-     * @param {AddEventListenerOptions|boolean} [options]
-     * @returns {Element}
-     */
-    on(el, events, selector, handler, options) {
-        if (isFunction(selector)) {
-            options = handler;
-            handler = selector;
-            selector = null;
-        }
-
-        foreach(events.split(' '), (rawEvent) => {
-            const [event, namespace] = rawEvent.split('.');
-
-            const listener = (ev) => {
-                if (!selector) {
-                    handler.call(el, ev);
-                    return;
-                }
-
-                let currentTarget = ev.target;
-
-                while (currentTarget && currentTarget !== el) {
-                    if (this.matches(currentTarget, selector)) {
-                        const wrappedEv = {
-                            _immediateStopped: false,
-                            originalEvent: ev,
-                            type: ev.type,
-                            target: ev.target,
-                            currentTarget,
-                            relatedTarget: ev.relatedTarget,
-                            button: ev.button,
-                            pageX: ev.pageX,
-                            pageY: ev.pageY,
-                            preventDefault: (...args) => ev.preventDefault(...args),
-                            stopPropagation: (...args) => ev.stopPropagation(...args),
-                            stopImmediatePropagation: (...args) => {
-                                wrappedEv._immediateStopped = true;
-                                ev.stopImmediatePropagation(...args);
-                            },
-                        };
-
-                        handler.call(currentTarget, wrappedEv);
-
-                        if (wrappedEv._immediateStopped) {
-                            return;
-                        }
-
-                        break;
-                    }
-
-                    currentTarget = currentTarget.parentElement;
-                }
-            }
-
-            let store = LISTENERS.get(el);
-            if (!store) {
-                store = [];
-                LISTENERS.set(el, store);
-            }
-
-            store.push({ event, handler, selector, listener, namespace, options });
-
-            if (inArray(event, CUSTOM_EVENTS)) {
-                supplyEvent(event);
-            }
-
-            el.addEventListener(event, listener, options);
-        });
-
-        return el;
-    },
-
-    /**
-     * @param {Element|Document|Window} el
-     * @param {string} [events]
-     * @param {string|Element|function} [selector]
-     * @param {function|AddEventListenerOptions|boolean} [handler]
-     * @param {AddEventListenerOptions|boolean} [options]
-     * @returns {Element}
-     */
-    off(el, events, selector, handler, options) {
-        if (isFunction(selector)) {
-            options = handler;
-            handler = selector;
-            selector = null;
-        }
-
-        const store = LISTENERS.get(el);
-        if (!store) return el;
-
-        const evts = events ? events.split(' ') : [undefined];
-
-        foreach(evts, rawEvent => {
-            let [event, namespace] = undefined === rawEvent ? [undefined, undefined] : rawEvent.split('.');
-
-            event = !event ? undefined : event;
-
-            const hasEvent = undefined !== event;
-            const hasNs = undefined !== namespace;
-
-            foreach([...store].reverse(), (l) => {
-                const match =
-                    (!hasEvent  && !hasNs) ||
-                    (hasEvent   && !hasNs && l.event === event) ||
-                    (!hasEvent  && hasNs  && l.namespace === namespace) ||
-                    (hasEvent   && hasNs  && l.event === event && l.namespace === namespace);
-
-                if (
-                    match &&
-                    (undefined === event     || l.event === event) &&
-                    (undefined === handler   || l.handler === handler) &&
-                    (undefined === selector  || l.selector === selector) &&
-                    (undefined === namespace || l.namespace === namespace) &&
-                    (undefined === options   || l.options === options)
-                ) {
-                    el.removeEventListener(l.event, l.listener, l.options);
-
-                    const index = store.indexOf(l);
-                    index !== -1 && store.splice(index, 1);
-                }
-            });
-        });
-
-        return el;
-    },
-
-    /**
      * @param {HTMLElement} el
      * @param {Object<string, string>|string} style
      * @param {string} [value]
@@ -1156,14 +906,15 @@ const dom = {
             top: rect.top + wOffset.top,
             left: rect.left + wOffset.left,
         };
-    }
+    },
+
+    on,
+    off,
 }
 
 if ('test' === process.env.NODE_ENV) {
     dom.__resetCustomEventsForTests = function () {
-        ENABLED_EVENTS.clear();
-        teardownLongTap?.();
-        teardownDblTap?.();
+        __resetCustomEventsForTests();
     };
 }
 

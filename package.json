@@ -23,7 +23,7 @@
     "build:esm": "babel src --out-dir dist/esm --extensions .js",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --out-dir dist/cjs --extensions .js",
     "types": "tsc",
-    "build": "rm -r dist && yarn build:esm && yarn build:cjs && yarn types",
+    "build": "rm -rf dist && yarn build:esm && yarn build:cjs && yarn types",
     "readme": "documentation readme src/index.js --section=API --github",
     "prepublishOnly": "yarn build"
   },

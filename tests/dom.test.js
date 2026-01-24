@@ -1,5 +1,6 @@
 import dom, {isWindow, isDocument, isDomElement, getStyle} from "../src/dom.js";
 import Mouse from "../src/Mouse.js";
+import {__resetCustomEventsForTests} from "../src/onOff.js";
 
 function dispatchTouch(el, type) {
     el.dispatchEvent(new Event(type, { bubbles: true, cancelable: true }));
@@ -118,7 +119,7 @@ describe('dom manipulation', () => {
     beforeEach(() => {
         jest.useFakeTimers();
         jest.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
-        dom.__resetCustomEventsForTests();
+        __resetCustomEventsForTests();
 
         el = document.createElement('div');
         el.id = 'root';
@@ -141,7 +142,7 @@ describe('dom manipulation', () => {
     })
 
     afterEach(() => {
-        dom.__resetCustomEventsForTests();
+        __resetCustomEventsForTests();
         jest.useRealTimers();
 
         document.body.innerHTML = ''
@@ -169,12 +170,57 @@ describe('dom manipulation', () => {
     describe('find()', () => {
         it('should return descendants of element', () => {
             expect(dom.find(el, '.grandchild')).toHaveLength(9);
-            expect(dom.find('.grandchild')).toHaveLength(9);
-        })
+            expect(dom.find('.grandchild')).toHaveLength(9); // refEl implicite = document
+        });
 
-        it('should return an empty list on invalid selector', () => {
-            expect(dom.find(el, '!!!').length).toBe(0);
-        })
+        it('should return direct element if selector is an Element inside refEl', () => {
+            const child = el.querySelector('.child1');
+            const result = dom.find(el, child);
+
+            expect(result).toEqual([child]);
+        });
+
+        it('should return empty if selector Element is outside refEl', () => {
+            const outside = document.createElement('div');
+            document.body.append(outside);
+
+            const result = dom.find(el, outside);
+            expect(result).toEqual([]);
+        });
+
+        it('should accept NodeList as selector and filter by refEl containment', () => {
+            const nodeList = document.querySelectorAll('.grandchild');
+            const result = dom.find(el, nodeList);
+
+            expect(result).toHaveLength(9);
+            result.forEach(e => expect(el.contains(e)).toBe(true));
+        });
+
+        it('should accept Array of elements as selector', () => {
+            const arr = Array.from(document.querySelectorAll('.child'));
+            const result = dom.find(el, arr);
+
+            expect(result).toHaveLength(3);
+        });
+
+        it('should ignore non-elements in array-like selector', () => {
+            const arr = [document.createElement('div'), 'foo', null];
+            const result = dom.find(el, arr);
+
+            expect(result).toEqual([]);
+        });
+
+        it('should return empty list on invalid selector', () => {
+            expect(dom.find(el, '!!!')).toEqual([]);
+        });
+
+        it('should return empty list if refEl does not contain matches', () => {
+            const other = document.createElement('div');
+            document.body.append(other);
+
+            const result = dom.find(other, '.grandchild');
+            expect(result).toEqual([]);
+        });
     })
 
     describe('findOne()', () => {
@@ -191,6 +237,37 @@ describe('dom manipulation', () => {
         })
     })
 
+    describe('findOneByData() / findByData()', () => {
+        it('should return the matching descendants by data attribute', () => {
+            const a = el.querySelector('.child1 .grandchild0');
+            const b = el.querySelector('.child1 .grandchild1');
+
+            a.dataset.test = 'x';
+            b.dataset.test = 'x';
+
+            const found = dom.findByData(el, 'test', 'x');
+
+            expect(found).toHaveLength(2);
+            expect(found).toEqual([a, b]);
+        })
+
+        it('should return the first matching descendant by data attribute', () => {
+            const a = el.querySelector('.child1 .grandchild0');
+            const b = el.querySelector('.child1 .grandchild1');
+
+            a.dataset.test = 'x';
+            b.dataset.test = 'x';
+
+            const found = dom.findOneByData(el, 'test', 'x');
+
+            expect(found).toBe(a);
+        });
+
+        it('should return null if nothing matches', () => {
+            expect(dom.findOneByData(el, 'test', 'missing')).toBeNull();
+        });
+    })
+
     describe('addClass()', () => {
         it('should add classes to element', () => {
             dom.addClass(el, 'perceval karadoc');
@@ -199,11 +276,59 @@ describe('dom manipulation', () => {
             expect(el.classList.contains('karadoc')).toBe(true);
         })
 
+        it('should add classes to all matching descendants (NodeList)', () => {
+            const grandchildren = el.querySelectorAll('.grandchild');
+
+            dom.addClass(grandchildren, 'graal');
+
+            grandchildren.forEach(gc => {
+                expect(gc.classList.contains('graal')).toBe(true);
+            });
+        });
+
         it('should handle empty string', () => {
             const before = [...el.classList];
             dom.addClass(el, '');
             expect([...el.classList]).toEqual(before);
         })
+
+        it('should ignore non-elements in collection', () => {
+            const child = el.querySelector('.child0');
+
+            dom.addClass([child, null, 'Karadoc', 42], 'Kaamelott');
+
+            expect(child.classList.contains('Kaamelott')).toBe(true);
+        });
+
+        it('should trim and ignore empty class names', () => {
+            dom.addClass(el, '   arthur   merlin   ');
+
+            expect(el.classList.contains('arthur')).toBe(true);
+            expect(el.classList.contains('merlin')).toBe(true);
+        });
+
+        it('should not duplicate classes if already present', () => {
+            const child = el.querySelector('.child2');
+
+            dom.addClass(child, 'lancelot');
+            dom.addClass(child, 'lancelot');
+
+            const occurrences = [...child.classList].filter(c => 'lancelot' === c).length;
+            expect(occurrences).toBe(1);
+        });
+
+        it('should ignore non-elements in collection', () => {
+            const child = el.querySelector('.child0');
+
+            dom.removeClass([child, null, 'Karadoc', 42], 'child0');
+
+            expect(child.classList.contains('child0')).toBe(false);
+        });
+
+        it('should return the original input (chainable)', () => {
+            const result = dom.addClass(el, 'gauvain');
+            expect(result).toBe(el);
+        });
     })
 
     describe('removeClass()', () => {
@@ -222,6 +347,13 @@ describe('dom manipulation', () => {
             dom.removeClass(el, '');
             expect([...el.classList]).toEqual(before);
         })
+
+        it('should return the original input (chainable)', () => {
+            dom.addClass(el, 'gauvain');
+
+            const result = dom.removeClass(el, 'gauvain');
+            expect(result).toBe(el);
+        });
     })
 
     describe('toggleClass()', () => {
@@ -274,6 +406,18 @@ describe('dom manipulation', () => {
             expect(el.children).toHaveLength(5);
             expect(el.lastElementChild).toBe(c2);
         });
+
+        it('should append a child to an element from an HTML string', () => {
+            const html = '<span>test</span>';
+
+            dom.append(el, html);
+
+            const span = el.lastElementChild;
+
+            expect(span).not.toBeNull();
+            expect(span.tagName).toBe('SPAN');
+            expect(span.textContent).toBe('test');
+        })
     })
 
     describe('prepend()', () => {
@@ -305,6 +449,18 @@ describe('dom manipulation', () => {
             expect(el.firstElementChild).toHaveClass('c1');
             expect(el.firstElementChild.nextElementSibling).toHaveClass('c2');
         });
+
+        it('should append a child to an element from an HTML string', () => {
+            const html = '<span>test</span>';
+
+            dom.prepend(el, html);
+
+            const span = el.firstElementChild;
+
+            expect(span).not.toBeNull();
+            expect(span.tagName).toBe('SPAN');
+            expect(span.textContent).toBe('test');
+        })
     })
 
     describe('remove()', () => {
@@ -323,6 +479,20 @@ describe('dom manipulation', () => {
 
             expect(el.children).toHaveLength(1);
         });
+
+        it('should remove multiple elements from a an Array-Like object', () => {
+            const children = el.querySelectorAll('.child');
+
+            dom.remove(el, children);
+
+            expect(el.children).toHaveLength(0);
+        });
+
+        it('should remove Elements from string selector', () => {
+            dom.remove('.child0');
+
+            expect(el.children).toHaveLength(2);
+        });
     })
 
     describe('closest()', () => {
@@ -334,6 +504,53 @@ describe('dom manipulation', () => {
             expect(dom.closest(grandchild, '.grandchild')).toBe(grandchild);
             expect(dom.closest(grandchild)).toBe(grandchild);
         })
+
+        it('should return the closest element using a selector string', () => {
+            const child = el.children[0];
+            const grandchild = child.children[0];
+
+            expect(dom.closest(grandchild, '#root')).toBe(el);
+            expect(dom.closest(grandchild, '.child')).toBe(child);
+            expect(dom.closest(grandchild, '.grandchild')).toBe(grandchild);
+        });
+
+        it('should return the element itself if selector is undefined', () => {
+            const child = el.children[0];
+            const grandchild = child.children[0];
+
+            expect(dom.closest(grandchild)).toBe(grandchild);
+        });
+
+        it('should return the matching ancestor when selector is an Element', () => {
+            const child = el.children[0];
+            const grandchild = child.children[0];
+
+            expect(dom.closest(grandchild, child)).toBe(child);
+            expect(dom.closest(grandchild, el)).toBe(el);
+        });
+
+        it('should return the element itself if selector is the same Element', () => {
+            const child = el.children[0];
+
+            expect(dom.closest(child, child)).toBe(child);
+        });
+
+        it('should return null if no matching ancestor is found (Element selector)', () => {
+            const child = el.children[0];
+            const grandchild = child.children[0];
+
+            const outside = document.createElement('div');
+            document.body.append(outside);
+
+            expect(dom.closest(grandchild, outside)).toBeNull();
+        });
+
+        it('should return null if no matching ancestor is found (string selector)', () => {
+            const child = el.children[0];
+            const grandchild = child.children[0];
+
+            expect(dom.closest(grandchild, '.does-not-exist')).toBeNull();
+        });
     })
 
     describe('next()', () => {
@@ -356,10 +573,12 @@ describe('dom manipulation', () => {
 
     describe('prev()', () => {
         it('should return the immediate previous element matching selector', () => {
-            const child = el.children[2];
+            const child1 = el.children[1];
+            const child2 = el.children[2];
 
-            expect(dom.prev(child)).toBe(el.children[1]);
-            expect(dom.prev(child, '.child0')).toBeNull();
+            expect(dom.prev(child2)).toBe(child1);
+            expect(dom.prev(child2, '.child1')).toBe(child1);
+            expect(dom.prev(child2, '.child0')).toBeNull();
         })
 
         it('should return null if there is no previous element', () => {
@@ -408,6 +627,45 @@ describe('dom manipulation', () => {
     })
 
     describe('wrap()', () => {
+        it('should wrap a child element with a wrapper', () => {
+            const child = el.querySelector('.child1');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'wrapper';
+
+            dom.wrap(child, wrapper);
+
+            expect(el.children[1]).toBe(wrapper);
+
+            expect(wrapper.firstElementChild).toBe(child);
+        });
+
+        it('should insert wrapper before element when wrapper is not connected', () => {
+            const child = el.querySelector('.child1');
+            const wrapper = document.createElement('div');
+
+            expect(wrapper.isConnected).toBe(false); // état initial
+
+            dom.wrap(child, wrapper);
+
+            expect(wrapper.isConnected).toBe(true);
+
+            expect(el.children[1]).toBe(wrapper);
+
+            expect(wrapper.firstElementChild).toBe(child);
+        });
+
+        it('should not insert wrapper before element if wrapper is already connected', () => {
+            const child = el.querySelector('.child1');
+
+            const wrapper = document.createElement('div');
+            document.body.append(wrapper);
+
+            dom.wrap(child, wrapper);
+
+            expect(wrapper.parentNode).toBe(document.body);
+            expect(wrapper.firstElementChild).toBe(child);
+            expect(el.querySelector('.child1')).toBeNull(); // child a quitté el
+        });
     })
 
     describe('attr()', () => {
@@ -437,391 +695,6 @@ describe('dom manipulation', () => {
     describe('removeData()', () => {
     })
 
-    describe('on(), off()', () => {
-        it('should attach an event listener', () => {
-            const handler = jest.fn();
-
-            dom.on(el, 'click', handler);
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(handler).toHaveBeenCalledTimes(1);
-            expect(handler).toHaveBeenCalledWith(expect.any(MouseEvent));
-        });
-
-        it('should detach an event listener', () => {
-            const handler = jest.fn();
-
-            dom.on(el, 'click', handler);
-            dom.off(el, 'click', handler);
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should support multiple events', () => {
-            const handler = jest.fn();
-
-            dom.on(el, 'click mouseenter', handler);
-
-            el.dispatchEvent(new MouseEvent('click'));
-            el.dispatchEvent(new MouseEvent('mouseenter'));
-
-            expect(handler).toHaveBeenCalledTimes(2);
-        });
-
-        it('should remove handler for multiple events', () => {
-            const handler = jest.fn();
-
-            dom.on(el, 'click mouseenter', handler);
-            dom.off(el, 'click mouseenter', handler);
-
-            el.dispatchEvent(new MouseEvent('click'));
-            el.dispatchEvent(new MouseEvent('mouseenter'));
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should call handler when delegated target matches selector', () => {
-            const handler = jest.fn();
-
-            const child1 = el.querySelector('.child1');
-
-            dom.on(el, 'click', '.child1', handler);
-
-            child1.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-            expect(handler).toHaveBeenCalledTimes(1);
-
-            const ev = handler.mock.calls[0][0];
-            expect(ev.target).toBe(child1);
-        });
-
-        it('should not call handler when delegated target does not match selector', () => {
-            const handler = jest.fn();
-
-            const child2 = el.querySelector('.child2');
-
-            dom.on(el, 'click', '.child1', handler);
-
-            child2.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should match delegated selector on ancestors', () => {
-            const handler = jest.fn();
-
-            const deep = el.querySelector('.child1 .grandchild0');
-
-            dom.on(el, 'click', '.child1', handler);
-
-            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-            expect(handler).toHaveBeenCalledTimes(1);
-        });
-
-        it('should set currentTarget to matched element', () => {
-            const handler = jest.fn();
-
-            const deep = el.querySelector('.child1 .grandchild0');
-            const child1 = el.querySelector('.child1');
-
-            dom.on(el, 'click', '.child1', handler);
-
-            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-            const ev = handler.mock.calls[0][0];
-            expect(ev.currentTarget).toBe(child1);
-            expect(ev.originalEvent).toBeInstanceOf(MouseEvent);
-        });
-
-        it('should remove delegated handler only', () => {
-            const h1 = jest.fn();
-            const h2 = jest.fn();
-
-            const deep = el.querySelector('.child1 .grandchild0');
-
-            dom.on(el, 'click', '.child1', h1);
-            dom.on(el, 'click', '.child1', h2);
-
-            dom.off(el, 'click', '.child1', h1);
-
-            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-            expect(h1).not.toHaveBeenCalled();
-            expect(h2).toHaveBeenCalledTimes(1);
-        });
-
-        it('should remove all delegated handlers for selector', () => {
-            const h1 = jest.fn();
-            const h2 = jest.fn();
-
-            const deep = el.querySelector('.child1 .grandchild0');
-
-            dom.on(el, 'click', '.child1', h1);
-            dom.on(el, 'click', '.child1', h2);
-
-            dom.off(el, 'click', '.child1');
-
-            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-            expect(h1).not.toHaveBeenCalled();
-            expect(h2).not.toHaveBeenCalled();
-        });
-
-        it('should not remove direct handler when removing delegated one', () => {
-            const direct = jest.fn();
-            const delegated = jest.fn();
-
-            const deep = el.querySelector('.child1 .grandchild0');
-
-            dom.on(el, 'click', direct);
-            dom.on(el, 'click', '.child1', delegated);
-
-            dom.off(el, 'click', '.child1', delegated);
-
-            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-            expect(direct).toHaveBeenCalledTimes(1);
-            expect(delegated).not.toHaveBeenCalled();
-        });
-
-        it('should be safe to call off multiple times', () => {
-            const handler = jest.fn();
-
-            dom.on(el, 'click', handler);
-            dom.off(el, 'click', handler);
-            dom.off(el, 'click', handler);
-            dom.off(el, 'click');
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should bind same handler twice', () => {
-            const handler = jest.fn();
-
-            dom.on(el, 'click', handler);
-            dom.on(el, 'click', handler);
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(handler).toHaveBeenCalledTimes(2);
-        });
-
-        it('should remove all occurrences of handler', () => {
-            const handler = jest.fn();
-
-            dom.on(el, 'click', handler);
-            dom.on(el, 'click', handler);
-
-            dom.off(el, 'click', handler);
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should call handlers in registration order', () => {
-            const calls = [];
-
-            dom.on(el, 'click', () => calls.push(1));
-            dom.on(el, 'click', () => calls.push(2));
-            dom.on(el, 'click', () => calls.push(3));
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(calls).toEqual([1, 2, 3]);
-        });
-
-        it('should remove only handlers for given event', () => {
-            const click = jest.fn();
-            const enter = jest.fn();
-
-            dom.on(el, 'click', click);
-            dom.on(el, 'mouseenter', enter);
-
-            dom.off(el, 'click');
-
-            el.dispatchEvent(new MouseEvent('click'));
-            el.dispatchEvent(new MouseEvent('mouseenter'));
-
-            expect(click).not.toHaveBeenCalled();
-            expect(enter).toHaveBeenCalledTimes(1);
-        });
-
-        it('should call handler for namespaced event', () => {
-            const h = jest.fn();
-
-            dom.on(el, 'click.ns', h);
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(h).toHaveBeenCalledTimes(1);
-        });
-
-        it('should remove handler by event and namespace', () => {
-            const h1 = jest.fn();
-            const h2 = jest.fn();
-
-            dom.on(el, 'click.ns1', h1);
-            dom.on(el, 'click.ns2', h2);
-
-            dom.off(el, 'click.ns1');
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(h1).not.toHaveBeenCalled();
-            expect(h2).toHaveBeenCalledTimes(1);
-        });
-
-        it('should remove all handlers for event regardless of namespace', () => {
-            const h1 = jest.fn();
-            const h2 = jest.fn();
-
-            dom.on(el, 'click.ns2', h1);
-            dom.on(el, 'click.ns1', h2);
-
-            dom.off(el, 'click');
-
-            el.dispatchEvent(new MouseEvent('click'));
-
-            expect(h1).not.toHaveBeenCalled();
-            expect(h2).not.toHaveBeenCalled();
-        });
-
-        it('should remove all handlers by namespace only', () => {
-            const h1 = jest.fn();
-            const h2 = jest.fn();
-
-            dom.on(el, 'click.ns', h1);
-            dom.on(el, 'mouseenter.ns', h2);
-
-            dom.off(el, '.ns');
-
-            el.dispatchEvent(new MouseEvent('click'));
-            el.dispatchEvent(new MouseEvent('mouseenter'));
-
-            expect(h1).not.toHaveBeenCalled();
-            expect(h2).not.toHaveBeenCalled();
-        });
-
-        it('should dispatch longtap after delay', () => {
-            const handler = jest.fn();
-            dom.on(el, 'longtap', handler);
-
-            jest.spyOn(Mouse, 'getViewportPosition')
-                .mockReturnValueOnce({ x: 10, y: 10 });
-
-            dispatchTouch(el, 'touchstart');
-
-            jest.advanceTimersByTime(799);
-            expect(handler).not.toHaveBeenCalled();
-
-            jest.advanceTimersByTime(1);
-            expect(handler).toHaveBeenCalledTimes(1);
-        });
-
-        it('should cancel longtap when finger moves too much', () => {
-            const handler = jest.fn();
-            dom.on(el, 'longtap', handler);
-
-            jest.spyOn(Mouse, 'getViewportPosition')
-                .mockReturnValueOnce({ x: 10, y: 10 }) // start
-                .mockReturnValueOnce({ x: 30, y: 30 }); // move (distance > 8)
-
-            dispatchTouch(el, 'touchstart');
-            dispatchTouch(el, 'touchmove');
-
-            jest.advanceTimersByTime(800);
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should cancel longtap on touchend', () => {
-            const handler = jest.fn();
-            dom.on(el, 'longtap', handler);
-
-            jest.spyOn(Mouse, 'getViewportPosition')
-                .mockReturnValueOnce({ x: 10, y: 10 });
-
-            dispatchTouch(el, 'touchstart');
-            dispatchTouch(el, 'touchend');
-
-            jest.advanceTimersByTime(800);
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should dispatch dbltap on two taps within delay', () => {
-            const handler = jest.fn();
-            dom.on(el, 'dbltap', handler);
-
-            jest.spyOn(Mouse, 'getViewportPosition')
-                .mockReturnValueOnce({ x: 10, y: 10 })
-                .mockReturnValueOnce({ x: 12, y: 12 });
-
-            dispatchTouch(el, 'touchstart');
-            jest.advanceTimersByTime(200);
-            dispatchTouch(el, 'touchstart');
-
-            expect(handler).toHaveBeenCalledTimes(1);
-        });
-
-        it('should not dispatch dbltap if second tap is too far', () => {
-            const handler = jest.fn();
-            dom.on(el, 'dbltap', handler);
-
-            jest.spyOn(Mouse, 'getViewportPosition')
-                .mockReturnValueOnce({ x: 10, y: 10 })
-                .mockReturnValueOnce({ x: 50, y: 50 });
-
-            dispatchTouch(el, 'touchstart');
-            jest.advanceTimersByTime(200);
-            dispatchTouch(el, 'touchstart');
-
-            expect(handler).not.toHaveBeenCalled();
-        });
-
-        it('should support delegated longtap', () => {
-            const handler = jest.fn();
-            const child1 = el.querySelector('.child1');
-
-            dom.on(el, 'longtap', '.child1', handler);
-
-            jest.spyOn(Mouse, 'getViewportPosition')
-                .mockReturnValueOnce({ x: 10, y: 10 });
-
-            dispatchTouch(child1, 'touchstart');
-
-            jest.advanceTimersByTime(800);
-
-            expect(handler).toHaveBeenCalledTimes(1);
-
-            const ev = handler.mock.calls[0][0];
-            expect(ev.type).toBe('longtap');
-            expect(ev.currentTarget).toBe(child1);
-        });
-
-        it('should remove all handlers when calling off(el)', () => {
-            const h1 = jest.fn();
-            const h2 = jest.fn();
-
-            dom.on(el, 'click', h1);
-            dom.on(el, 'click', '.child1', h2);
-
-            dom.off(el);
-
-            el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-            expect(h1).not.toHaveBeenCalled();
-            expect(h2).not.toHaveBeenCalled();
-        });
-    })
-
     describe('css()', () => {
         it('should get computed style value', () => {
             el.style.width = '123px';
@@ -846,60 +719,6 @@ describe('dom manipulation', () => {
 
         it('should return empty string for unknown property', () => {
             expect(dom.css(el, 'not-exists')).toBe('');
-        });
-    });
-
-    describe('dom.on delegated events propagation', () => {
-        let root, parent, child;
-
-        beforeEach(() => {
-            document.body.innerHTML = `
-              <div id="root">
-                <div id="parent">
-                  <div class="name" contenteditable="true">test</div>
-                </div>
-              </div>
-            `;
-
-            root = document.querySelector('#root');
-            parent = document.querySelector('#parent');
-            child = document.querySelector('.name');
-        });
-
-        it('stopImmediatePropagation should prevents other delegated handlers on same container', () => {
-            const calls = [];
-
-            dom.on(root, 'keydown', '.name[contenteditable="true"]', (ev) => {
-                calls.push('name');
-                ev.stopImmediatePropagation();
-            });
-
-            dom.on(root, 'keydown', '#parent', (ev) => {
-                calls.push('parent');
-            });
-
-            const e = new KeyboardEvent('keydown', {key: 'Enter', bubbles: true});
-            child.dispatchEvent(e);
-
-            expect(calls).toEqual(['name']);
-        });
-
-        it('stopPropagation should not prevent other delegated handlers on same container', () => {
-            const calls = [];
-
-            dom.on(root, 'keydown', '.name[contenteditable="true"]', (ev) => {
-                calls.push('name');
-                ev.stopPropagation();
-            });
-
-            dom.on(root, 'keydown', '#parent', (ev) => {
-                calls.push('parent');
-            });
-
-            const e = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
-            child.dispatchEvent(e);
-
-            expect(calls).toEqual(['name', 'parent']);
         });
     });
 
@@ -1030,19 +849,19 @@ describe('dom manipulation', () => {
         });
     });
 
-    // describe('empty()', () => {
-    //     it('should remove all children', () => {
-    //         el.innerHTML = `<span></span><span></span>`;
-    //         dom.empty(el);
-    //         expect(el.children).toHaveLength(0);
-    //         expect(el.innerHTML).toBe('');
-    //     });
-    //
-    //     it('should keep node itself', () => {
-    //         dom.empty(el);
-    //         expect(el).toBeInstanceOf(Element);
-    //     });
-    // });
+    describe('empty()', () => {
+        it('should remove all children', () => {
+            el.innerHTML = `<span></span><span></span>`;
+            dom.empty(el);
+            expect(el.children).toHaveLength(0);
+            expect(el.innerHTML).toBe('');
+        });
+
+        it('should keep node itself', () => {
+            dom.empty(el);
+            expect(el).toBeInstanceOf(Element);
+        });
+    });
 
     describe('not()', () => {
         it('should filter out elements matching selector', () => {
@@ -1166,23 +985,544 @@ describe('dom manipulation', () => {
             expect(o.top).toBe(107);
         });
     });
+
+
+    describe('on(), off()', () => {
+        it('should attach an event listener', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(handler).toHaveBeenCalledTimes(1);
+
+            const wrapped = handler.mock.calls[0][0];
+            expect(wrapped).toEqual(expect.any(Object));
+            expect(wrapped.originalEvent).toEqual(expect.any(MouseEvent));
+        });
+
+        it('should detach an event listener', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+            dom.off(el, 'click', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should support multiple events', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click mouseenter', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+            el.dispatchEvent(new MouseEvent('mouseenter'));
+
+            expect(handler).toHaveBeenCalledTimes(2);
+        });
+
+        it('should remove handler for multiple events', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click mouseenter', handler);
+            dom.off(el, 'click mouseenter', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+            el.dispatchEvent(new MouseEvent('mouseenter'));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should call handler when delegated target matches selector', () => {
+            const handler = jest.fn();
+
+            const child1 = el.querySelector('.child1');
+
+            dom.on(el, 'click', '.child1', handler);
+
+            child1.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(handler).toHaveBeenCalledTimes(1);
+
+            const ev = handler.mock.calls[0][0];
+            expect(ev.target).toBe(child1);
+        });
+
+        it('should not call handler when delegated target does not match selector', () => {
+            const handler = jest.fn();
+
+            const child2 = el.querySelector('.child2');
+
+            dom.on(el, 'click', '.child1', handler);
+
+            child2.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should match delegated selector on ancestors', () => {
+            const handler = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+
+            dom.on(el, 'click', '.child1', handler);
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(handler).toHaveBeenCalledTimes(1);
+        });
+
+        it('should set currentTarget to matched element', () => {
+            const handler = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+            const child1 = el.querySelector('.child1');
+
+            dom.on(el, 'click', '.child1', handler);
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            const ev = handler.mock.calls[0][0];
+            expect(ev.currentTarget).toBe(child1);
+            expect(ev.originalEvent).toBeInstanceOf(MouseEvent);
+        });
+
+        it('should remove delegated handler only', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+
+            dom.on(el, 'click', '.child1', h1);
+            dom.on(el, 'click', '.child1', h2);
+
+            dom.off(el, 'click', '.child1', h1);
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not remove dispatcher when other selectors still exist', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            const deep1 = el.querySelector('.child1 .grandchild0');
+            const deep2 = el.querySelector('.child2 .grandchild0');
+
+            dom.on(el, 'click', '.child1', h1);
+            dom.on(el, 'click', '.child2', h2);
+
+            dom.off(el, 'click', '.child1', h1);
+
+            deep2.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).toHaveBeenCalledTimes(1);
+        });
+
+        it('should remove all delegated handlers for selector', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+
+            dom.on(el, 'click', '.child1', h1);
+            dom.on(el, 'click', '.child1', h2);
+
+            dom.off(el, 'click', '.child1');
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).not.toHaveBeenCalled();
+        });
+
+        it('should not remove direct handler when removing delegated one', () => {
+            const direct = jest.fn();
+            const delegated = jest.fn();
+
+            const deep = el.querySelector('.child1 .grandchild0');
+
+            dom.on(el, 'click', direct);
+            dom.on(el, 'click', '.child1', delegated);
+
+            dom.off(el, 'click', '.child1', delegated);
+
+            deep.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(direct).toHaveBeenCalledTimes(1);
+            expect(delegated).not.toHaveBeenCalled();
+        });
+
+        it('should be safe to call off multiple times', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+            dom.off(el, 'click', handler);
+            dom.off(el, 'click', handler);
+            dom.off(el, 'click');
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should bind same handler twice', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+            dom.on(el, 'click', handler);
+
+            el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(handler).toHaveBeenCalledTimes(2);
+        });
+
+        it('should remove all occurrences of handler', () => {
+            const handler = jest.fn();
+
+            dom.on(el, 'click', handler);
+            dom.on(el, 'click', handler);
+
+            dom.off(el, 'click', handler);
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should call handlers in registration order', () => {
+            const calls = [];
+
+            dom.on(el, 'click', () => calls.push(1));
+            dom.on(el, 'click', () => calls.push(2));
+            dom.on(el, 'click', () => calls.push(3));
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(calls).toEqual([1, 2, 3]);
+        });
+
+        it('should remove only handlers for given event', () => {
+            const click = jest.fn();
+            const enter = jest.fn();
+
+            dom.on(el, 'click', click);
+            dom.on(el, 'mouseenter', enter);
+
+            dom.off(el, 'click');
+
+            el.dispatchEvent(new MouseEvent('click'));
+            el.dispatchEvent(new MouseEvent('mouseenter'));
+
+            expect(click).not.toHaveBeenCalled();
+            expect(enter).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call handler for namespaced event', () => {
+            const h = jest.fn();
+
+            dom.on(el, 'click.ns', h);
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(h).toHaveBeenCalledTimes(1);
+        });
+
+        it('should remove handler by event and namespace', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            dom.on(el, 'click.ns1', h1);
+            dom.on(el, 'click.ns2', h2);
+
+            dom.off(el, 'click.ns1');
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).toHaveBeenCalledTimes(1);
+        });
+
+        it('should remove all handlers for event regardless of namespace', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            dom.on(el, 'click.ns2', h1);
+            dom.on(el, 'click.ns1', h2);
+
+            dom.off(el, 'click');
+
+            el.dispatchEvent(new MouseEvent('click'));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).not.toHaveBeenCalled();
+        });
+
+        it('should remove all handlers by namespace only', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            dom.on(el, 'click.ns', h1);
+            dom.on(el, 'mouseenter.ns', h2);
+
+            dom.off(el, '.ns');
+
+            el.dispatchEvent(new MouseEvent('click'));
+            el.dispatchEvent(new MouseEvent('mouseenter'));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).not.toHaveBeenCalled();
+        });
+
+        it('should dispatch longtap after delay', () => {
+            const handler = jest.fn();
+            dom.on(el, 'longtap', handler);
+
+            jest.spyOn(Mouse, 'getViewportPosition')
+                .mockReturnValueOnce({ x: 10, y: 10 });
+
+            dispatchTouch(el, 'touchstart');
+
+            jest.advanceTimersByTime(799);
+            expect(handler).not.toHaveBeenCalled();
+
+            jest.advanceTimersByTime(1);
+            expect(handler).toHaveBeenCalledTimes(1);
+        });
+
+        it('should cancel longtap when finger moves too much', () => {
+            const handler = jest.fn();
+            dom.on(el, 'longtap', handler);
+
+            jest.spyOn(Mouse, 'getViewportPosition')
+                .mockReturnValueOnce({ x: 10, y: 10 })
+                .mockReturnValueOnce({ x: 40, y: 40 });
+
+            dispatchTouch(el, 'touchstart');
+            dispatchTouch(el, 'touchmove');
+
+            jest.advanceTimersByTime(800);
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should cancel longtap on touchend', () => {
+            const handler = jest.fn();
+            dom.on(el, 'longtap', handler);
+
+            jest.spyOn(Mouse, 'getViewportPosition')
+                .mockReturnValueOnce({ x: 10, y: 10 });
+
+            dispatchTouch(el, 'touchstart');
+            dispatchTouch(el, 'touchend');
+
+            jest.advanceTimersByTime(800);
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should dispatch dbltap on two taps within delay', () => {
+            const handler = jest.fn();
+            dom.on(el, 'dbltap', handler);
+
+            jest.spyOn(Mouse, 'getViewportPosition')
+                .mockReturnValueOnce({ x: 10, y: 10 })
+                .mockReturnValueOnce({ x: 12, y: 12 });
+
+            dispatchTouch(el, 'touchstart');
+            jest.advanceTimersByTime(200);
+            dispatchTouch(el, 'touchstart');
+
+            expect(handler).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not dispatch dbltap if second tap is too far', () => {
+            const handler = jest.fn();
+            dom.on(el, 'dbltap', handler);
+
+            jest.spyOn(Mouse, 'getViewportPosition')
+                .mockReturnValueOnce({ x: 10, y: 10 })
+                .mockReturnValueOnce({ x: 50, y: 50 });
+
+            dispatchTouch(el, 'touchstart');
+            jest.advanceTimersByTime(200);
+            dispatchTouch(el, 'touchstart');
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
+        it('should support delegated longtap', () => {
+            const handler = jest.fn();
+            const child1 = el.querySelector('.child1');
+
+            dom.on(el, 'longtap', '.child1', handler);
+
+            jest.spyOn(Mouse, 'getViewportPosition')
+                .mockReturnValueOnce({ x: 10, y: 10 });
+
+            dispatchTouch(child1, 'touchstart');
+
+            jest.advanceTimersByTime(800);
+
+            expect(handler).toHaveBeenCalledTimes(1);
+
+            const ev = handler.mock.calls[0][0];
+            expect(ev.type).toBe('longtap');
+            expect(ev.currentTarget).toBe(child1);
+        });
+
+        it('should remove all handlers when calling off(el)', () => {
+            const h1 = jest.fn();
+            const h2 = jest.fn();
+
+            dom.on(el, 'click', h1);
+            dom.on(el, 'click', '.child1', h2);
+
+            dom.off(el);
+
+            el.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(h1).not.toHaveBeenCalled();
+            expect(h2).not.toHaveBeenCalled();
+        });
+    })
+
+    describe('dom.on delegated events propagation', () => {
+        let root, parent, child;
+
+        beforeEach(() => {
+            document.body.innerHTML = `
+              <div class="root">
+                <div class="parent">
+                  <div class="child">test</div>
+                </div>
+              </div>
+            `;
+
+            root = document.querySelector('.root');
+            parent = document.querySelector('.parent');
+            child = document.querySelector('.child');
+        });
+
+        it('stopImmediatePropagation should prevents other delegated handlers on same container', () => {
+            const calls = [];
+
+            dom.on(root, 'keydown', '.child', (ev) => {
+                calls.push('child');
+                ev.stopImmediatePropagation();
+            });
+
+            dom.on(root, 'keydown', '.parent', (ev) => {
+                calls.push('parent');
+            });
+
+            const e = new KeyboardEvent('keydown', {key: 'Enter', bubbles: true});
+            child.dispatchEvent(e);
+
+            expect(calls).toEqual(['child']);
+        });
+
+        it('stopPropagation should not prevent other delegated handlers on same element', () => {
+            const calls = [];
+
+            dom.on(root, 'keydown', '.child', (ev) => {
+                calls.push('child1');
+            });
+
+            dom.on(root, 'click', '.root', (ev) => {
+                calls.push('click');
+            });
+
+            dom.on(root, 'keydown', '.child', (ev) => {
+                ev.stopPropagation();
+                calls.push('child2');
+            });
+
+            dom.on(root, 'keydown', '.parent', (ev) => {
+                calls.push('parent');
+            });
+
+            const ev = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+            child.dispatchEvent(ev);
+
+            expect(calls).toEqual(['child1', 'child2']);
+        });
+
+        it('child can stop parent regardless of bind order', () => {
+            const el = document.createElement('div');
+            el.innerHTML = `<div class="parent"><div class="child"></div></div>`;
+            document.body.appendChild(el);
+
+            const child = el.querySelector('.child');
+            const calls = [];
+
+            dom.on(el, 'click', '.parent', () => calls.push('parent'));
+            dom.on(el, 'click', '.child', (ev) => {
+                calls.push('child1');
+                ev.stopImmediatePropagation();
+            });
+            dom.on(el, 'click', '.child', (ev) => {
+                calls.push('child2');
+            });
+
+            child.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(calls).toEqual(['child1']);
+        });
+
+        it('should stop propagation on native events', () => {
+            const calls = [];
+
+            dom.on(parent, 'click', '.child', () => {
+                calls.push('dom.on:delegated-parent');
+            });
+
+            dom.on(parent, 'click', () => {
+                calls.push('dom.on:direct-parent');
+            });
+
+            parent.addEventListener('click', () => {
+                calls.push('native:parent');
+            });
+
+            root.addEventListener('click', () => {
+                calls.push('native:root');
+            });
+
+            child.addEventListener('click', (ev) => {
+                calls.push('native:child');
+                ev.stopPropagation();
+            });
+
+            child.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+            expect(calls).toEqual(['native:child']);
+        });
+
+        it('should stop dom.on internal propagation if native listener stops propagation before it reaches root', () => {
+            const calls = [];
+
+            dom.on(root, 'click', '.child', () => {
+                calls.push('dom.on:root-delegated');
+            });
+
+            parent.addEventListener('click', (ev) => {
+                calls.push('native:parent-stop');
+                ev.stopPropagation();
+            });
+
+            child.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+            expect(calls).toEqual(['native:parent-stop']);
+        });
+    })
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
