@@ -1,0 +1,48 @@
+name: CI Tests & Build
+
+permissions:
+  contents: read
+  id-token: write
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          scope: '@webalternatif'
+
+      - name: Install deps
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Publish package
+        run: npm publish --provenance --access public
+
+      - name: Show npm debug log if publish fails
+        if: failure()
+        run: |
+          echo "NPM LOGS"
+          ls -R /home/runner/.npm/_logs || true
+          cat /home/runner/.npm/_logs/* || true
