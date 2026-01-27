@@ -154,16 +154,7 @@ function createWrappedEvent(ev, currentTarget) {
     _immediateStopped: false,
     _propagationStopped: false,
     originalEvent: ev,
-    type: ev.type,
-    target: ev.target,
     currentTarget: currentTarget,
-    relatedTarget: ev.relatedTarget,
-    button: ev.button,
-    pageX: ev.pageX,
-    pageY: ev.pageY,
-    preventDefault: function preventDefault() {
-      return ev.preventDefault.apply(ev, arguments);
-    },
     stopPropagation: function stopPropagation() {
       wrappedEv._propagationStopped = true;
       ev.stopPropagation.apply(ev, arguments);
@@ -174,7 +165,15 @@ function createWrappedEvent(ev, currentTarget) {
       ev.stopImmediatePropagation.apply(ev, arguments);
     }
   };
-  return wrappedEv;
+  return new Proxy(wrappedEv, {
+    get: function get(target, prop, receiver) {
+      if (prop in target) {
+        return Reflect.get(target, prop, receiver);
+      }
+      var value = ev[prop];
+      return (0, _is.isFunction)(value) ? value.bind(ev) : value;
+    }
+  });
 }
 
 /**
