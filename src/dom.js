@@ -920,6 +920,17 @@ const dom = {
         )
     },
 
+    /**
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    isInDOM(node) {
+        if (!(node instanceof Node)) return false;
+
+        const root = node.getRootNode({ composed: true });
+        return root === document;
+    },
+
     on,
     off,
 }
