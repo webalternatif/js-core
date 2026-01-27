@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.range = exports.indexOf = exports.inArray = exports.compareArray = exports.array_unique = exports.array_diff = exports.arrayUnique = exports.arrayDiff = void 0;
+exports.range = exports.lastIndexOf = exports.indexOf = exports.inArray = exports.compareArray = exports.array_unique = exports.array_diff = exports.arrayUnique = exports.arrayDiff = void 0;
 var _traversal = require("./traversal.js");
 var _is = require("./is.js");
 var _math = require("./math.js");
@@ -11,7 +11,7 @@ var _utils = require("./utils.js");
 /**
  * Checks if a value exists in an array or an object
  *
- * @param {*} value the searched value
+ * @param {any} value the searched value
  * @param {Object|Array} arr the array
  * @param {number} [index=0] if provided, search from this index
  * @param {boolean} [strict=false] if true, search is done with strict equality
@@ -26,8 +26,7 @@ var _utils = require("./utils.js");
  * // → true
  *
  * @example
- * inArray(5, [1, 2, 3])
- * // → false
+ * inArray(5, [1, 2, 3]) // → false
  */
 var inArray = exports.inArray = function inArray(value, arr) {
   var index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
@@ -56,11 +55,47 @@ var inArray = exports.inArray = function inArray(value, arr) {
   });
   return ret;
 };
+
+/**
+ * Returns the first index at which a given element can be found in an array or a string.
+ * or -1 if it is not present.
+ *
+ * @param {Array<any>|string} arr - The array to search in
+ * @param {any} elt - The element to search for
+ * @param {number} [from] - The index to start the search from. Can be negative.
+ * @returns {number} - The index of the element, or -1 if not found
+ */
 var indexOf = exports.indexOf = function indexOf(arr, elt) {
   var from = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-  from = from < 0 ? Math.ceil(from) + arr.length : Math.floor(from);
-  for (; from < arr.length; from++) {
-    if (from in arr && arr[from] === elt) {
+  var a = (0, _is.isString)(arr) ? (0, _traversal.map)(arr, function (_, a) {
+    return a;
+  }) : arr;
+  from = from < 0 ? Math.ceil(from) + a.length : Math.floor(from);
+  for (; from < a.length; from++) {
+    if (from in a && a[from] === elt) {
+      return from;
+    }
+  }
+  return -1;
+};
+
+/**
+ * Returns the last index at which a given element can be found in an array or a string.
+ * or -1 if it is not present.
+ *
+ * @param {Array<any>|string} arr - The array to search in
+ * @param {any} elt - The element to search for
+ * @param {number} [from] - The index to start the search from. Can be negative.
+ * @returns {number} - The index of the element, or -1 if not found
+ */
+var lastIndexOf = exports.lastIndexOf = function lastIndexOf(arr, elt) {
+  var from = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : -1;
+  var a = (0, _is.isString)(arr) ? (0, _traversal.map)(arr, function (_, a) {
+    return a;
+  }) : arr;
+  from = from < 0 ? a.length + Math.ceil(from) : Math.floor(from);
+  for (; from >= 0; from--) {
+    if (from in a && a[from] === elt) {
       return from;
     }
   }

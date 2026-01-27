@@ -4,11 +4,10 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-import { isArray, isArrayLike, isFunction, isObject, isPlainObject, isString, isTouchDevice } from "./is.js";
+import { isArray, isArrayLike, isObject, isPlainObject, isString } from "./is.js";
 import { camelCase } from "./string.js";
 import { each, foreach, map } from "./traversal.js";
 import { inArray } from "./array.js";
-import Mouse from "./Mouse.js";
 import { on, off, __resetCustomEventsForTests } from './onOff.js';
 var cssNumber = ['animationIterationCount', 'aspectRatio', 'borderImageSlice', 'columnCount', 'flexGrow', 'flexShrink', 'fontWeight', 'gridArea', 'gridColumn', 'gridColumnEnd', 'gridColumnStart', 'gridRow', 'gridRowEnd', 'gridRowStart', 'lineHeight', 'opacity', 'order', 'orphans', 'scale', 'widows', 'zIndex', 'zoom', 'fillOpacity', 'floodOpacity', 'stopOpacity', 'strokeMiterlimit', 'strokeOpacity'];
 
@@ -259,9 +258,7 @@ var dom = {
    */
   closest: function closest(el, selector) {
     if (selector instanceof Element) {
-      if (el === selector) {
-        return el;
-      }
+      if (el === selector) return el;
       var parentEl = el.parentElement;
       while (parentEl) {
         if (parentEl === selector) {
@@ -419,7 +416,7 @@ var dom = {
   /**
    * @param {Element} el
    * @param {string} [html]
-   * @returns {Element|*}
+   * @returns {Element|string}
    */
   html: function html(el, _html) {
     if (undefined === _html) return el.innerHTML;
@@ -429,7 +426,7 @@ var dom = {
   /**
    * @param {Element} el
    * @param {string} [text]
-   * @returns {Element|*}
+   * @returns {Element|string}
    */
   text: function text(el, _text) {
     if (undefined === _text) return el.innerText;
@@ -731,6 +728,14 @@ var dom = {
       top: rect.top + wOffset.top,
       left: rect.left + wOffset.left
     };
+  },
+  /**
+   * @param {Element} el
+   * @returns {boolean}
+   */
+  isEditable: function isEditable(el) {
+    if (!(el instanceof HTMLElement)) return false;
+    return inArray(el.tagName, ['INPUT', 'TEXTAREA', 'SELECT']) || el.isContentEditable || !!this.closest(el, '[contenteditable="true"]');
   },
   on: on,
   off: off

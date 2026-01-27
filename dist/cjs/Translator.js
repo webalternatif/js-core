@@ -19,13 +19,13 @@ function _classPrivateFieldGet(s, a) { return s.get(_assertClassBrand(s, a)); }
 function _classPrivateFieldSet(s, a, r) { return s.set(_assertClassBrand(s, a), r), r; }
 function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.has(t)) return arguments.length < 3 ? t : n; throw new TypeError("Private element is not present on this object"); }
 /**
- * @typedef {string | (() => string)} TranslatorValue
+ * @typedef {string|(()=>string)} TranslatorValue
  */
 /**
- * @typedef {Record<string, Record<string, Record<string, TranslatorValue>>>} TranslatorNsMapping
+ * @typedef {Record<string,Record<string,Record<string,TranslatorValue>>>} TranslatorNsMapping
  */
 /**
- * @typedef {Record<string, Record<string, TranslatorValue>>} TranslatorCoreMapping
+ * @typedef {Record<string,Record<string,TranslatorValue>>} TranslatorCoreMapping
  */
 /**
  * @typedef {TranslatorNsMapping | TranslatorCoreMapping} TranslatorMapping
@@ -142,11 +142,7 @@ function _findKeyByValue(entries, label) {
 }
 function _resolve(entry) {
   if ((0, _is.isFunction)(entry)) {
-    try {
-      return entry();
-    } catch (e) {
-      return null;
-    }
+    return entry();
   }
   return entry;
 }

@@ -8,9 +8,7 @@ var _is = require("./is.js");
 var _string = require("./string.js");
 var _traversal = require("./traversal.js");
 var _array = require("./array.js");
-var _Mouse = _interopRequireDefault(require("./Mouse.js"));
 var _onOff = require("./onOff.js");
-function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -266,9 +264,7 @@ var dom = {
    */
   closest: function closest(el, selector) {
     if (selector instanceof Element) {
-      if (el === selector) {
-        return el;
-      }
+      if (el === selector) return el;
       var parentEl = el.parentElement;
       while (parentEl) {
         if (parentEl === selector) {
@@ -426,7 +422,7 @@ var dom = {
   /**
    * @param {Element} el
    * @param {string} [html]
-   * @returns {Element|*}
+   * @returns {Element|string}
    */
   html: function html(el, _html) {
     if (undefined === _html) return el.innerHTML;
@@ -436,7 +432,7 @@ var dom = {
   /**
    * @param {Element} el
    * @param {string} [text]
-   * @returns {Element|*}
+   * @returns {Element|string}
    */
   text: function text(el, _text) {
     if (undefined === _text) return el.innerText;
@@ -738,6 +734,14 @@ var dom = {
       top: rect.top + wOffset.top,
       left: rect.left + wOffset.left
     };
+  },
+  /**
+   * @param {Element} el
+   * @returns {boolean}
+   */
+  isEditable: function isEditable(el) {
+    if (!(el instanceof HTMLElement)) return false;
+    return (0, _array.inArray)(el.tagName, ['INPUT', 'TEXTAREA', 'SELECT']) || el.isContentEditable || !!this.closest(el, '[contenteditable="true"]');
   },
   on: _onOff.on,
   off: _onOff.off

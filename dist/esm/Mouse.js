@@ -12,7 +12,13 @@ var Mouse = /*#__PURE__*/function () {
   }
   return _createClass(Mouse, null, [{
     key: "getPosition",
-    value: function getPosition(ev, element) {
+    value:
+    /**
+     * @param {Event} ev
+     * @param {Element} element
+     * @returns {{x: number, y: number}}
+     */
+    function getPosition(ev, element) {
       ev = _assertClassBrand(Mouse, this, _getEvent).call(this, ev);
       var rect = {
         left: 0,
@@ -26,10 +32,15 @@ var Mouse = /*#__PURE__*/function () {
         };
       }
       return {
-        x: ev.pageX !== undefined ? ev.pageX - rect.left : rect.left,
-        y: ev.pageY !== undefined ? ev.pageY - rect.top : rect.top
+        x: ev.pageX - rect.left,
+        y: ev.pageY - rect.top
       };
     }
+
+    /**
+     * @param {Event} ev
+     * @returns {{x: number, y: number}}
+     */
   }, {
     key: "getViewportPosition",
     value: function getViewportPosition(ev) {
@@ -45,18 +56,24 @@ var Mouse = /*#__PURE__*/function () {
       ev = _assertClassBrand(Mouse, this, _getEvent).call(this, ev);
       return window.document.elementFromPoint(ev.clientX, ev.clientY);
     }
+
+    /**
+     * @param {Event|{originalEvent?: Event}} ev
+     * @returns {Event}
+     */
   }]);
 }();
 function _getEvent(ev) {
   var _ev$originalEvent;
+  ev = (_ev$originalEvent = ev.originalEvent) !== null && _ev$originalEvent !== void 0 ? _ev$originalEvent : ev;
   if (isTouchDevice()) {
-    var orgEvent = ev.originalEvent ? ev.originalEvent : ev;
-    if (orgEvent.changedTouches && orgEvent.changedTouches.length) {
-      ev = orgEvent.changedTouches[0];
-    } else if (orgEvent.touches) {
-      ev = orgEvent.touches[0];
-    }
+    var _ev$changedTouches, _ev$touches;
+    var touch = ((_ev$changedTouches = ev.changedTouches) === null || _ev$changedTouches === void 0 ? void 0 : _ev$changedTouches[0]) || ((_ev$touches = ev.touches) === null || _ev$touches === void 0 ? void 0 : _ev$touches[0]);
+    ev.clientX = touch.clientX;
+    ev.clientY = touch.clientY;
+    ev.pageX = touch.pageX;
+    ev.pageY = touch.pageY;
   }
-  return (_ev$originalEvent = ev.originalEvent) !== null && _ev$originalEvent !== void 0 ? _ev$originalEvent : ev;
+  return ev;
 }
 export default Mouse;

@@ -14,15 +14,15 @@ import { isFunction, isPlainObject } from "./is.js";
 import { each, extend } from "./traversal.js";
 
 /**
- * @typedef {string | (() => string)} TranslatorValue
+ * @typedef {string|(()=>string)} TranslatorValue
  */
 
 /**
- * @typedef {Record<string, Record<string, Record<string, TranslatorValue>>>} TranslatorNsMapping
+ * @typedef {Record<string,Record<string,Record<string,TranslatorValue>>>} TranslatorNsMapping
  */
 
 /**
- * @typedef {Record<string, Record<string, TranslatorValue>>} TranslatorCoreMapping
+ * @typedef {Record<string,Record<string,TranslatorValue>>} TranslatorCoreMapping
  */
 
 /**
@@ -140,11 +140,7 @@ function _findKeyByValue(entries, label) {
 }
 function _resolve(entry) {
   if (isFunction(entry)) {
-    try {
-      return entry();
-    } catch (e) {
-      return null;
-    }
+    return entry();
   }
   return entry;
 }

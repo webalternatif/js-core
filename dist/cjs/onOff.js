@@ -57,7 +57,8 @@ var enableLongTap = function enableLongTap() {
     }, LONGPRESS_DELAY);
   };
   var move = function move(ev) {
-    if (!timer) return;
+    // if (!timer) return;
+
     var pos = _Mouse["default"].getViewportPosition(ev);
     if (Math.hypot(pos.x - startX, pos.y - startY) > MOVE_TOLERANCE) {
       clearTimeout(timer);
@@ -65,7 +66,7 @@ var enableLongTap = function enableLongTap() {
     }
   };
   var end = function end() {
-    if (timer) clearTimeout(timer);
+    clearTimeout(timer);
     timer = null;
   };
   document.addEventListener('touchstart', start, {
@@ -142,7 +143,7 @@ function buildTree(target, el) {
   var path = [];
   var node = target.nodeType === 3 ? target.parentElement : target;
   while (node) {
-    if (node.nodeType === 1) path.push(node);
+    path.push(node);
     if (node === el) break;
     node = node.parentElement;
   }
@@ -245,7 +246,7 @@ function on(el, events, selector, handler, options) {
       supplyEvent(event);
     }
     var events = (0, _traversal.map)(store, function (_, entry) {
-      return entry.event ? entry.event : null;
+      return entry.event;
     });
     if (!(0, _array.inArray)(event, events)) {
       el.addEventListener(event, listener, options);
