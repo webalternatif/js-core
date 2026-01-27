@@ -1,5 +1,17 @@
 {
   "name": "@webalternatif/js-core",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webalternatif/js-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/webalternatif/js-core/issues"
+  },
+  "homepage": "https://github.com/webalternatif/js-core#readme",
+  "author": {
+    "name": "Ludovic Tarit",
+    "email": "ludovic.tarit@webalternatif.com"
+  },
   "version": "1.6.2",
   "type": "module",
   "types": "types/index.d.ts",
