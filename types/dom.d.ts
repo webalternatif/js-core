@@ -287,10 +287,10 @@ declare namespace dom {
         left: number;
     };
     /**
-     * @param {Element} el
+     * @param {Node} el
      * @returns {boolean}
      */
-    export function isEditable(el: Element): boolean;
+    export function isEditable(el: Node): boolean;
     /**
      * @param {Node} node
      * @returns {boolean}

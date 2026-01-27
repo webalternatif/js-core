@@ -1124,25 +1124,38 @@ describe('dom manipulation', () => {
             expect(dom.isEditable(child)).toBe(true);
         })
 
-        test('should return false for normal div', () => {
+        it('should return false for normal div', () => {
             const el = document.createElement('div');
             expect(dom.isEditable(el)).toBe(false);
         })
 
-        test('should return false for button', () => {
+        it('should return false for button', () => {
             const el = document.createElement('button');
             expect(dom.isEditable(el)).toBe(false);
         })
 
-        test('should return false for span', () => {
+        it('should return false for span', () => {
             const el = document.createElement('span');
             expect(dom.isEditable(el)).toBe(false);
         })
 
-        test('should return false for element with contenteditable="false"', () => {
+        it('should return false for element with contenteditable="false"', () => {
             const el = document.createElement('div');
             el.setAttribute('contenteditable', 'false');
             expect(dom.isEditable(el)).toBe(false);
+        })
+
+        it('should return true for Text Node in editable container', () => {
+            const el = document.createElement('div');
+            const textNode = document.createTextNode('c pas faux');
+            el.appendChild(textNode);
+            el.setAttribute('contenteditable', 'true');
+
+            expect(dom.isEditable(textNode)).toBe(true);
+        })
+
+        it('should return true for invalid node', () => {
+            expect(dom.isEditable(null)).toBe(false);
         })
     })
 

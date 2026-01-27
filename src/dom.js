@@ -907,10 +907,12 @@ const dom = {
     },
 
     /**
-     * @param {Element} el
+     * @param {Node} el
      * @returns {boolean}
      */
     isEditable(el) {
+        if (el?.nodeType === 3) el = el.parentElement;
+
         if (!(el instanceof HTMLElement)) return false;
 
         return (

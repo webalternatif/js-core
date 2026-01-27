@@ -730,10 +730,12 @@ var dom = {
     };
   },
   /**
-   * @param {Element} el
+   * @param {Node} el
    * @returns {boolean}
    */
   isEditable: function isEditable(el) {
+    var _el;
+    if (((_el = el) === null || _el === void 0 ? void 0 : _el.nodeType) === 3) el = el.parentElement;
     if (!(el instanceof HTMLElement)) return false;
     return inArray(el.tagName, ['INPUT', 'TEXTAREA', 'SELECT']) || el.isContentEditable || !!this.closest(el, '[contenteditable="true"]');
   },
