@@ -1,10 +1,10 @@
 name: Update dist
 
 on:
-  workflow_run:
-    workflows: ["CI Tests & Build"]
-    types:
-      - completed
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'dist/**'
 
 permissions:
   contents: write
@@ -12,13 +12,10 @@ permissions:
 
 jobs:
   update-dist:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
 
       - uses: actions/setup-node@v4
         with:
@@ -38,7 +35,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: ci/build-dist
+          branch: ci/rebuild-dist
           delete-branch: true
           title: "chore(ci): rebuild dist"
           body: "Automated build update"

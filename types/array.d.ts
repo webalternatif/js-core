@@ -1,5 +1,6 @@
 export function inArray(value: any, arr: Object | any[], index?: number, strict?: boolean): boolean;
-export function indexOf(arr: any, elt: any, from?: number): number;
+export function indexOf(arr: Array<any> | string, elt: any, from?: number): number;
+export function lastIndexOf(arr: Array<any> | string, elt: any, from?: number): number;
 export function compareArray(a1: any, a2: any): any;
 export function arrayUnique(arr: any): any;
 export function array_unique(arr: any): any;

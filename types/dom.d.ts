@@ -149,15 +149,15 @@ declare namespace dom {
     /**
      * @param {Element} el
      * @param {string} [html]
-     * @returns {Element|*}
+     * @returns {Element|string}
      */
-    export function html(el: Element, html?: string): Element | any;
+    export function html(el: Element, html?: string): Element | string;
     /**
      * @param {Element} el
      * @param {string} [text]
-     * @returns {Element|*}
+     * @returns {Element|string}
      */
-    export function text(el: Element, text?: string): Element | any;
+    export function text(el: Element, text?: string): Element | string;
     /**
      * @param {Element} el
      * @returns {Element}
@@ -286,6 +286,11 @@ declare namespace dom {
         top: number;
         left: number;
     };
+    /**
+     * @param {Element} el
+     * @returns {boolean}
+     */
+    export function isEditable(el: Element): boolean;
     export { on };
     export { off };
 }

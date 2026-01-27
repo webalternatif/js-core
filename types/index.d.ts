@@ -1,6 +1,13 @@
 export default webf;
+/**
+ * Main entry point of js-core.
+ *
+ * Provides pure JavaScript utility functions such as string, array,
+ * type checking, traversal, math and other helpers.
+ *
+ * @module webf
+ */
 declare const webf: {
-    default: typeof i18n.default;
     equals: (o1: any, o2: any, seen?: WeakMap<WeakKey, any>) => any;
     noop: () => void;
     sizeOf: (o: any) => number;
@@ -15,63 +22,6 @@ declare const webf: {
     max: (list: any, cmp_func: any) => number | undefined;
     dec2hex: (n: number) => string;
     hex2dec: (hex: string) => number;
-    dom: {
-        children(el: Element, selector?: string): NodeList;
-        child(el: Element, selector?: string): Element | null;
-        findOne(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Element;
-        find(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Array<Element>;
-        findOneByData(el: Element | string, data: string, value?: string): Element | null;
-        findByData(el: Element | string, data: string, value?: string): Element[];
-        addClass(el: Element | NodeList | Array<Element>, className: string): Element | NodeList | Array<Element>;
-        removeClass(el: Element | NodeList | Array<Element>, className: string): Element | NodeList | Array<Element>;
-        toggleClass(el: Element, classNames: string, force?: boolean): Element;
-        hasClass(el: Element, classNames: string): boolean;
-        append(node: Node, ...children: (Node | string)[]): Node;
-        prepend(node: Node, ...children: (Node | string)[]): Node;
-        remove(...els: Element | NodeList | Array<Element> | string): void;
-        closest(el: Element, selector?: string | Element): Element | null;
-        next(el: Element, selector?: string): Element | null;
-        prev(el: Element, selector?: string | null): Element | null;
-        nextAll(el: Element, selector?: string): Element[];
-        prevAll(el: Element, selector?: string): Element[];
-        nextUntil(el: Element, selector: Element | string): Element[];
-        prevUntil(el: Element, selector: Element | string): Element[];
-        wrap(el: Element, wrappingElement: Element): Element;
-        attr(el: Element, name: string, value?: any): Element | any;
-        prop(el: Element, name: string, value?: any): any | Element;
-        html(el: Element, html?: string): Element | any;
-        text(el: Element, text?: string): Element | any;
-        hide(el: Element): Element;
-        show(el: Element): Element;
-        toggle(el: Element): Element;
-        data(el: Element, name: {
-            [x: string]: string;
-        } | string, value?: string): Element | DOMStringMap;
-        removeData(el: Element, name: string): Element | any;
-        css(el: HTMLElement, style: {
-            [x: string]: string;
-        } | string, value?: string): Element;
-        closestFind(el: Element, selectorClosest: string, selectorFind: string): Array<Element>;
-        closestFindOne(el: Element, selectorClosest: string, selectorFindOne: string): Element | null;
-        first(nodeList: NodeList | Element | Array<Element>): Element | null;
-        last(nodeList: NodeList | Array<Element>): Element | null;
-        create(html: string): Element | DocumentFragment | null;
-        eq(nodeList: NodeList | Array<Element>, index?: number): Element | null;
-        after(el: Element, newEl: Element | string): Element | null;
-        before(el: Element, newEl: Element | string): Element | null;
-        empty(el: Element | string): Element;
-        not(el: Element | NodeList | Array<Element>, selector: string | Element): Array<Element>;
-        collide(elem1: Element, elem2: Element): boolean;
-        matches(el: Element, selector: string | Element): boolean;
-        replaceChild(el: Element, child: Element, oldChild: Element): Element;
-        replaceChildren(el: Element, ...children: NodeList | Array<Element> | string[]): Element;
-        offset(el: Element | Document | Window): {
-            top: number;
-            left: number;
-        };
-        on: typeof import("./onOff.js").on;
-        off: typeof import("./onOff.js").off;
-    };
     isWindow: (o: any) => boolean;
     isDocument: (o: any) => boolean;
     isDomElement: (o: any) => boolean;
@@ -89,15 +39,15 @@ declare const webf: {
     isPlainObject: (o: any) => boolean;
     isBoolean: (b: any) => boolean;
     isBool: (b: any) => boolean;
-    isUndefined: (v: any) => v is undefined;
+    isUndefined: (v: any) => boolean;
     isArrayLike: (o: any) => boolean;
-    isArray: (a: any) => a is any[];
+    isArray: (a: any) => boolean;
     isDate: (o: any) => boolean;
     isEvent: (o: any) => boolean;
     isInteger: (n: any) => boolean;
     isInt: (n: any) => boolean;
     isFloat: (n: any) => boolean;
-    isScalar: (value: any) => boolean;
+    isScalar: (v: any) => boolean;
     isEventSupported: (eventName: any) => boolean;
     isTouchDevice: () => boolean;
     each: <T>(o: Collection<T>, callback: (key: number | string, value: T, o: Collection<T>, index: number) => (void | boolean), context?: any) => typeof o;
@@ -108,7 +58,8 @@ declare const webf: {
     clone: <T>(o: T) => T;
     merge: <T>(first: Collection<T>, second?: Collection<T>, ...args: Collection<T>[]) => Array<T>;
     inArray: (value: any, arr: Object | any[], index?: number, strict?: boolean) => boolean;
-    indexOf: (arr: any, elt: any, from?: number) => number;
+    indexOf: (arr: Array<any> | string, elt: any, from?: number) => number;
+    lastIndexOf: (arr: Array<any> | string, elt: any, from?: number) => number;
     compareArray: (a1: any, a2: any) => any;
     arrayUnique: (arr: any) => any;
     array_unique: (arr: any) => any;
@@ -165,5 +116,4 @@ import * as utils from './utils.js';
 import eventDispatcher from './eventDispatcher.js';
 import Mouse from './Mouse.js';
 import Translator from './Translator.js';
-import * as i18n from './Translator.js';
 export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher, Mouse, Translator };

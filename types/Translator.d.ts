@@ -1,11 +1,11 @@
 /**
- * @typedef {string | (() => string)} TranslatorValue
+ * @typedef {string|(()=>string)} TranslatorValue
  */
 /**
- * @typedef {Record<string, Record<string, Record<string, TranslatorValue>>>} TranslatorNsMapping
+ * @typedef {Record<string,Record<string,Record<string,TranslatorValue>>>} TranslatorNsMapping
  */
 /**
- * @typedef {Record<string, Record<string, TranslatorValue>>} TranslatorCoreMapping
+ * @typedef {Record<string,Record<string,TranslatorValue>>} TranslatorCoreMapping
  */
 /**
  * @typedef {TranslatorNsMapping | TranslatorCoreMapping} TranslatorMapping
