@@ -40,6 +40,18 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Commit built files
+        run: |
+          if [ -n "$(git status --porcelain dist)" ]; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add dist
+            git commit -m "chore(ci): rebuild dist"
+            git push
+          else
+            echo "No changes in dist"
+          fi
+
   publish:
     name: Publish to npm
     needs: test-and-build
