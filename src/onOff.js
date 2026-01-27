@@ -130,13 +130,13 @@ const enableDblTap = function () {
  */
 function buildTree(target, el) {
     const path = [];
-    let node = target.nodeType === 3 ? target.parentElement : target;
+    let node = target.nodeType === 3 ? target.parentNode : target;
 
     while (node) {
         path.push(node);
         if (node === el)
             break;
-        node = node.parentElement;
+        node = node.parentNode;
     }
 
     return path;

@@ -141,11 +141,11 @@ var enableDblTap = function enableDblTap() {
  */
 function buildTree(target, el) {
   var path = [];
-  var node = target.nodeType === 3 ? target.parentElement : target;
+  var node = target.nodeType === 3 ? target.parentNode : target;
   while (node) {
     path.push(node);
     if (node === el) break;
-    node = node.parentElement;
+    node = node.parentNode;
   }
   return path;
 }

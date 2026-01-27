@@ -1501,6 +1501,20 @@ describe('dom manipulation', () => {
             expect(wrapped.originalEvent).toEqual(expect.any(MouseEvent));
         });
 
+        it('should attach an event listener on document', () => {
+            const handler = jest.fn();
+
+            dom.on(document, 'mousemove', handler);
+
+            document.dispatchEvent(new MouseEvent('mousemove'));
+
+            expect(handler).toHaveBeenCalledTimes(1);
+
+            const wrapped = handler.mock.calls[0][0];
+            expect(wrapped).toEqual(expect.any(Object));
+            expect(wrapped.originalEvent).toEqual(expect.any(MouseEvent));
+        });
+
         it('should detach an event listener', () => {
             const handler = jest.fn();
 
