@@ -60,6 +60,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@webalternatif'
 
       - name: Install deps
         run: yarn install --frozen-lockfile
@@ -69,3 +71,10 @@ jobs:
 
       - name: Publish package
         run: npm publish --provenance --access public
+
+      - name: Show npm debug log if publish fails
+        if: failure()
+        run: |
+          echo "NPM LOGS"
+          ls -R /home/runner/.npm/_logs || true
+          cat /home/runner/.npm/_logs/* || true
