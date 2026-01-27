@@ -38,7 +38,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: ci/rebuild-dist
+          branch: ci/build-dist
           delete-branch: true
           title: "chore(ci): rebuild dist"
           body: "Automated build update"
