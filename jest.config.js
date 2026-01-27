@@ -14,6 +14,14 @@ export default {
         '!src/index.js',
         '!tests/**/*.js'
     ],
+    coverageThreshold: {
+        global: {
+            statements: 99,
+            branches: 99,
+            functions: 99,
+            lines: 99,
+        },
+    },
     transform: {
         '^.+\\.js$': [
             'babel-jest', {

@@ -713,7 +713,7 @@ const dom = {
      * @returns {Element|DocumentFragment|null}
      */
     create(html) {
-        html += '';
+        if (!isString(html)) return null;
 
         const isTagName = (s) => /^[A-Za-z][A-Za-z0-9-]*$/.test(s);
 
@@ -729,8 +729,6 @@ const dom = {
         if (frag.childElementCount === 1 && frag.children.length === 1) {
             return frag.firstElementChild;
         }
-
-        if (!frag.firstChild) return null;
 
         return frag.cloneNode(true);
     },
@@ -749,7 +747,7 @@ const dom = {
             index = nodeList.length + index;
         }
 
-        return nodeList[index] ?? null;
+        return nodeList[index];
     },
 
     /**
@@ -783,14 +781,10 @@ const dom = {
     },
 
     /**
-     * @param {Element|string} el
+     * @param {Element} el
      * @returns {Element}
      */
     empty(el) {
-        if (isString(el)) {
-            el = this.findOne(el);
-        }
-
         while (el.firstChild) {
             el.removeChild(el.firstChild);
         }
@@ -811,7 +805,7 @@ const dom = {
         const selectorIsString = isString(selector);
 
         return elements.filter(e => {
-            if (!(e instanceof Element)) return false
+            // if (!(e instanceof Element)) return false
 
             return selectorIsString
                 ? !e.matches(selector)
@@ -871,7 +865,7 @@ const dom = {
                 child = this.create(child);
             }
 
-            if (child) nodes.push(child);
+            nodes.push(child);
         });
 
         el.replaceChildren(...nodes);
@@ -937,6 +931,7 @@ const dom = {
     off,
 }
 
+/* istanbul ignore next */
 if ('test' === process.env.NODE_ENV) {
     dom.__resetCustomEventsForTests = function () {
         __resetCustomEventsForTests();

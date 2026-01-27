@@ -591,6 +591,68 @@ describe('dom manipulation', () => {
         })
     })
 
+    describe('nextUntil() / prevUntil()', () => {
+        let children;
+
+        beforeEach(() => {
+            children = el.querySelectorAll('.child');
+        });
+
+        describe('nextUntil()', () => {
+            it('should collect next siblings until selector matches (string)', () => {
+                const result = dom.nextUntil(children[0], '.child2');
+                expect(result).toEqual([children[1]]);
+            });
+
+            it('should stop immediately if next sibling matches selector', () => {
+                const result = dom.nextUntil(children[1], '.child2');
+                expect(result).toEqual([]);
+            });
+
+            it('should work with Element selector', () => {
+                const result = dom.nextUntil(children[0], children[2]);
+                expect(result).toEqual([children[1]]);
+            });
+
+            it('should return all next siblings if selector never matches', () => {
+                const result = dom.nextUntil(children[0], '.does-not-exist');
+                expect(result).toEqual([children[1], children[2]]);
+            });
+
+            it('should return empty array if no next siblings', () => {
+                const result = dom.nextUntil(children[2], '.child0');
+                expect(result).toEqual([]);
+            });
+        });
+
+        describe('prevUntil()', () => {
+            it('should collect previous siblings until selector matches (string)', () => {
+                const result = dom.prevUntil(children[2], '.child0');
+                expect(result).toEqual([children[1]]);
+            });
+
+            it('should stop immediately if previous sibling matches selector', () => {
+                const result = dom.prevUntil(children[1], '.child0');
+                expect(result).toEqual([]);
+            });
+
+            it('should work with Element selector', () => {
+                const result = dom.prevUntil(children[2], children[0]);
+                expect(result).toEqual([children[1]]);
+            });
+
+            it('should return all previous siblings if selector never matches', () => {
+                const result = dom.prevUntil(children[2], '.does-not-exist');
+                expect(result).toEqual([children[1], children[0]]);
+            });
+
+            it('should return empty array if no previous siblings', () => {
+                const result = dom.prevUntil(children[0], '.child2');
+                expect(result).toEqual([]);
+            });
+        });
+    });
+
     describe('nextAll()', () => {
         it('should return every elements next to an element', () => {
             const child = el.children[0];
@@ -787,18 +849,159 @@ describe('dom manipulation', () => {
     })
 
     describe('hide()', () => {
-    })
+        it('should set display to none', () => {
+            dom.hide(el);
+            expect(el.style.display).toBe('none');
+        });
+
+        it('should store previous computed display value', () => {
+            el.style.display = 'inline-block';
+            dom.hide(el);
+
+            expect(dom.data(el, '__display__')).toBe('inline-block');
+        });
+
+        it('should not overwrite stored display if already hidden once', () => {
+            el.style.display = 'flex';
+            dom.hide(el);
+            dom.hide(el);
+
+            expect(dom.data(el, '__display__')).toBe('flex');
+        });
+
+        it('should return the element', () => {
+            expect(dom.hide(el)).toBe(el);
+        });
+    });
 
     describe('show()', () => {
-    })
+        it('should restore previous display value', () => {
+            el.style.display = 'grid';
+            dom.hide(el);
+            dom.show(el);
+
+            expect(el.style.display).toBe('grid');
+        });
+
+        it('should remove stored display data after restoring', () => {
+            el.style.display = 'block';
+            dom.hide(el);
+            dom.show(el);
+
+            expect(dom.data(el, '__display__')).toBeUndefined();
+        });
+
+        it('should remove inline display if no stored value exists', () => {
+            el.style.display = 'none';
+            dom.show(el);
+
+            expect(el.style.display).toBe('');
+        });
+
+        it('should return the element', () => {
+            expect(dom.show(el)).toBe(el);
+        });
+    });
 
     describe('toggle()', () => {
-    })
+        it('should hide element if currently visible', () => {
+            el.style.display = '';
+            dom.toggle(el);
+
+            expect(el.style.display).toBe('none');
+        });
+
+        it('should show element if currently hidden', () => {
+            el.style.display = 'none';
+            dom.toggle(el);
+
+            expect(el.style.display).not.toBe('none');
+        });
+
+        it('should restore original display after hide → toggle', () => {
+            el.style.display = 'inline';
+            dom.hide(el);
+            dom.toggle(el);
+
+            expect(el.style.display).toBe('inline');
+        });
+
+        it('should return the element', () => {
+            expect(dom.toggle(el)).toBe(el);
+        });
+    });
 
     describe('data()', () => {
+        it('should return dataset when called without arguments', () => {
+            el.dataset.test = '123';
+            expect(dom.data(el)).toBe(el.dataset);
+        });
+
+        it('should set a single data value', () => {
+            dom.data(el, 'foo', 'bar');
+            expect(el.dataset.foo).toBe('bar');
+        });
+
+        it('should get a single data value', () => {
+            el.dataset.foo = 'bar';
+            expect(dom.data(el, 'foo')).toBe('bar');
+        });
+
+        it('should accept "data-*" attribute name', () => {
+            dom.data(el, 'data-user-id', '42');
+            expect(el.dataset.userId).toBe('42');
+        });
+
+        it('should camelCase keys automatically', () => {
+            dom.data(el, 'user-id', '99');
+            expect(el.dataset.userId).toBe('99');
+        });
+
+        it('should set multiple values from object', () => {
+            dom.data(el, { a: '1', b: '2' });
+            expect(el.dataset.a).toBe('1');
+            expect(el.dataset.b).toBe('2');
+        });
+
+        it('should remove data when value is null', () => {
+            el.dataset.temp = 'yes';
+            dom.data(el, 'temp', null);
+            expect(el.dataset.temp).toBeUndefined();
+        });
+
+        it('should return element when setting values (chainable)', () => {
+            const result = dom.data(el, 'foo', 'bar');
+            expect(result).toBe(el);
+        });
+
+        it('should return undefined for unknown key', () => {
+            expect(dom.data(el, 'doesNotExist')).toBeUndefined();
+        });
     })
 
     describe('removeData()', () => {
+        it('should remove data by key', () => {
+            el.dataset.foo = 'bar';
+            dom.removeData(el, 'foo');
+            expect(el.dataset.foo).toBeUndefined();
+        });
+
+        it('should accept "data-*" attribute name', () => {
+            el.dataset.userId = '42';
+            dom.removeData(el, 'data-user-id');
+            expect(el.dataset.userId).toBeUndefined();
+        });
+
+        it('should camelCase keys automatically', () => {
+            el.dataset.userId = '99';
+            dom.removeData(el, 'user-id');
+            expect(el.dataset.userId).toBeUndefined();
+        });
+
+        it('should return element (chainable)', () => {
+            const result = dom.removeData(el, 'foo');
+            expect(result).toBe(el);
+        });
     })
 
     describe('css()', () => {
@@ -826,6 +1029,11 @@ describe('dom manipulation', () => {
         it('should return empty string for unknown property', () => {
             expect(dom.css(el, 'not-exists')).toBe('');
         });
+
+        it('should set CSS custom properties (--var)', () => {
+            dom.css(el, '--my-color', 'blue');
+            expect(el.style.getPropertyValue('--my-color')).toBe('blue');
+        });
     });
 
     describe('closestFind()', () => {
@@ -839,6 +1047,12 @@ describe('dom manipulation', () => {
         it('should return empty array when nothing found', () => {
             const grandChild0 = el.querySelectorAll('.grandchild0').item(0);
             const res = dom.closestFind(grandChild0, '#root', '.notExists');
+            expect(res).toEqual([]);
+        });
+
+        it('should return empty array when closest is not found', () => {
+            const grandChild0 = el.querySelectorAll('.grandchild0').item(0);
+            const res = dom.closestFind(grandChild0, '#notexists', '.child');
             expect(res).toEqual([]);
         });
     });
@@ -881,7 +1095,7 @@ describe('dom manipulation', () => {
 
         it('should return null if no children', () => {
             dom.empty(el);
-            expect(dom.first(el.children)).toBe(null);
+            expect(dom.last(el.children)).toBe(null);
         });
 
         it('should return element if element is specified', () => {
@@ -907,6 +1121,10 @@ describe('dom manipulation', () => {
             expect(node).toBeInstanceOf(DocumentFragment);
             expect(node.children).toHaveLength(2);
         });
+
+        it('should return null with invalid nodes', () => {
+            expect(dom.create(null)).toBe(null);
+        });
     });
 
     describe('eq()', () => {
@@ -918,6 +1136,11 @@ describe('dom manipulation', () => {
         it('should accept negative index', () => {
             const children = el.querySelectorAll('.child');
             expect(dom.eq(children, -2).classList.contains('child1')).toBe(true);
+        });
+
+        it('should accept no index and return first element', () => {
+            const children = el.querySelectorAll('.child');
+            expect(dom.eq(children).classList.contains('child0')).toBe(true);
         });
 
         it('should return null if out of bounds', () => {
@@ -939,6 +1162,22 @@ describe('dom manipulation', () => {
 
             expect(ref.nextElementSibling).toBe(newEl);
         });
+
+        it('should insert HTML string as a node after reference node', () => {
+            const ref = document.createElement('span');
+            ref.className = 'ref';
+            const newEl = '<div class="perceval"></div>';
+
+            el.append(ref);
+            dom.after(ref, newEl);
+
+            expect(ref.nextElementSibling).toHaveClass('perceval');
+        });
+
+        it('should not insert a node on document', () => {
+            const newEl = document.createElement('span');
+            expect(dom.after(document, newEl)).toBe(null);
+        });
     });
 
     describe('before()', () => {
@@ -952,6 +1191,22 @@ describe('dom manipulation', () => {
             dom.before(ref, newEl);
 
             expect(ref.previousElementSibling).toBe(newEl);
+        });
+
+        it('should insert HTML string as a node after reference node', () => {
+            const ref = document.createElement('span');
+            ref.className = 'ref';
+            const newEl = '<div class="perceval"></div>';
+
+            el.append(ref);
+            dom.before(ref, newEl);
+
+            expect(ref.previousElementSibling).toHaveClass('perceval');
+        });
+
+        it('should not insert a node on document', () => {
+            const newEl = document.createElement('span');
+            expect(dom.before(document, newEl)).toBe(null);
         });
     });
 
@@ -977,6 +1232,27 @@ describe('dom manipulation', () => {
             const filtered = dom.not(list, '.a');
             expect(filtered).toHaveLength(1);
             expect(filtered[0].classList.contains('b')).toBe(true);
+        });
+
+        it('should accept an array-like', () => {
+            el.innerHTML = `<span class="a"></span><span class="b"></span><span class="a"></span>`;
+            const list = el.querySelectorAll('span');
+
+            const filtered = dom.not(list, '.a');
+            expect(filtered).toHaveLength(1);
+            expect(filtered[0].classList.contains('b')).toBe(true);
+        });
+
+        it('should accept an single element', () => {
+            const filtered = dom.not(el, '.a');
+            expect(filtered).toHaveLength(1);
+        });
+
+        it('should accept elements as selector', () => {
+            const children = el.querySelectorAll('.child');
+            const child1 = el.querySelector('.child1');
+            const filtered = dom.not(children, child1);
+            expect(filtered).toHaveLength(2);
         });
     });
 
@@ -1015,6 +1291,10 @@ describe('dom manipulation', () => {
             const node = el.querySelector('span');
             expect(dom.matches(node, '.a')).toBe(true);
             expect(dom.matches(node, '.b')).toBe(false);
+        });
+
+        it('should return true for element', () => {
+            expect(dom.matches(el, el)).toBe(true);
         });
 
         it('should return false for non-element', () => {
@@ -1157,6 +1437,53 @@ describe('dom manipulation', () => {
         it('should return true for invalid node', () => {
             expect(dom.isEditable(null)).toBe(false);
         })
+    })
+
+    describe('isInDOM', () => {
+        let child, grandchild;
+
+        beforeEach(() => {
+            child = el.querySelector('.child0');
+            grandchild = child.querySelector('.grandchild0');
+        });
+
+        it('should return true for element attached to DOM', () => {
+            expect(dom.isInDOM(el)).toBe(true);
+        });
+
+        it('should return true for nested child element', () => {
+            expect(dom.isInDOM(child)).toBe(true);
+        });
+
+        it('should return true for deeply nested element', () => {
+            expect(dom.isInDOM(grandchild)).toBe(true);
+        });
+
+        it('should return false for detached element', () => {
+            const detached = document.createElement('div');
+            expect(dom.isInDOM(detached)).toBe(false);
+        });
+
+        it('should return false for element removed from DOM', () => {
+            const toRemove = el.querySelector('.child1');
+            toRemove.remove();
+            expect(dom.isInDOM(toRemove)).toBe(false);
+        });
+
+        it('should return false for non-Node values', () => {
+            expect(dom.isInDOM(null)).toBe(false);
+            expect(dom.isInDOM(undefined)).toBe(false);
+            expect(dom.isInDOM({})).toBe(false);
+            expect(dom.isInDOM('div')).toBe(false);
+        });
+
+        it('should return false for DocumentFragment not attached to document', () => {
+            const fragment = document.createDocumentFragment();
+            const fragChild = document.createElement('div');
+            fragment.appendChild(fragChild);
+
+            expect(dom.isInDOM(fragChild)).toBe(false);
+        });
     })
 
     describe('on(), off()', () => {

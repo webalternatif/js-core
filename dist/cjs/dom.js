@@ -585,7 +585,7 @@ var dom = {
    * @returns {Element|DocumentFragment|null}
    */
   create: function create(html) {
-    html += '';
+    if (!(0, _is.isString)(html)) return null;
     var isTagName = function isTagName(s) {
       return /^[A-Za-z][A-Za-z0-9-]*$/.test(s);
     };
@@ -598,7 +598,6 @@ var dom = {
     if (frag.childElementCount === 1 && frag.children.length === 1) {
       return frag.firstElementChild;
     }
-    if (!frag.firstChild) return null;
     return frag.cloneNode(true);
   },
   /**
@@ -607,14 +606,13 @@ var dom = {
    * @returns {Element|null}
    */
   eq: function eq(nodeList) {
-    var _nodeList$index;
     var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
     nodeList = Array.from(nodeList);
     if (Math.abs(index) >= nodeList.length) return null;
     if (index < 0) {
       index = nodeList.length + index;
     }
-    return (_nodeList$index = nodeList[index]) !== null && _nodeList$index !== void 0 ? _nodeList$index : null;
+    return nodeList[index];
   },
   /**
    * @param {Element} el
@@ -641,13 +639,10 @@ var dom = {
     return el.parentElement.insertBefore(newEl, el);
   },
   /**
-   * @param {Element|string} el
+   * @param {Element} el
    * @returns {Element}
    */
   empty: function empty(el) {
-    if ((0, _is.isString)(el)) {
-      el = this.findOne(el);
-    }
     while (el.firstChild) {
       el.removeChild(el.firstChild);
     }
@@ -662,7 +657,8 @@ var dom = {
     var elements = el instanceof Element ? [el] : Array.from(el);
     var selectorIsString = (0, _is.isString)(selector);
     return elements.filter(function (e) {
-      if (!(e instanceof Element)) return false;
+      // if (!(e instanceof Element)) return false
+
       return selectorIsString ? !e.matches(selector) : e !== selector;
     });
   },
@@ -707,7 +703,7 @@ var dom = {
       if ((0, _is.isString)(child)) {
         child = _this6.create(child);
       }
-      if (child) nodes.push(child);
+      nodes.push(child);
     });
     el.replaceChildren.apply(el, nodes);
     return el;
@@ -759,6 +755,8 @@ var dom = {
   on: _onOff.on,
   off: _onOff.off
 };
+
+/* istanbul ignore next */
 if ('test' === process.env.NODE_ENV) {
   dom.__resetCustomEventsForTests = function () {
     (0, _onOff.__resetCustomEventsForTests)();

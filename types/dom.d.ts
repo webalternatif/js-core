@@ -245,10 +245,10 @@ declare namespace dom {
      */
     export function before(el: Element, newEl: Element | string): Element | null;
     /**
-     * @param {Element|string} el
+     * @param {Element} el
      * @returns {Element}
      */
-    export function empty(el: Element | string): Element;
+    export function empty(el: Element): Element;
     /**
      * @param {Element|NodeList|Array<Element>} el
      * @param {string|Element} selector
