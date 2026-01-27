@@ -5,15 +5,8 @@ export default {
     coverageDirectory: 'coverage',
     moduleFileExtensions: ['js'],
     coverageReporters: ['text', 'lcov', 'html'],
-    roots: [
-        '<rootDir>/tests',
-        '<rootDir>/src'
-    ],
-    collectCoverageFrom: [
-        'src/**/*.{js,jsx}',
-        '!src/index.js',
-        '!tests/**/*.js'
-    ],
+    roots: ['<rootDir>/tests', '<rootDir>/src'],
+    collectCoverageFrom: ['src/**/*.{js,jsx}', '!src/index.js', '!tests/**/*.js'],
     coverageThreshold: {
         global: {
             statements: 99,
@@ -24,12 +17,11 @@ export default {
     },
     transform: {
         '^.+\\.js$': [
-            'babel-jest', {
-                presets: [
-                    ['@babel/preset-env', { targets: { node: 'current' } }]
-                ]
-            }
-        ]
+            'babel-jest',
+            {
+                presets: [['@babel/preset-env', { targets: { node: 'current' } }]],
+            },
+        ],
     },
     setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-};
+}

@@ -10,7 +10,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 var _equals = exports.equals = function equals(o1, o2) {
   var seen = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new WeakMap();
   if (o1 === o2) return true;
-  if (_typeof(o1) !== _typeof(o2) || o1 == null || o2 == null) {
+  if (_typeof(o1) !== _typeof(o2) || o1 === null || o2 === null) {
     return false;
   }
   if ((0, _is.isObject)(o1)) {

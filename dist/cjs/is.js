@@ -11,7 +11,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
  * @returns {boolean}
  */
 var isString = exports.isString = function isString(str) {
-  return typeof str == 'string' || Object.prototype.toString.call(str) === '[object String]';
+  return typeof str === 'string' || Object.prototype.toString.call(str) === '[object String]';
 };
 
 /**
@@ -64,9 +64,9 @@ var isUndefined = exports.isUndefined = function isUndefined(v) {
  * @returns {boolean}
  */
 var isArrayLike = exports.isArrayLike = function isArrayLike(o) {
-  return !!o && !isString(o) && !isFunction(o) && isInt(o.length)
+  return !!o && !isString(o) && !isFunction(o) && isInt(o.length) &&
   // && o.length >= 0
-  && Number.isFinite(o.length);
+  Number.isFinite(o.length);
 };
 
 /**
@@ -98,7 +98,7 @@ var isEvent = exports.isEvent = function isEvent(o) {
  * @returns {boolean}
  */
 var isInteger = exports.isInteger = function isInteger(n) {
-  return /^[\-+]?\d+$/.test(n + '');
+  return /^[-+]?\d+$/.test(n + '');
 };
 var isInt = exports.isInt = isInteger;
 
@@ -107,7 +107,7 @@ var isInt = exports.isInt = isInteger;
  * @returns {boolean}
  */
 var isFloat = exports.isFloat = function isFloat(n) {
-  return /^[\-+]?\d+(\.\d+)?$/.test(n + '');
+  return /^[-+]?\d+(\.\d+)?$/.test(n + '');
 };
 
 /**

@@ -46,6 +46,7 @@ var inArray = exports.inArray = function inArray(value, arr) {
         } else if ((0, _is.isArray)(value) && (0, _is.isObject)(val)) {
           ret = _compareArray(val, value);
           return false;
+          // eslint-disable-next-line eqeqeq
         } else if (val == value) {
           ret = true;
           return false;
@@ -101,6 +102,17 @@ var lastIndexOf = exports.lastIndexOf = function lastIndexOf(arr, elt) {
   }
   return -1;
 };
+
+/**
+ * Returns true if given arrays are equals
+ *
+ * @example
+ *
+ *
+ * @param {Array} a1
+ * @param {Array} a2
+ * @returns {boolean}
+ */
 var _compareArray = exports.compareArray = function compareArray(a1, a2) {
   if (a1.length !== a2.length) {
     return false;
@@ -130,7 +142,7 @@ var arrayDiff = exports.arrayDiff = function arrayDiff(array1, array2) {
     return !inArray(item, array2, 0, strict);
   });
 };
-var array_diff = exports.array_diff = arrayUnique;
+var array_diff = exports.array_diff = arrayDiff;
 var range = exports.range = function range(size) {
   var startAt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   var step = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;

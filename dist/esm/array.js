@@ -1,7 +1,7 @@
-import { each, map } from "./traversal.js";
-import { isArray, isInteger, isObject, isString, isUndefined } from "./is.js";
-import { round } from "./math.js";
-import { equals } from "./utils.js";
+import { each, map } from './traversal.js';
+import { isArray, isInteger, isObject, isString, isUndefined } from './is.js';
+import { round } from './math.js';
+import { equals } from './utils.js';
 
 /**
  * Checks if a value exists in an array or an object
@@ -41,6 +41,7 @@ export var inArray = function inArray(value, arr) {
         } else if (isArray(value) && isObject(val)) {
           ret = _compareArray(val, value);
           return false;
+          // eslint-disable-next-line eqeqeq
         } else if (val == value) {
           ret = true;
           return false;
@@ -96,6 +97,17 @@ export var lastIndexOf = function lastIndexOf(arr, elt) {
   }
   return -1;
 };
+
+/**
+ * Returns true if given arrays are equals
+ *
+ * @example
+ *
+ *
+ * @param {Array} a1
+ * @param {Array} a2
+ * @returns {boolean}
+ */
 var _compareArray = function compareArray(a1, a2) {
   if (a1.length !== a2.length) {
     return false;
@@ -126,7 +138,7 @@ export var arrayDiff = function arrayDiff(array1, array2) {
     return !inArray(item, array2, 0, strict);
   });
 };
-export var array_diff = arrayUnique;
+export var array_diff = arrayDiff;
 export var range = function range(size) {
   var startAt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   var step = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;

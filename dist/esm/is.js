@@ -1,12 +1,12 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-import { inArray } from "./array.js";
+import { inArray } from './array.js';
 
 /**
  * @param {any} str
  * @returns {boolean}
  */
 export var isString = function isString(str) {
-  return typeof str == 'string' || Object.prototype.toString.call(str) === '[object String]';
+  return typeof str === 'string' || Object.prototype.toString.call(str) === '[object String]';
 };
 
 /**
@@ -59,9 +59,9 @@ export var isUndefined = function isUndefined(v) {
  * @returns {boolean}
  */
 export var isArrayLike = function isArrayLike(o) {
-  return !!o && !isString(o) && !isFunction(o) && isInt(o.length)
+  return !!o && !isString(o) && !isFunction(o) && isInt(o.length) &&
   // && o.length >= 0
-  && Number.isFinite(o.length);
+  Number.isFinite(o.length);
 };
 
 /**
@@ -93,7 +93,7 @@ export var isEvent = function isEvent(o) {
  * @returns {boolean}
  */
 export var isInteger = function isInteger(n) {
-  return /^[\-+]?\d+$/.test(n + '');
+  return /^[-+]?\d+$/.test(n + '');
 };
 export var isInt = isInteger;
 
@@ -102,7 +102,7 @@ export var isInt = isInteger;
  * @returns {boolean}
  */
 export var isFloat = function isFloat(n) {
-  return /^[\-+]?\d+(\.\d+)?$/.test(n + '');
+  return /^[-+]?\d+(\.\d+)?$/.test(n + '');
 };
 
 /**

@@ -60,7 +60,7 @@ var dom = {
   /**
    * @param {Element} el
    * @param {string} [selector]
-   * @returns {NodeList}
+   * @returns {NodeList|Element[]}
    */
   children: function children(el, selector) {
     return selector ? this.find(el, ":scope > ".concat(selector)) : el.children;
@@ -85,7 +85,7 @@ var dom = {
   /**
    * @param {Element|Document|string} refEl
    * @param {string|Element|NodeList|Array<Element>} [selector]
-   * @returns {Array<Element>}
+   * @returns {Element[]}
    */
   find: function find(refEl, selector) {
     if (undefined === selector) {
@@ -105,7 +105,7 @@ var dom = {
     }
     try {
       return Array.from(refEl.querySelectorAll(selector));
-    } catch (e) {
+    } catch (_unused) {
       return [];
     }
   },
@@ -525,7 +525,7 @@ var dom = {
       if (prop.startsWith('--')) {
         el.style.setProperty(prop, String(value));
       } else {
-        if (typeof value === "number" && !(0, _array.inArray)(prop, cssNumber)) value += 'px';
+        if (typeof value === 'number' && !(0, _array.inArray)(prop, cssNumber)) value += 'px';
         el.style[prop] = value;
       }
     } else {

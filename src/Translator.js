@@ -1,5 +1,5 @@
-import {isFunction, isPlainObject} from "./is.js";
-import {each, extend} from "./traversal.js";
+import { isFunction, isPlainObject } from './is.js'
+import { each, extend } from './traversal.js'
 
 /**
  * @typedef {string|(()=>string)} TranslatorValue
@@ -19,37 +19,39 @@ import {each, extend} from "./traversal.js";
 
 export default class Translator {
     /** @type string */
-    #lang;
+    #lang
 
     /** @type TranslatorMapping */
-    #mapping;
+    #mapping
 
     /**
      * @param {TranslatorMapping} mapping
      * @param {string} [defaultLang]
      */
     constructor(mapping, defaultLang) {
-        this.#setMapping(mapping);
-        this.setLang(defaultLang);
+        this.#setMapping(mapping)
+        this.setLang(defaultLang)
     }
 
     #setMapping(mapping) {
         let nsMapping = {},
-            coreMapping = {};
+            coreMapping = {}
 
         each(mapping, (ns, langs) => {
             each(langs, (lang, trads) => {
                 if (isPlainObject(trads)) {
-                    if (undefined === nsMapping[ns]) nsMapping[ns] = {};
-                    nsMapping[ns][lang] = trads;
+                    if (undefined === nsMapping[ns]) nsMapping[ns] = {}
+                    nsMapping[ns][lang] = trads
                 } else {
-                    if (undefined === coreMapping[ns]) coreMapping[ns] = {};
-                    coreMapping[ns][lang] = trads;
+                    if (undefined === coreMapping[ns]) coreMapping[ns] = {}
+                    coreMapping[ns][lang] = trads
                 }
             })
         })
 
-        this.#mapping = extend(true, nsMapping, {core: extend({}, nsMapping.core || {}, coreMapping)});
+        this.#mapping = extend(true, nsMapping, {
+            core: extend({}, nsMapping.core || {}, coreMapping),
+        })
     }
 
     /**
@@ -59,19 +61,19 @@ export default class Translator {
      * @returns {string}
      */
     translate(label, lang, namespace = 'core') {
-        lang = undefined === lang ? this.getLang() : lang;
+        lang = undefined === lang ? this.getLang() : lang
 
         const translationExists =
             undefined !== this.#mapping[namespace] &&
             undefined !== this.#mapping[namespace][lang] &&
-            undefined !== this.#mapping[namespace][lang][label];
+            undefined !== this.#mapping[namespace][lang][label]
 
         if (translationExists) {
-            const entry = this.#mapping[namespace][lang][label];
-            return this.#resolve(entry);
+            const entry = this.#mapping[namespace][lang][label]
+            return this.#resolve(entry)
         }
 
-        return 'en' !== lang ? this.translate(label, 'en', namespace) : label;
+        return 'en' !== lang ? this.translate(label, 'en', namespace) : label
     }
 
     /**
@@ -81,22 +83,22 @@ export default class Translator {
      * @param {string} [namespace='core']
      */
     translateFrom(label, from, to, namespace = 'core') {
-        if (!label) return label;
+        if (!label) return label
 
-        const mapNs = this.#mapping?.[namespace];
-        if (!mapNs) return label;
+        const mapNs = this.#mapping?.[namespace]
+        if (!mapNs) return label
 
-        const mapFrom = mapNs?.[from];
-        const mapTo = mapNs?.[to];
-        if (!mapFrom || !mapTo) return label;
+        const mapFrom = mapNs?.[from]
+        const mapTo = mapNs?.[to]
+        if (!mapFrom || !mapTo) return label
 
-        const key = this.#findKeyByValue(mapFrom, label);
-        if (!key) return label;
+        const key = this.#findKeyByValue(mapFrom, label)
+        if (!key) return label
 
-        const entryTo = mapTo[key];
-        const resolvedTo = this.#resolve(entryTo);
+        const entryTo = mapTo[key]
+        const resolvedTo = this.#resolve(entryTo)
 
-        return resolvedTo ?? label;
+        return resolvedTo ?? label
     }
 
     _(...args) {
@@ -104,35 +106,35 @@ export default class Translator {
     }
 
     getLang() {
-        return this.#lang;
+        return this.#lang
     }
 
     setLang(lang) {
         if (!lang) {
             if (typeof navigator !== 'undefined' && navigator.language) {
-                lang = navigator.language;
+                lang = navigator.language
             } else if (typeof process !== 'undefined' && process.env) {
-                lang = (process.env.LANG || process.env.LC_ALL || process.env.LC_MESSAGES);
+                lang = process.env.LANG || process.env.LC_ALL || process.env.LC_MESSAGES
             }
         }
 
-        this.#lang = (lang || 'en').trim().toLowerCase().slice(0, 2);
+        this.#lang = (lang || 'en').trim().toLowerCase().slice(0, 2)
     }
 
     #findKeyByValue(entries, label) {
         for (const key in entries) {
-            const resolved = this.#resolve(entries[key]);
-            if (resolved === label) return key;
+            const resolved = this.#resolve(entries[key])
+            if (resolved === label) return key
         }
 
-        return null;
+        return null
     }
 
     #resolve(entry) {
         if (isFunction(entry)) {
-            return entry();
+            return entry()
         }
 
-        return entry;
+        return entry
     }
 }

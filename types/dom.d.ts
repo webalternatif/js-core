@@ -7,9 +7,9 @@ declare namespace dom {
     /**
      * @param {Element} el
      * @param {string} [selector]
-     * @returns {NodeList}
+     * @returns {NodeList|Element[]}
      */
-    export function children(el: Element, selector?: string): NodeList;
+    export function children(el: Element, selector?: string): NodeList | Element[];
     /**
      * @param {Element} el
      * @param {string} [selector]
@@ -25,9 +25,9 @@ declare namespace dom {
     /**
      * @param {Element|Document|string} refEl
      * @param {string|Element|NodeList|Array<Element>} [selector]
-     * @returns {Array<Element>}
+     * @returns {Element[]}
      */
-    export function find(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Array<Element>;
+    export function find(refEl: Element | Document | string, selector?: string | Element | NodeList | Array<Element>): Element[];
     /**
      * @param {Element|string} el
      * @param {string} data

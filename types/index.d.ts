@@ -60,11 +60,11 @@ declare const webf: {
     inArray: (value: any, arr: Object | any[], index?: number, strict?: boolean) => boolean;
     indexOf: (arr: Array<any> | string, elt: any, from?: number) => number;
     lastIndexOf: (arr: Array<any> | string, elt: any, from?: number) => number;
-    compareArray: (a1: any, a2: any) => any;
+    compareArray: (a1: any[], a2: any[]) => boolean;
     arrayUnique: (arr: any) => any;
     array_unique: (arr: any) => any;
     arrayDiff: (array1: any, array2: any, strict?: boolean) => any;
-    array_diff: (arr: any) => any;
+    array_diff: (array1: any, array2: any, strict?: boolean) => any;
     range: (size: any, startAt?: number, step?: number) => any[];
     trim: (str: any, char?: string) => any;
     ltrim: (str: any, char?: string) => any;

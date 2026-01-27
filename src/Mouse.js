@@ -1,29 +1,28 @@
-import {isTouchDevice} from "./is.js";
+import { isTouchDevice } from './is.js'
 
-class Mouse
-{
+class Mouse {
     /**
      * @param {Event} ev
      * @param {Element} element
      * @returns {{x: number, y: number}}
      */
     static getPosition(ev, element) {
-        ev = this.#getEvent(ev);
-        let rect = { left: 0, top: 0 };
+        ev = this.#getEvent(ev)
+        let rect = { left: 0, top: 0 }
 
         if (element instanceof Element) {
-            const r = element.getBoundingClientRect();
+            const r = element.getBoundingClientRect()
 
             rect = {
                 left: window.scrollX + r.left,
-                top: window.scrollY + r.top
-            };
+                top: window.scrollY + r.top,
+            }
         }
 
         return {
             x: ev.pageX - rect.left,
-            y: ev.pageY - rect.top
-        };
+            y: ev.pageY - rect.top,
+        }
     }
 
     /**
@@ -31,18 +30,18 @@ class Mouse
      * @returns {{x: number, y: number}}
      */
     static getViewportPosition(ev) {
-        ev = this.#getEvent(ev);
+        ev = this.#getEvent(ev)
 
         return {
             x: ev.clientX,
-            y: ev.clientY
-        };
+            y: ev.clientY,
+        }
     }
 
     static getElement(ev) {
-        ev = this.#getEvent(ev);
+        ev = this.#getEvent(ev)
 
-        return window.document.elementFromPoint(ev.clientX, ev.clientY);
+        return window.document.elementFromPoint(ev.clientX, ev.clientY)
     }
 
     /**
@@ -50,18 +49,18 @@ class Mouse
      * @returns {Event}
      */
     static #getEvent(ev) {
-        ev = ev.originalEvent ?? ev;
+        ev = ev.originalEvent ?? ev
 
         if (isTouchDevice()) {
-            const touch = ev.changedTouches?.[0] || ev.touches?.[0];
+            const touch = ev.changedTouches?.[0] || ev.touches?.[0]
 
-            ev.clientX = touch.clientX;
-            ev.clientY = touch.clientY;
-            ev.pageX = touch.pageX;
-            ev.pageY = touch.pageY;
+            ev.clientX = touch.clientX
+            ev.clientY = touch.clientY
+            ev.pageX = touch.pageX
+            ev.pageY = touch.pageY
         }
 
-        return ev;
+        return ev
     }
 }
 

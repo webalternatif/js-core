@@ -1,73 +1,69 @@
-import {each} from "./traversal.js";
-import {isArray, isFunction, isObject} from "./is.js";
-import {reverse} from "./string.js";
+import { each } from './traversal.js'
+import { isArray, isFunction, isObject } from './is.js'
+import { reverse } from './string.js'
 
-export const round = function(val, precision = 0) {
-    return Math.round(val * Math.pow(10, precision)) / Math.pow(10, precision);
+export const round = function (val, precision = 0) {
+    return Math.round(val * Math.pow(10, precision)) / Math.pow(10, precision)
 }
 
-export const floorTo = function(n, precision) {
-    if (precision <= 0) throw new Error('Precision must be greater than 0');
+export const floorTo = function (n, precision) {
+    if (precision <= 0) throw new Error('Precision must be greater than 0')
 
-    return round(Math.floor(n / precision) * precision, 6);
+    return round(Math.floor(n / precision) * precision, 6)
 }
 
 export const plancher = floorTo
 
-export const min = function(list, cmp_func)
-{
+export const min = function (list, cmp_func) {
     if (isArray(list)) {
-        return Math.min.apply(null, list);
+        return Math.min.apply(null, list)
     }
 
-    let min;
+    let min
 
     cmp_func = isFunction(cmp_func)
         ? cmp_func
-        : function(a, b) {
-            return a < b ? -1 : 1;
-        }
-    ;
+        : function (a, b) {
+              return a < b ? -1 : 1
+          }
 
     if (isObject(list)) {
-        each(list, function(key, val, obj, index) {
+        each(list, function (key, val, obj, index) {
             if (index === 0) {
-                min = val;
+                min = val
             } else {
-                min = cmp_func.call(null, min, val) > 0 ? val : min;
+                min = cmp_func.call(null, min, val) > 0 ? val : min
             }
-        });
+        })
     }
 
-    return min;
+    return min
 }
 
-export const max = function(list, cmp_func)
-{
+export const max = function (list, cmp_func) {
     if (isArray(list)) {
-        return Math.max.apply(null, list);
+        return Math.max.apply(null, list)
     }
 
-    let max;
+    let max
 
     cmp_func = isFunction(cmp_func)
         ? cmp_func
-        : function(a, b) {
-            return b - a;
-        }
-    ;
+        : function (a, b) {
+              return b - a
+          }
 
     if (isObject(list)) {
-        each(list, function(key, val, obj, index) {
+        each(list, function (key, val, obj, index) {
             if (index === 0) {
-                max = val;
+                max = val
             } else {
-                max = cmp_func.call(null, max, val) > 0 ? val : max;
+                max = cmp_func.call(null, max, val) > 0 ? val : max
             }
-        });
+        })
     }
 
-    return max;
+    return max
 }
 
 /**
@@ -76,9 +72,8 @@ export const max = function(list, cmp_func)
  * @param {number} n
  * @returns {string}
  */
-export const dec2hex = function(n)
-{
-    return n.toString(16);
+export const dec2hex = function (n) {
+    return n.toString(16)
 }
 
 /**
@@ -87,23 +82,22 @@ export const dec2hex = function(n)
  * @param {string} hex
  * @returns {number}
  */
-export const hex2dec = function(hex)
-{
-    hex = reverse(hex + '').toUpperCase();
+export const hex2dec = function (hex) {
+    hex = reverse(hex + '').toUpperCase()
 
-    const c = '0123456789ABCDEF';
-    let value = 0;
+    const c = '0123456789ABCDEF'
+    let value = 0
 
     each(hex, (i, char) => {
-        const index = (c.indexOf(char));
+        const index = c.indexOf(char)
 
         if (index === -1) {
-            value = 0;
-            return false;
+            value = 0
+            return false
         }
 
-        value += ((index) * Math.pow(2, 4 * i));
+        value += index * Math.pow(2, 4 * i)
     })
 
-    return value;
+    return value
 }

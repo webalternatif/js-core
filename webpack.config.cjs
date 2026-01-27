@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
     mode: 'production',
@@ -8,8 +8,8 @@ module.exports = {
         library: 'webf',
         libraryTarget: 'umd',
         globalObject: 'this',
-        filename: "index.js",
-        publicPath: "/dist/",
+        filename: 'index.js',
+        publicPath: '/dist/',
     },
     optimization: {
         minimize: true,
@@ -28,4 +28,4 @@ module.exports = {
             },
         ],
     },
-};
+}

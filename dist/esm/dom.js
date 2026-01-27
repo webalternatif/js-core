@@ -4,10 +4,10 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-import { isArray, isArrayLike, isObject, isPlainObject, isString } from "./is.js";
-import { camelCase } from "./string.js";
-import { each, foreach, map } from "./traversal.js";
-import { inArray } from "./array.js";
+import { isArray, isArrayLike, isObject, isPlainObject, isString } from './is.js';
+import { camelCase } from './string.js';
+import { each, foreach, map } from './traversal.js';
+import { inArray } from './array.js';
 import { on, off, __resetCustomEventsForTests } from './onOff.js';
 var cssNumber = ['animationIterationCount', 'aspectRatio', 'borderImageSlice', 'columnCount', 'flexGrow', 'flexShrink', 'fontWeight', 'gridArea', 'gridColumn', 'gridColumnEnd', 'gridColumnStart', 'gridRow', 'gridRowEnd', 'gridRowStart', 'lineHeight', 'opacity', 'order', 'orphans', 'scale', 'widows', 'zIndex', 'zoom', 'fillOpacity', 'floodOpacity', 'stopOpacity', 'strokeMiterlimit', 'strokeOpacity'];
 
@@ -54,7 +54,7 @@ var dom = {
   /**
    * @param {Element} el
    * @param {string} [selector]
-   * @returns {NodeList}
+   * @returns {NodeList|Element[]}
    */
   children: function children(el, selector) {
     return selector ? this.find(el, ":scope > ".concat(selector)) : el.children;
@@ -79,7 +79,7 @@ var dom = {
   /**
    * @param {Element|Document|string} refEl
    * @param {string|Element|NodeList|Array<Element>} [selector]
-   * @returns {Array<Element>}
+   * @returns {Element[]}
    */
   find: function find(refEl, selector) {
     if (undefined === selector) {
@@ -99,7 +99,7 @@ var dom = {
     }
     try {
       return Array.from(refEl.querySelectorAll(selector));
-    } catch (e) {
+    } catch (_unused) {
       return [];
     }
   },
@@ -519,7 +519,7 @@ var dom = {
       if (prop.startsWith('--')) {
         el.style.setProperty(prop, String(value));
       } else {
-        if (typeof value === "number" && !inArray(prop, cssNumber)) value += 'px';
+        if (typeof value === 'number' && !inArray(prop, cssNumber)) value += 'px';
         el.style[prop] = value;
       }
     } else {

@@ -10,8 +10,8 @@ function _checkPrivateRedeclaration(e, t) { if (t.has(e)) throw new TypeError("C
 function _classPrivateFieldGet(s, a) { return s.get(_assertClassBrand(s, a)); }
 function _classPrivateFieldSet(s, a, r) { return s.set(_assertClassBrand(s, a), r), r; }
 function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.has(t)) return arguments.length < 3 ? t : n; throw new TypeError("Private element is not present on this object"); }
-import { isFunction, isPlainObject } from "./is.js";
-import { each, extend } from "./traversal.js";
+import { isFunction, isPlainObject } from './is.js';
+import { each, extend } from './traversal.js';
 
 /**
  * @typedef {string|(()=>string)} TranslatorValue

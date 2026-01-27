@@ -4,10 +4,10 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-import { isArray, isFloat, isInteger, isObject, isPlainObject, isString, isUndefined } from "./is.js";
-import { dec2hex, hex2dec, round } from "./math.js";
-import { inArray } from "./array.js";
-import { each, foreach, map } from "./traversal.js";
+import { isArray, isFloat, isInteger, isPlainObject, isString, isUndefined } from './is.js';
+import { dec2hex, hex2dec, round } from './math.js';
+import { inArray } from './array.js';
+import { each, map } from './traversal.js';
 // import {translate} from "./Translator.js";
 
 export var trim = function trim(str) {
@@ -214,7 +214,9 @@ export var hextorgb = hex2rgb;
  */
 export var parse_url = function parse_url(str) {
   var key = ['source', 'scheme', 'authority', 'userInfo', 'user', 'pass', 'host', 'port', 'relative', 'path', 'directory', 'file', 'query', 'fragment'],
-    parser = /^(?:([^:\/?#]+):)?(?:\/\/()(?:(?:()(?:([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?()(?:(()(?:(?:[^?#\/]*\/)*)()(?:[^?#]*))(?:\?([^#]*))?(?:#(.*))?)/;
+    parser =
+    // eslint-disable-next-line no-useless-escape
+    /^(?:([^:\/?#]+):)?(?:\/\/()(?:(?:()(?:([^:@]*):?([^:@]*))?@)?([^:\/?#]*)(?::(\d*))?))?()(?:(()(?:(?:[^?#\/]*\/)*)()(?:[^?#]*))(?:\?([^#]*))?(?:#(.*))?)/;
   var m = parser.exec(str);
   var uri = {},
     i = 14;
@@ -253,45 +255,45 @@ var _addUrlParam = function addUrlParam(url, param) {
   }
   var parseUrl = parse_url(url),
     pos,
-    hash = "";
-  if ((pos = url.indexOf("#")) > -1) {
+    hash = '';
+  if ((pos = url.indexOf('#')) > -1) {
     hash = url.slice(pos);
     url = url.slice(0, pos);
   }
   var key = encodeURIComponent(param);
   var val = value === null ? '' : encodeURIComponent(value);
   if (!parseUrl.query) {
-    return url + "?" + key + "=" + val + hash;
+    return url + '?' + key + '=' + val + hash;
   }
   var params = parseUrl.query.split('&');
   var param_exists = false;
   for (var i = 0; i < params.length; i++) {
-    if (params[i].startsWith(key + "=")) {
-      params[i] = key + "=" + val;
+    if (params[i].startsWith(key + '=')) {
+      params[i] = key + '=' + val;
       param_exists = true;
       break;
     }
   }
   if (!param_exists) {
-    params.push(key + "=" + val);
+    params.push(key + '=' + val);
   }
   if (parseUrl.scheme && parseUrl.host) {
-    return parseUrl.scheme + '://' + parseUrl.host + (parseUrl.path || '') + "?" + params.join("&") + hash;
+    return parseUrl.scheme + '://' + parseUrl.host + (parseUrl.path || '') + '?' + params.join('&') + hash;
   }
-  return (parseUrl.host || '') + parseUrl.path + "?" + params.join("&") + hash;
+  return (parseUrl.host || '') + parseUrl.path + '?' + params.join('&') + hash;
 };
 export { _addUrlParam as addUrlParam };
 export var decodeHtml = function decodeHtml(str) {
   if (!isString(str)) return '';
-  return str.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#039;/g, "'");
+  return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#039;/g, "'");
 };
 export var htmlquotes = function htmlquotes(str) {
   if (!isString(str)) return '';
-  return str.replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  return str.replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 };
 export var htmlsimplequotes = function htmlsimplequotes(str) {
   if (!isString(str)) return '';
-  return str.replace(/'/g, "&#039;");
+  return str.replace(/'/g, '&#039;');
 };
 export var repeat = function repeat(str, n) {
   if (!isString(str) || !isFloat(n)) return '';
@@ -303,7 +305,7 @@ export var stripTags = function stripTags(str, tag) {
     while (rStripTags.test(str)) str = str.replace(rStripTags, '$1');
     return str;
   }
-  return str.replace(/(<([^>]+)>)/ig, "");
+  return str.replace(/(<([^>]+)>)/gi, '');
 };
 export var toUrl = function toUrl(str) {
   return trim(noAccent(str).toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-{2,}/g, '-'), '-');
@@ -313,7 +315,7 @@ export var toUrl = function toUrl(str) {
  * @see http://stackoverflow.com/questions/3115150/how-to-escape-regular-expression-special-characters-using-javascript
  */
 export var escapeRegex = function escapeRegex(str) {
-  return str.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&").replace(/[\n\t]/g, " ");
+  return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&').replace(/[\n\t]/g, ' ');
 };
 export var camelCase = function camelCase(str) {
   if (!str) return '';
@@ -378,7 +380,7 @@ export var f = format;
  * @see https://stackoverflow.com/questions/7627000/javascript-convert-string-to-safe-class-name-for-css
  */
 export var toCssClassName = function toCssClassName(str) {
-  return str.replace(/[^a-z0-9_-]/ig, function (s) {
+  return str.replace(/[^a-z0-9_-]/gi, function (s) {
     var c = s.charCodeAt(0);
     if (c === 32) return '-';
     return '__' + ('000' + c.toString(16)).slice(-4);
@@ -387,7 +389,7 @@ export var toCssClassName = function toCssClassName(str) {
 export var hilite = function hilite(str, req) {
   var tag = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'strong';
   str = decodeHtml(str);
-  var str_folded = noAccent(str).toLowerCase().replace(/[\[\]]+/g, '');
+  var str_folded = noAccent(str).toLowerCase().replace(/[[\]]+/g, '');
   var q_folded,
     re,
     hilite_hints = '';
@@ -397,7 +399,7 @@ export var hilite = function hilite(str, req) {
   each(req, function (i, q) {
     if (q.length) {
       q = decodeHtml(q);
-      q_folded = noAccent(q).toLowerCase().replace(/[\[\]]+/g, '');
+      q_folded = noAccent(q).toLowerCase().replace(/[[\]]+/g, '');
       re = new RegExp(escapeRegex(q_folded), 'g');
       hilite_hints = str_folded.replace(re, "[".concat(q_folded, "]"));
       str_folded = hilite_hints;

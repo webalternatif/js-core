@@ -1,6 +1,14 @@
-import {isArray, isArrayLike, isBoolean, isObject, isPlainObject, isString, isUndefined} from "./is.js";
-import {isWindow} from "./dom.js";
-import {sizeOf} from "./utils.js";
+import {
+    isArray,
+    isArrayLike,
+    isBoolean,
+    isObject,
+    isPlainObject,
+    isString,
+    isUndefined,
+} from './is.js'
+import { isWindow } from './dom.js'
+import { sizeOf } from './utils.js'
 
 /**
  * @template T
@@ -21,52 +29,43 @@ import {sizeOf} from "./utils.js";
  * @param {any} [context] Optional "this" binding for the callback
  * @returns {typeof o} Returns the original input
  */
-export const each = function(o, callback, context) {
+export const each = function (o, callback, context) {
     if (isPlainObject(o)) {
-        let index = -1;
+        let index = -1
 
         for (let i in o)
-            if (o.hasOwnProperty(i) && false === callback.call(context ?? o[i], i, o[i], o, ++index))
-                return;
-    }
-
-    else if (isString(o)) {
-        const arr = o.split('');
+            if (
+                o.hasOwnProperty(i) &&
+                false === callback.call(context ?? o[i], i, o[i], o, ++index)
+            )
+                return
+    } else if (isString(o)) {
+        const arr = o.split('')
 
         for (let i = 0; i < arr.length; i++)
-            if (false === callback.call(context ?? arr[i], i, arr[i], o, i))
-                return o;
+            if (false === callback.call(context ?? arr[i], i, arr[i], o, i)) return o
 
-        return o;
-    }
-
-    else if (o instanceof Map) {
-        let index = 0;
+        return o
+    } else if (o instanceof Map) {
+        let index = 0
         for (const [key, value] of o.entries()) {
-            if (false === callback.call(context ?? value, key, value, o, index++))
-                return o;
+            if (false === callback.call(context ?? value, key, value, o, index++)) return o
         }
-    }
-
-    else if (o instanceof Set) {
-        let index = 0;
+    } else if (o instanceof Set) {
+        let index = 0
         for (const value of o.values()) {
-            if (false === callback.call(context ?? value, index, value, o, index))
-                return o;
+            if (false === callback.call(context ?? value, index, value, o, index)) return o
 
-            index++;
+            index++
         }
-    }
-
-    else if (isArrayLike(o)) {
-        const arr = Array.from(o);
+    } else if (isArrayLike(o)) {
+        const arr = Array.from(o)
 
         for (let i = 0; i < arr.length; i++)
-            if (false === callback.call(context || arr[i], i, arr[i], arr, i))
-                return o;
+            if (false === callback.call(context || arr[i], i, arr[i], arr, i)) return o
     }
 
-    return o;
+    return o
 }
 
 /**
@@ -81,8 +80,12 @@ export const each = function(o, callback, context) {
  * @param {any} [context] Optional "this" binding for the callback
  * @returns {typeof o} Returns the original input
  */
-export const foreach = function(o, callback, context) {
-    return each(o, (key, value, o, index) => callback.apply(context || value, [value, key, o, index]), context)
+export const foreach = function (o, callback, context) {
+    return each(
+        o,
+        (key, value, o, index) => callback.apply(context || value, [value, key, o, index]),
+        context,
+    )
 }
 
 /**
@@ -100,17 +103,17 @@ export const foreach = function(o, callback, context) {
  * @param {any} [context] Optional "this" binding for the callback
  * @returns {Array<R>} Returns the resulted array
  */
-export const map = function(o, callback, context) {
-    let results = [];
+export const map = function (o, callback, context) {
+    let results = []
 
-    each(o, function(index, value, o, i) {
-        const response = callback.call(context, index, value, o, i);
+    each(o, function (index, value, o, i) {
+        const response = callback.call(context, index, value, o, i)
 
         // if (false === response) return false;
-        if (null !== response) results.push(response);
-    });
+        if (null !== response) results.push(response)
+    })
 
-    return results;
+    return results
 }
 
 /**
@@ -125,22 +128,24 @@ export const map = function(o, callback, context) {
  * @param {R} [initialValue] la valeur initiale
  * @returns {R} Returns the accumulated value
  */
-export const reduce = function(o, callback, initialValue) {
-    const isInitialValueDefined = !isUndefined(initialValue);
+export const reduce = function (o, callback, initialValue) {
+    const isInitialValueDefined = !isUndefined(initialValue)
 
     if (!sizeOf(o) && !isInitialValueDefined) {
-        throw new Error('Nothing to reduce and no initial value');
+        throw new Error('Nothing to reduce and no initial value')
     }
 
-    let accumulator = !isInitialValueDefined ? map(o, (key, v, o, i) => i === 0 ? v : null)[0] : initialValue;
+    let accumulator = !isInitialValueDefined
+        ? map(o, (key, v, o, i) => (i === 0 ? v : null))[0]
+        : initialValue
 
     each(o, (key, v, o, i) => {
-        if (i === 0 && !isInitialValueDefined) return;
+        if (i === 0 && !isInitialValueDefined) return
 
-        accumulator = callback(accumulator, v, key, i, o);
+        accumulator = callback(accumulator, v, key, i, o)
     })
 
-    return accumulator;
+    return accumulator
 }
 
 /**
@@ -151,35 +156,35 @@ export const reduce = function(o, callback, initialValue) {
  * @param {...(boolean|T)} args
  * @returns {T} A copy of the merged result
  */
-export const extend = function(...args) {
-    let deep = false;
+export const extend = function (...args) {
+    let deep = false
 
     if (isBoolean(args[0])) {
-        deep = args.shift();
+        deep = args.shift()
     }
 
     if (args.length < 2 || isUndefined(args[0]) || null === args[0]) {
-        return args[0];
+        return args[0]
     }
 
-    let dest = args[0];
+    let dest = args[0]
     if (!isObject(dest)) {
-        args[0] = dest = {};
+        args[0] = dest = {}
     }
 
     foreach(args.slice(1), (src) => {
         if (isObject(src)) {
             for (const name in src) {
                 if (deep && isPlainObject(src[name])) {
-                    dest[name] = extend(true, {}, dest[name], src[name]);
+                    dest[name] = extend(true, {}, dest[name], src[name])
                 } else {
-                    dest[name] = src[name];
+                    dest[name] = src[name]
                 }
             }
         }
     })
 
-    return dest;
+    return dest
 }
 
 /**
@@ -189,22 +194,22 @@ export const extend = function(...args) {
  * @param {T} o
  * @returns {T} The copy of o
  */
-export const clone = function(o) {
+export const clone = function (o) {
     if ((!isObject(o) && !isArray(o)) || isWindow(o)) {
-        return o;
+        return o
     }
 
-    const c = isObject(o) ? {} : [];
+    const c = isObject(o) ? {} : []
 
     each(o, (key, value) => {
         if (isObject(value)) {
-            c[key] = clone(value);
+            c[key] = clone(value)
         } else {
-            c[key] = value;
+            c[key] = value
         }
     })
 
-    return c;
+    return c
 }
 
 /**
@@ -216,17 +221,16 @@ export const clone = function(o) {
  * @param {...Collection<T>} args Remaining collections to merge
  * @returns {Array<T>} the resulted merged array
  */
-export const merge = function(first, second = [], ...args)
-{
-    const result = map(first, (i, elem) => elem);
+export const merge = function (first, second = [], ...args) {
+    const result = map(first, (i, elem) => elem)
 
-    each(second, function(i, elem) {
-        result.push(elem);
-    });
+    each(second, function (i, elem) {
+        result.push(elem)
+    })
 
     if (args.length) {
-        return merge(result, ...args);
+        return merge(result, ...args)
     }
 
-    return result;
+    return result
 }

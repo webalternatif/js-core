@@ -1,6 +1,6 @@
-import { each } from "./traversal.js";
-import { isArray, isFunction, isObject } from "./is.js";
-import { reverse } from "./string.js";
+import { each } from './traversal.js';
+import { isArray, isFunction, isObject } from './is.js';
+import { reverse } from './string.js';
 export var round = function round(val) {
   var precision = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   return Math.round(val * Math.pow(10, precision)) / Math.pow(10, precision);

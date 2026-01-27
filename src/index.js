@@ -1,12 +1,12 @@
-import * as stringFunctions from './string.js';
-import './stringPrototype.js';
-import * as arrayFunctions from './array.js';
-import * as is from './is.js';
-import * as random from './random.js';
-import * as traversal from './traversal.js';
-import dom, {getStyle, isDomElement, isWindow, isDocument} from './dom.js';
-import * as math from './math.js';
-import * as utils from './utils.js';
+import * as stringFunctions from './string.js'
+import './stringPrototype.js'
+import * as arrayFunctions from './array.js'
+import * as is from './is.js'
+import * as random from './random.js'
+import * as traversal from './traversal.js'
+import dom, { getStyle, isDomElement, isWindow, isDocument } from './dom.js'
+import * as math from './math.js'
+import * as utils from './utils.js'
 import eventDispatcher from './eventDispatcher.js'
 import Mouse from './Mouse.js'
 import Translator from './Translator.js'
@@ -25,7 +25,10 @@ const webf = {
     ...traversal,
     ...is,
     ...random,
-    isWindow, isDocument, isDomElement, getStyle,
+    isWindow,
+    isDocument,
+    isDomElement,
+    getStyle,
     ...math,
     ...utils,
 }
@@ -101,4 +104,4 @@ export {
     eventDispatcher,
     Mouse,
     Translator,
-};
+}

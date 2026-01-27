@@ -1,10 +1,10 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-import { each, map } from "./traversal.js";
-import { isArray, isFunction, isObject, isUndefined } from "./is.js";
+import { map } from './traversal.js';
+import { isArray, isObject } from './is.js';
 var _equals = function equals(o1, o2) {
   var seen = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new WeakMap();
   if (o1 === o2) return true;
-  if (_typeof(o1) !== _typeof(o2) || o1 == null || o2 == null) {
+  if (_typeof(o1) !== _typeof(o2) || o1 === null || o2 === null) {
     return false;
   }
   if (isObject(o1)) {

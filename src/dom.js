@@ -1,8 +1,8 @@
-import {isArray, isArrayLike, isObject, isPlainObject, isString} from "./is.js";
-import {camelCase} from "./string.js";
-import {each, foreach, map} from "./traversal.js";
-import {inArray} from "./array.js";
-import {on, off, __resetCustomEventsForTests} from './onOff.js';
+import { isArray, isArrayLike, isObject, isPlainObject, isString } from './is.js'
+import { camelCase } from './string.js'
+import { each, foreach, map } from './traversal.js'
+import { inArray } from './array.js'
+import { on, off, __resetCustomEventsForTests } from './onOff.js'
 
 const cssNumber = [
     'animationIterationCount',
@@ -32,31 +32,30 @@ const cssNumber = [
     'stopOpacity',
     'strokeMiterlimit',
     'strokeOpacity',
-];
+]
 
 /**
  * @param {any} o
  * @returns {boolean}
  */
-export const isWindow = function(o) {
-    return !!o && o === o.window;
+export const isWindow = function (o) {
+    return !!o && o === o.window
 }
 
 /**
  * @param {any} o
  * @returns {boolean}
  */
-export const isDocument = function(o)
-{
-    return !!o && o.nodeType === 9;
+export const isDocument = function (o) {
+    return !!o && o.nodeType === 9
 }
 
 /**
  * @param {any} o
  * @returns {boolean}
  */
-export const isDomElement = function(o) {
-    return isObject(o) && o instanceof HTMLElement;
+export const isDomElement = function (o) {
+    return isObject(o) && o instanceof HTMLElement
 }
 
 /**
@@ -64,30 +63,28 @@ export const isDomElement = function(o) {
  * @param {string} cssRule
  * @returns {string}
  */
-export const getStyle = function(el, cssRule) {
+export const getStyle = function (el, cssRule) {
     if (!isDomElement(el)) {
-        return '';
+        return ''
     }
 
     if (window.getComputedStyle) {
-        const computedStyle = window.getComputedStyle(el, null);
+        const computedStyle = window.getComputedStyle(el, null)
 
-        return computedStyle.getPropertyValue(cssRule) || computedStyle[camelCase(cssRule)] || '';
+        return computedStyle.getPropertyValue(cssRule) || computedStyle[camelCase(cssRule)] || ''
     }
 
-    return el.style[camelCase(cssRule)] || '';
+    return el.style[camelCase(cssRule)] || ''
 }
 
 const dom = {
     /**
      * @param {Element} el
      * @param {string} [selector]
-     * @returns {NodeList}
+     * @returns {NodeList|Element[]}
      */
     children(el, selector) {
-        return selector
-            ? this.find(el, `:scope > ${selector}`)
-            : el.children;
+        return selector ? this.find(el, `:scope > ${selector}`) : el.children
     },
 
     /**
@@ -96,7 +93,7 @@ const dom = {
      * @returns {Element|null}
      */
     child(el, selector) {
-        return this.first(this.children(el, selector));
+        return this.first(this.children(el, selector))
     },
 
     /**
@@ -105,38 +102,38 @@ const dom = {
      * @returns {Element}
      */
     findOne(refEl, selector) {
-        return this.find(refEl, selector)[0] ?? null;
+        return this.find(refEl, selector)[0] ?? null
     },
 
     /**
      * @param {Element|Document|string} refEl
      * @param {string|Element|NodeList|Array<Element>} [selector]
-     * @returns {Array<Element>}
+     * @returns {Element[]}
      */
     find(refEl, selector) {
         if (undefined === selector) {
-            selector = refEl;
-            refEl = document;
+            selector = refEl
+            refEl = document
         }
 
         if (selector instanceof Element) {
-            selector = [selector];
+            selector = [selector]
         }
 
         if (isArrayLike(selector)) {
             return map(Array.from(selector), (i, el) => {
                 if (el instanceof Element) {
-                    return refEl === el || refEl.contains(el) ? el : null;
+                    return refEl === el || refEl.contains(el) ? el : null
                 }
 
-                return null;
+                return null
             })
         }
 
         try {
-            return Array.from(refEl.querySelectorAll(selector));
-        } catch (e) {
-            return [];
+            return Array.from(refEl.querySelectorAll(selector))
+        } catch {
+            return []
         }
     },
 
@@ -147,7 +144,7 @@ const dom = {
      * @returns {Element|null}
      */
     findOneByData(el, data, value) {
-        return this.findByData(el, data, value)[0] ?? null;
+        return this.findByData(el, data, value)[0] ?? null
     },
 
     /**
@@ -157,8 +154,8 @@ const dom = {
      * @returns {Element[]}
      */
     findByData(el, data, value) {
-        const escapeValue = CSS.escape(value);
-        return this.find(el, `[data-${data}="${escapeValue}"]`);
+        const escapeValue = CSS.escape(value)
+        return this.find(el, `[data-${data}="${escapeValue}"]`)
     },
 
     /**
@@ -167,23 +164,22 @@ const dom = {
      * @returns {Element|NodeList|Array<Element>}
      */
     addClass(el, className) {
-        if (!className) return el;
+        if (!className) return el
 
-        const classNames = className.split(' ')
-            .map(c => c.trim())
-            .filter(Boolean);
+        const classNames = className
+            .split(' ')
+            .map((c) => c.trim())
+            .filter(Boolean)
 
-        const elements = (el instanceof Element)
-            ? [el]
-            : Array.from(el);
+        const elements = el instanceof Element ? [el] : Array.from(el)
 
-        elements.forEach(e => {
+        elements.forEach((e) => {
             if (e instanceof Element) {
-                e.classList.add(...classNames);
+                e.classList.add(...classNames)
             }
         })
 
-        return el;
+        return el
     },
 
     /**
@@ -192,23 +188,22 @@ const dom = {
      * @returns {Element|NodeList|Array<Element>}
      */
     removeClass(el, className) {
-        if (!className) return;
+        if (!className) return
 
-        const classNames = className.split(' ')
-            .map(c => c.trim())
-            .filter(Boolean);
+        const classNames = className
+            .split(' ')
+            .map((c) => c.trim())
+            .filter(Boolean)
 
-        const elements = (el instanceof Element)
-            ? [el]
-            : Array.from(el);
+        const elements = el instanceof Element ? [el] : Array.from(el)
 
-        elements.forEach(e => {
+        elements.forEach((e) => {
             if (e instanceof Element) {
-                e.classList.remove(...classNames);
+                e.classList.remove(...classNames)
             }
         })
 
-        return el;
+        return el
     },
 
     /**
@@ -219,13 +214,14 @@ const dom = {
      */
     toggleClass(el, classNames, force) {
         foreach(
-            classNames.split(' ')
-                .map(c => c.trim())
+            classNames
+                .split(' ')
+                .map((c) => c.trim())
                 .filter(Boolean),
-            c => el.classList.toggle(c, force)
+            (c) => el.classList.toggle(c, force),
         )
 
-        return el;
+        return el
     },
 
     /**
@@ -234,25 +230,26 @@ const dom = {
      * @returns {boolean}
      */
     hasClass(el, classNames) {
-        if (!classNames) return false;
+        if (!classNames) return false
 
-        let foundClasses = true;
+        let foundClasses = true
 
         foreach(
-            classNames.split(' ')
-            .map(c => c.trim())
-            .filter(Boolean),
-            c => {
+            classNames
+                .split(' ')
+                .map((c) => c.trim())
+                .filter(Boolean),
+            (c) => {
                 if (el.classList.contains(c)) {
-                    return true;
+                    return true
                 }
 
-                foundClasses = false;
-                return false;
-            }
+                foundClasses = false
+                return false
+            },
         )
 
-        return foundClasses;
+        return foundClasses
     },
 
     /**
@@ -263,13 +260,13 @@ const dom = {
     append(node, ...children) {
         foreach(children, (child) => {
             if (isString(child)) {
-                child = this.create(child);
+                child = this.create(child)
             }
 
-            child && node.append(child);
-        });
+            child && node.append(child)
+        })
 
-        return node;
+        return node
     },
 
     /**
@@ -280,13 +277,13 @@ const dom = {
     prepend(node, ...children) {
         foreach([...children].reverse(), (child) => {
             if (isString(child)) {
-                child = this.create(child);
+                child = this.create(child)
             }
 
-            child && node.prepend(child);
-        });
+            child && node.prepend(child)
+        })
 
-        return node;
+        return node
     },
 
     /**
@@ -294,13 +291,13 @@ const dom = {
      * @returns {void}
      */
     remove(...els) {
-        els.forEach(el => {
+        els.forEach((el) => {
             if (el instanceof Element) {
-                el.remove();
+                el.remove()
             } else if (el instanceof NodeList || isArray(el)) {
-                Array.from(el).forEach(e => e.remove());
+                Array.from(el).forEach((e) => e.remove())
             } else {
-                this.remove(this.find(el));
+                this.remove(this.find(el))
             }
         })
     },
@@ -312,27 +309,26 @@ const dom = {
      */
     closest(el, selector) {
         if (selector instanceof Element) {
-            if (el === selector)
-                return el;
+            if (el === selector) return el
 
-            let parentEl = el.parentElement;
+            let parentEl = el.parentElement
 
             while (parentEl) {
                 if (parentEl === selector) {
-                    return parentEl;
+                    return parentEl
                 }
 
-                parentEl = parentEl.parentElement;
+                parentEl = parentEl.parentElement
             }
 
-            return null;
+            return null
         }
 
         if (undefined === selector) {
-            return el;
+            return el
         }
 
-        return el.closest(selector);
+        return el.closest(selector)
     },
 
     /**
@@ -341,15 +337,15 @@ const dom = {
      * @returns {Element|null}
      */
     next(el, selector = null) {
-        let sibling = el.nextElementSibling;
+        let sibling = el.nextElementSibling
 
-        if (!selector) return sibling;
+        if (!selector) return sibling
 
         if (sibling && sibling.matches(selector)) {
-            return sibling;
+            return sibling
         }
 
-        return null;
+        return null
     },
 
     /**
@@ -358,15 +354,15 @@ const dom = {
      * @returns {Element|null}
      */
     prev(el, selector = null) {
-        let sibling = el.previousElementSibling;
+        let sibling = el.previousElementSibling
 
-        if (!selector) return sibling;
+        if (!selector) return sibling
 
         if (sibling && sibling.matches(selector)) {
-            return sibling;
+            return sibling
         }
 
-        return null;
+        return null
     },
 
     /**
@@ -375,19 +371,19 @@ const dom = {
      * @returns {Element[]}
      */
     nextAll(el, selector) {
-        const siblings = [];
+        const siblings = []
 
-        let sibling = el.nextElementSibling;
+        let sibling = el.nextElementSibling
 
         while (sibling) {
             if (undefined === selector || sibling.matches(selector)) {
-                siblings.push(sibling);
+                siblings.push(sibling)
             }
 
-            sibling = sibling.nextElementSibling;
+            sibling = sibling.nextElementSibling
         }
 
-        return siblings;
+        return siblings
     },
 
     /**
@@ -396,19 +392,19 @@ const dom = {
      * @returns {Element[]}
      */
     prevAll(el, selector) {
-        const siblings = [];
+        const siblings = []
 
-        let sibling = el.previousElementSibling;
+        let sibling = el.previousElementSibling
 
         while (sibling) {
             if (undefined === selector || sibling.matches(selector)) {
-                siblings.push(sibling);
+                siblings.push(sibling)
             }
 
-            sibling = sibling.previousElementSibling;
+            sibling = sibling.previousElementSibling
         }
 
-        return siblings;
+        return siblings
     },
 
     /**
@@ -417,28 +413,28 @@ const dom = {
      * @returns {Element[]}
      */
     nextUntil(el, selector) {
-        let selectorIsElement = false;
-        const list = [];
+        let selectorIsElement = false
+        const list = []
 
         if (selector instanceof Element) {
-            selectorIsElement = true;
+            selectorIsElement = true
         }
 
-        let nextSibling = el.nextElementSibling;
+        let nextSibling = el.nextElementSibling
 
         while (nextSibling) {
             const found = selectorIsElement
                 ? nextSibling === selector
-                : nextSibling.matches(selector);
+                : nextSibling.matches(selector)
 
-            if (found) break;
+            if (found) break
 
-            list.push(nextSibling);
+            list.push(nextSibling)
 
-            nextSibling = nextSibling.nextElementSibling;
+            nextSibling = nextSibling.nextElementSibling
         }
 
-        return list;
+        return list
     },
 
     /**
@@ -447,28 +443,28 @@ const dom = {
      * @returns {Element[]}
      */
     prevUntil(el, selector) {
-        let selectorIsElement = false;
-        const list = [];
+        let selectorIsElement = false
+        const list = []
 
         if (selector instanceof Element) {
-            selectorIsElement = true;
+            selectorIsElement = true
         }
 
-        let prevSibling = el.previousElementSibling;
+        let prevSibling = el.previousElementSibling
 
         while (prevSibling) {
             const found = selectorIsElement
                 ? prevSibling === selector
-                : prevSibling.matches(selector);
+                : prevSibling.matches(selector)
 
-            if (found) break;
+            if (found) break
 
-            list.push(prevSibling);
+            list.push(prevSibling)
 
-            prevSibling = prevSibling.previousElementSibling;
+            prevSibling = prevSibling.previousElementSibling
         }
 
-        return list;
+        return list
     },
 
     /**
@@ -478,12 +474,12 @@ const dom = {
      */
     wrap(el, wrappingElement) {
         if (!wrappingElement.isConnected) {
-            el.parentNode.insertBefore(wrappingElement, el);
+            el.parentNode.insertBefore(wrappingElement, el)
         }
 
-        this.append(wrappingElement, el);
+        this.append(wrappingElement, el)
 
-        return el;
+        return el
     },
 
     /**
@@ -493,15 +489,15 @@ const dom = {
      * @returns {Element|*}
      */
     attr(el, name, value) {
-        if (undefined === value) return el.getAttribute(name);
+        if (undefined === value) return el.getAttribute(name)
 
         if (null === value) {
-            el.removeAttribute(name);
+            el.removeAttribute(name)
         } else {
-            el.setAttribute(name, value);
+            el.setAttribute(name, value)
         }
 
-        return el;
+        return el
     },
 
     /**
@@ -512,11 +508,11 @@ const dom = {
      */
     prop(el, name, value) {
         if (undefined === value) {
-            return el[name];
+            return el[name]
         }
 
-        el[name] = value;
-        return el;
+        el[name] = value
+        return el
     },
 
     /**
@@ -525,10 +521,10 @@ const dom = {
      * @returns {Element|string}
      */
     html(el, html) {
-        if (undefined === html) return el.innerHTML;
+        if (undefined === html) return el.innerHTML
 
-        el.innerHTML = html;
-        return el;
+        el.innerHTML = html
+        return el
     },
 
     /**
@@ -537,10 +533,10 @@ const dom = {
      * @returns {Element|string}
      */
     text(el, text) {
-        if (undefined === text) return el.innerText;
+        if (undefined === text) return el.innerText
 
-        el.innerText = text;
-        return el;
+        el.innerText = text
+        return el
     },
 
     /**
@@ -549,12 +545,12 @@ const dom = {
      */
     hide(el) {
         if (undefined === this.data(el, '__display__')) {
-            const display = getComputedStyle(el).display;
-            this.data(el, '__display__', display);
+            const display = getComputedStyle(el).display
+            this.data(el, '__display__', display)
         }
 
-        el.style.display = 'none';
-        return el;
+        el.style.display = 'none'
+        return el
     },
 
     /**
@@ -565,13 +561,13 @@ const dom = {
         const dataDisplay = this.data(el, '__display__')
 
         if (undefined === dataDisplay) {
-            el.style.removeProperty('display');
+            el.style.removeProperty('display')
         } else {
-            el.style.display = dataDisplay;
-            this.removeData(el, '__display__');
+            el.style.display = dataDisplay
+            this.removeData(el, '__display__')
         }
 
-        return el;
+        return el
     },
 
     /**
@@ -579,7 +575,7 @@ const dom = {
      * @returns {Element}
      */
     toggle(el) {
-        return 'none' === el.style.display ? this.show(el) : this.hide(el);
+        return 'none' === el.style.display ? this.show(el) : this.hide(el)
     },
 
     /**
@@ -590,27 +586,27 @@ const dom = {
      */
     data(el, name, value) {
         if (undefined === name && undefined === value) {
-            return el.dataset;
+            return el.dataset
         }
 
         if (isPlainObject(name)) {
-            each(name, (k, v) => this.data(el, k, v));
-            return el;
+            each(name, (k, v) => this.data(el, k, v))
+            return el
         }
 
-        const isAttr = /^data-/.test(name + '');
-        const key = camelCase(isAttr ? (name + '').replace(/^data-/, '') : name + '');
+        const isAttr = /^data-/.test(name + '')
+        const key = camelCase(isAttr ? (name + '').replace(/^data-/, '') : name + '')
 
-        if (undefined === value) return el.dataset[key];
+        if (undefined === value) return el.dataset[key]
 
         if (null === value) {
-            this.removeData(el, key);
-            return el;
+            this.removeData(el, key)
+            return el
         }
 
-        el.dataset[key] = value;
+        el.dataset[key] = value
 
-        return el;
+        return el
     },
 
     /**
@@ -619,11 +615,11 @@ const dom = {
      * @returns {Element|*}
      */
     removeData(el, name) {
-        const key = camelCase((name + '').replace(/^data-/, ''));
+        const key = camelCase((name + '').replace(/^data-/, ''))
 
-        delete el.dataset[key];
+        delete el.dataset[key]
 
-        return el;
+        return el
     },
 
     /**
@@ -634,27 +630,26 @@ const dom = {
      */
     css(el, style, value) {
         if (isString(style)) {
-            const prop = style.startsWith('--') ? style : camelCase(style);
+            const prop = style.startsWith('--') ? style : camelCase(style)
 
             if (undefined === value) {
-                return getStyle(el, prop);
+                return getStyle(el, prop)
             }
 
             if (prop.startsWith('--')) {
-                el.style.setProperty(prop, String(value));
+                el.style.setProperty(prop, String(value))
             } else {
-                if (typeof value === "number" && !inArray(prop, cssNumber))
-                    value += 'px';
+                if (typeof value === 'number' && !inArray(prop, cssNumber)) value += 'px'
 
-                el.style[prop] = value;
+                el.style[prop] = value
             }
         } else {
             each(style, (name, v) => {
-                this.css(el, name, v);
-            });
+                this.css(el, name, v)
+            })
         }
 
-        return el;
+        return el
     },
 
     /**
@@ -664,13 +659,13 @@ const dom = {
      * @returns {Array<Element>}
      */
     closestFind(el, selectorClosest, selectorFind) {
-        const closest = this.closest(el, selectorClosest);
+        const closest = this.closest(el, selectorClosest)
 
         if (closest) {
-            return this.find(closest, selectorFind);
+            return this.find(closest, selectorFind)
         }
 
-        return [];
+        return []
     },
 
     /**
@@ -680,13 +675,13 @@ const dom = {
      * @returns {Element|null}
      */
     closestFindOne(el, selectorClosest, selectorFindOne) {
-        const closest = this.closest(el, selectorClosest);
+        const closest = this.closest(el, selectorClosest)
 
         if (closest) {
-            return this.findOne(closest, selectorFindOne);
+            return this.findOne(closest, selectorFindOne)
         }
 
-        return null;
+        return null
     },
 
     /**
@@ -695,7 +690,7 @@ const dom = {
      */
     first(nodeList) {
         if (nodeList instanceof Element) return nodeList
-        return Array.from(nodeList)[0] ?? null;
+        return Array.from(nodeList)[0] ?? null
     },
 
     /**
@@ -704,8 +699,8 @@ const dom = {
      */
     last(nodeList) {
         if (nodeList instanceof Element) return nodeList
-        const arr = Array.from(nodeList);
-        return arr[arr.length - 1] ?? null;
+        const arr = Array.from(nodeList)
+        return arr[arr.length - 1] ?? null
     },
 
     /**
@@ -713,24 +708,24 @@ const dom = {
      * @returns {Element|DocumentFragment|null}
      */
     create(html) {
-        if (!isString(html)) return null;
+        if (!isString(html)) return null
 
-        const isTagName = (s) => /^[A-Za-z][A-Za-z0-9-]*$/.test(s);
+        const isTagName = (s) => /^[A-Za-z][A-Za-z0-9-]*$/.test(s)
 
         if (isTagName(html)) {
-            return document.createElement(html);
+            return document.createElement(html)
         }
 
-        const tpl = document.createElement('template');
-        tpl.innerHTML = html.trim();
+        const tpl = document.createElement('template')
+        tpl.innerHTML = html.trim()
 
-        const frag = tpl.content;
+        const frag = tpl.content
 
         if (frag.childElementCount === 1 && frag.children.length === 1) {
-            return frag.firstElementChild;
+            return frag.firstElementChild
         }
 
-        return frag.cloneNode(true);
+        return frag.cloneNode(true)
     },
 
     /**
@@ -739,15 +734,15 @@ const dom = {
      * @returns {Element|null}
      */
     eq(nodeList, index = 0) {
-        nodeList = Array.from(nodeList);
+        nodeList = Array.from(nodeList)
 
-        if (Math.abs(index) >= nodeList.length) return null;
+        if (Math.abs(index) >= nodeList.length) return null
 
         if (index < 0) {
-            index = nodeList.length + index;
+            index = nodeList.length + index
         }
 
-        return nodeList[index];
+        return nodeList[index]
     },
 
     /**
@@ -756,13 +751,13 @@ const dom = {
      * @returns {Element|null}
      */
     after(el, newEl) {
-        if (!el.parentElement) return null;
+        if (!el.parentElement) return null
 
         if (isString(newEl)) {
-            newEl = this.create(newEl);
+            newEl = this.create(newEl)
         }
 
-        return el.parentElement.insertBefore(newEl, el.nextElementSibling);
+        return el.parentElement.insertBefore(newEl, el.nextElementSibling)
     },
 
     /**
@@ -771,13 +766,13 @@ const dom = {
      * @returns {Element|null}
      */
     before(el, newEl) {
-        if (!el.parentElement) return null;
+        if (!el.parentElement) return null
 
         if (isString(newEl)) {
-            newEl = this.create(newEl);
+            newEl = this.create(newEl)
         }
 
-        return el.parentElement.insertBefore(newEl, el);
+        return el.parentElement.insertBefore(newEl, el)
     },
 
     /**
@@ -786,10 +781,10 @@ const dom = {
      */
     empty(el) {
         while (el.firstChild) {
-            el.removeChild(el.firstChild);
+            el.removeChild(el.firstChild)
         }
 
-        return el;
+        return el
     },
 
     /**
@@ -798,18 +793,14 @@ const dom = {
      * @return {Array<Element>}
      */
     not(el, selector) {
-        const elements = (el instanceof Element)
-            ? [el]
-            : Array.from(el);
+        const elements = el instanceof Element ? [el] : Array.from(el)
 
-        const selectorIsString = isString(selector);
+        const selectorIsString = isString(selector)
 
-        return elements.filter(e => {
+        return elements.filter((e) => {
             // if (!(e instanceof Element)) return false
 
-            return selectorIsString
-                ? !e.matches(selector)
-                : e !== selector
+            return selectorIsString ? !e.matches(selector) : e !== selector
         })
     },
 
@@ -818,17 +809,16 @@ const dom = {
      * @param {Element} elem2
      * @returns {boolean}
      */
-    collide(elem1, elem2)
-    {
-        const rect1 = elem1.getBoundingClientRect();
-        const rect2 = elem2.getBoundingClientRect();
+    collide(elem1, elem2) {
+        const rect1 = elem1.getBoundingClientRect()
+        const rect2 = elem2.getBoundingClientRect()
 
         return (
             rect1.x < rect2.x + rect2.width &&
             rect1.x + rect1.width > rect2.x &&
             rect1.y < rect2.y + rect2.height &&
             rect1.y + rect1.height > rect2.y
-        );
+        )
     },
 
     /**
@@ -836,11 +826,9 @@ const dom = {
      * @param {string|Element} selector
      */
     matches(el, selector) {
-        if (!el) return false;
+        if (!el) return false
 
-        return selector instanceof Element
-            ? selector === el
-            : el.matches(selector);
+        return selector instanceof Element ? selector === el : el.matches(selector)
     },
 
     /**
@@ -849,7 +837,7 @@ const dom = {
      * @param {Element} oldChild
      */
     replaceChild(el, child, oldChild) {
-        return el.replaceChild(child, oldChild);
+        return el.replaceChild(child, oldChild)
     },
 
     /**
@@ -858,18 +846,18 @@ const dom = {
      * @returns {Element}
      */
     replaceChildren(el, ...children) {
-        const nodes = [];
+        const nodes = []
 
         foreach(children, (child) => {
             if (isString(child)) {
-                child = this.create(child);
+                child = this.create(child)
             }
 
-            nodes.push(child);
-        });
+            nodes.push(child)
+        })
 
-        el.replaceChildren(...nodes);
-        return el;
+        el.replaceChildren(...nodes)
+        return el
     },
 
     /**
@@ -881,23 +869,21 @@ const dom = {
             return {
                 top: el.scrollY,
                 left: el.scrollX,
-            };
-        }
-
-        else if (isDocument(el)) {
+            }
+        } else if (isDocument(el)) {
             return {
                 top: el.documentElement.scrollTop,
                 left: el.documentElement.scrollLeft,
-            };
+            }
         }
 
-        const rect = el.getBoundingClientRect();
-        const wOffset = this.offset(window);
+        const rect = el.getBoundingClientRect()
+        const wOffset = this.offset(window)
 
         return {
             top: rect.top + wOffset.top,
             left: rect.left + wOffset.left,
-        };
+        }
     },
 
     /**
@@ -905,9 +891,9 @@ const dom = {
      * @returns {boolean}
      */
     isEditable(el) {
-        if (el?.nodeType === 3) el = el.parentElement;
+        if (el?.nodeType === 3) el = el.parentElement
 
-        if (!(el instanceof HTMLElement)) return false;
+        if (!(el instanceof HTMLElement)) return false
 
         return (
             inArray(el.tagName, ['INPUT', 'TEXTAREA', 'SELECT']) ||
@@ -921,10 +907,10 @@ const dom = {
      * @returns {boolean}
      */
     isInDOM(node) {
-        if (!(node instanceof Node)) return false;
+        if (!(node instanceof Node)) return false
 
-        const root = node.getRootNode({ composed: true });
-        return root === document;
+        const root = node.getRootNode({ composed: true })
+        return root === document
     },
 
     on,
@@ -934,8 +920,8 @@ const dom = {
 /* istanbul ignore next */
 if ('test' === process.env.NODE_ENV) {
     dom.__resetCustomEventsForTests = function () {
-        __resetCustomEventsForTests();
-    };
+        __resetCustomEventsForTests()
+    }
 }
 
 export default dom
