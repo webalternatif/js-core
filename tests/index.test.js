@@ -1,6 +1,5 @@
 import '../src/index.js';
 import {isFunction} from "../src/is.js";
-import {trim, numberFormat} from "../src/string.js";
 
 describe('index', () => {
     const origTrim = String.prototype.trim;

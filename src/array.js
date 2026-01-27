@@ -1,4 +1,4 @@
-import {each} from "./traversal.js";
+import {each, map} from "./traversal.js";
 import {isArray, isInteger, isObject, isString, isUndefined} from "./is.js";
 import {round} from "./math.js";
 import {equals} from "./utils.js";
@@ -6,7 +6,7 @@ import {equals} from "./utils.js";
 /**
  * Checks if a value exists in an array or an object
  *
- * @param {*} value the searched value
+ * @param {any} value the searched value
  * @param {Object|Array} arr the array
  * @param {number} [index=0] if provided, search from this index
  * @param {boolean} [strict=false] if true, search is done with strict equality
@@ -21,8 +21,7 @@ import {equals} from "./utils.js";
  * // → true
  *
  * @example
- * inArray(5, [1, 2, 3])
- * // → false
+ * inArray(5, [1, 2, 3]) // → false
  */
 export const inArray = function(value, arr, index = 0, strict = false) {
     let ret = false;
@@ -52,11 +51,49 @@ export const inArray = function(value, arr, index = 0, strict = false) {
     return ret;
 }
 
+/**
+ * Returns the first index at which a given element can be found in an array or a string.
+ * or -1 if it is not present.
+ *
+ * @param {Array<any>|string} arr - The array to search in
+ * @param {any} elt - The element to search for
+ * @param {number} [from] - The index to start the search from. Can be negative.
+ * @returns {number} - The index of the element, or -1 if not found
+ */
 export const indexOf = function(arr, elt, from = 0) {
-    from = from < 0 ? Math.ceil(from) + arr.length : Math.floor(from);
+    const a = isString(arr) ? map(arr, (_, a) => a) : arr;
 
-    for (; from < arr.length; from++) {
-        if (from in arr && arr[from] === elt) {
+    from = from < 0
+        ? Math.ceil(from) + a.length
+        : Math.floor(from);
+
+    for (; from < a.length; from++) {
+        if (from in a && a[from] === elt) {
+            return from;
+        }
+    }
+
+    return -1;
+}
+
+/**
+ * Returns the last index at which a given element can be found in an array or a string.
+ * or -1 if it is not present.
+ *
+ * @param {Array<any>|string} arr - The array to search in
+ * @param {any} elt - The element to search for
+ * @param {number} [from] - The index to start the search from. Can be negative.
+ * @returns {number} - The index of the element, or -1 if not found
+ */
+export const lastIndexOf = function(arr, elt, from = -1) {
+    const a = isString(arr) ? map(arr, (_, a) => a) : arr;
+
+    from = from < 0
+        ? a.length + Math.ceil(from)
+        : Math.floor(from);
+
+    for (; from >= 0; from--) {
+        if (from in a && a[from] === elt) {
             return from;
         }
     }

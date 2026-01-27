@@ -1,5 +1,5 @@
 import * as traversal from "../src/traversal.js";
-import {arrayDiff, arrayUnique, compareArray, inArray, indexOf, range} from "../src/array.js";
+import {arrayDiff, arrayUnique, compareArray, inArray, indexOf, lastIndexOf, range} from "../src/array.js";
 import {each} from "../src/traversal.js";
 
 describe('array methods', () => {
@@ -106,24 +106,67 @@ describe('array methods', () => {
         })
 
         it('should skip holes in sparse arrays', () => {
-            const arr = [10, , 30, , 50]; // Sparse array
-            expect(indexOf(arr, undefined)).toBe(-1); // undefined is not explicitly in the array
-            expect(indexOf(arr, 30)).toBe(2); // Finds 30 despite the holes
+            const arr = [10, , 30, , 50];
+            expect(indexOf(arr, undefined)).toBe(-1);
+            expect(indexOf(arr, 30)).toBe(2);
         })
 
         it('should return the first occurrence of the element', () => {
             const arr = [10, 20, 30, 20, 10];
-            expect(indexOf(arr, 20)).toBe(1); // Returns the first occurrence
+            expect(indexOf(arr, 20)).toBe(1);
         })
 
         it('should work when from is larger than the array length', () => {
             const arr = [10, 20, 30];
-            expect(indexOf(arr, 20, 10)).toBe(-1); // Starts beyond the array, no search
+            expect(indexOf(arr, 20, 10)).toBe(-1);
         })
 
         it('should work when from is exactly the array length', () => {
             const arr = [10, 20, 30];
-            expect(indexOf(arr, 30, 3)).toBe(-1); // Starts at the end, no search
+            expect(indexOf(arr, 30, 3)).toBe(-1);
+        })
+
+        it('should work with strings', () => {
+            const str = 'abcb';
+            expect(indexOf(str, 'b')).toBe(1);
+        })
+    })
+
+    describe('lastIndexOf()', () => {
+        it('should return the last occurrence of the element', () => {
+            const arr = [10, 20, 30, 20, 10];
+            expect(lastIndexOf(arr, 20)).toBe(3);
+        })
+
+        it('should return -1 if element is not found', () => {
+            const arr = [1, 2, 3];
+            expect(lastIndexOf(arr, 99)).toBe(-1);
+        })
+
+        it('should find element at index 0', () => {
+            const arr = [5, 1, 2, 3];
+            expect(lastIndexOf(arr, 5)).toBe(0);
+        })
+
+        it('should work with strings', () => {
+            const str = 'abcb';
+            expect(lastIndexOf(str, 'b')).toBe(3);
+        })
+
+        it('should handle negative from negative index', () => {
+            const arr = [1, 2, 3, 2, 1];
+            expect(lastIndexOf(arr, 2, -2)).toBe(3);
+        })
+
+        it('should start searching from the given index', () => {
+            const arr = [10, 20, 30, 40, 50];
+            expect(lastIndexOf(arr, 30, 3)).toBe(2);
+            expect(lastIndexOf(arr, 50, 3)).toBe(-1);
+        })
+
+        it('should return -1 if from index excludes matches', () => {
+            const arr = [1, 2, 3, 2, 1];
+            expect(lastIndexOf(arr, 2, 0)).toBe(-1);
         })
     })
 

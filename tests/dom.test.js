@@ -1,6 +1,7 @@
 import dom, {isWindow, isDocument, isDomElement, getStyle} from "../src/dom.js";
 import Mouse from "../src/Mouse.js";
 import {__resetCustomEventsForTests} from "../src/onOff.js";
+import * as is from "../src/is.js";
 
 function dispatchTouch(el, type) {
     el.dispatchEvent(new Event(type, { bubbles: true, cancelable: true }));
@@ -669,15 +670,120 @@ describe('dom manipulation', () => {
     })
 
     describe('attr()', () => {
+        it('should read an attribute', () => {
+            const child = el.querySelector('.child0');
+            child.setAttribute('data-test', 'hello');
+
+            expect(dom.attr(child, 'data-test')).toBe('hello');
+        });
+
+        it('should set an attribute', () => {
+            const child = el.querySelector('.child1');
+
+            const ret = dom.attr(child, 'data-test', 'world');
+
+            expect(child.getAttribute('data-test')).toBe('world');
+        });
+
+        it('should remove attribute when value is null', () => {
+            const child = el.querySelector('.child2');
+            child.setAttribute('data-test', 'bye');
+
+            dom.attr(child, 'data-test', null);
+
+            expect(child.hasAttribute('data-test')).toBe(false);
+        });
+
+        it('should return null when attribute does not exist', () => {
+            const child = el.querySelector('.child0');
+
+            expect(dom.attr(child, 'data-unknown')).toBeNull();
+        });
     })
 
     describe('prop()', () => {
+        it('should read a property', () => {
+            const child = el.querySelector('.child0');
+            child.customValue = 42;
+
+            expect(dom.prop(child, 'customValue')).toBe(42);
+        });
+
+        it('should set a property', () => {
+            const child = el.querySelector('.child1');
+
+            const ret = dom.prop(child, 'perceval', 'c pas faux');
+
+            expect(child.perceval).toBe('c pas faux');
+            expect(ret).toBe(child);
+        });
+
+        it('should reflect live DOM state', () => {
+            const input = document.createElement('input');
+            document.body.append(input);
+
+            input.value = 'abc';
+
+            expect(dom.prop(input, 'value')).toBe('abc');
+        });
+
+        it('attr and prop should differ for input value', () => {
+            const input = document.createElement('input');
+            input.setAttribute('value', 'perceval');
+            document.body.append(input);
+
+            input.value = 'karadoc';
+
+            expect(dom.attr(input, 'value')).toBe('perceval');
+            expect(dom.prop(input, 'value')).toBe('karadoc');
+        });
     })
 
     describe('html()', () => {
+        it('should return innerHTML when no value provided', () => {
+            const child = el.querySelector('.child0');
+            child.innerHTML = '<span>On en a gros</span>';
+            expect(dom.html(child)).toBe('<span>On en a gros</span>');
+        });
+
+        it('should set innerHTML', () => {
+            const child = el.querySelector('.child1');
+            dom.html(child, '<b>On en a gros</b>');
+            expect(child.innerHTML).toBe('<b>On en a gros</b>');
+        });
+
+        it('should overwrite existing HTML', () => {
+            const child = el.querySelector('.child2');
+            child.innerHTML = '<i>On en a gros</i>';
+
+            dom.html(child, '<u>c pas faux</u>');
+
+            expect(child.innerHTML).toBe('<u>c pas faux</u>');
+        });
     })
 
     describe('text()', () => {
+        it('should return innerText when no value provided', () => {
+            const child = el.querySelector('.child0');
+            child.innerText = 'On en a gros';
+
+            expect(dom.text(child)).toBe('On en a gros');
+        });
+
+        it('should set innerText', () => {
+            const child = el.querySelector('.child1');
+            dom.text(child, 'On en a gros');
+            expect(child.innerText).toBe('On en a gros');
+        });
+
+        it('should overwrite existing text', () => {
+            const child = el.querySelector('.child2');
+            child.innerText = 'On en a gros';
+
+            dom.text(child, 'c pas faux');
+
+            expect(child.innerText).toBe('c pas faux');
+        });
     })
 
     describe('hide()', () => {
@@ -986,6 +1092,59 @@ describe('dom manipulation', () => {
         });
     });
 
+    describe('dom.isEditable', () => {
+        it('should return true for input', () => {
+            const el = document.createElement('input');
+            expect(dom.isEditable(el)).toBe(true);
+        })
+
+        it('should return true for textarea', () => {
+            const el = document.createElement('textarea');
+            expect(dom.isEditable(el)).toBe(true);
+        })
+
+        it('should return true for select', () => {
+            const el = document.createElement('select');
+            expect(dom.isEditable(el)).toBe(true);
+        })
+
+        it('should return true for contenteditable div', () => {
+            const el = document.createElement('div');
+            el.setAttribute('contenteditable', 'true');
+            expect(dom.isEditable(el)).toBe(true);
+        })
+
+        it('should return true for nested element inside contenteditable', () => {
+            const parent = document.createElement('div');
+            parent.setAttribute('contenteditable', 'true');
+
+            const child = document.createElement('span');
+            parent.appendChild(child);
+
+            expect(dom.isEditable(child)).toBe(true);
+        })
+
+        test('should return false for normal div', () => {
+            const el = document.createElement('div');
+            expect(dom.isEditable(el)).toBe(false);
+        })
+
+        test('should return false for button', () => {
+            const el = document.createElement('button');
+            expect(dom.isEditable(el)).toBe(false);
+        })
+
+        test('should return false for span', () => {
+            const el = document.createElement('span');
+            expect(dom.isEditable(el)).toBe(false);
+        })
+
+        test('should return false for element with contenteditable="false"', () => {
+            const el = document.createElement('div');
+            el.setAttribute('contenteditable', 'false');
+            expect(dom.isEditable(el)).toBe(false);
+        })
+    })
 
     describe('on(), off()', () => {
         it('should attach an event listener', () => {
@@ -1013,6 +1172,14 @@ describe('dom manipulation', () => {
             expect(handler).not.toHaveBeenCalled();
         });
 
+        it('should handle when no event has been on', () => {
+            const handler = jest.fn();
+
+            dom.off(el, 'click', handler);
+
+            expect(handler).not.toHaveBeenCalled();
+        });
+
         it('should support multiple events', () => {
             const handler = jest.fn();
 
@@ -1027,8 +1194,8 @@ describe('dom manipulation', () => {
         it('should remove handler for multiple events', () => {
             const handler = jest.fn();
 
-            dom.on(el, 'click mouseenter', handler);
-            dom.off(el, 'click mouseenter', handler);
+            dom.on(el, 'click mouseenter', handler, true);
+            dom.off(el, 'click mouseenter', handler, true);
 
             el.dispatchEvent(new MouseEvent('click'));
             el.dispatchEvent(new MouseEvent('mouseenter'));
@@ -1288,6 +1455,7 @@ describe('dom manipulation', () => {
                 .mockReturnValueOnce({ x: 10, y: 10 });
 
             dispatchTouch(el, 'touchstart');
+            dispatchTouch(el, 'touchmove');
 
             jest.advanceTimersByTime(799);
             expect(handler).not.toHaveBeenCalled();
@@ -1302,7 +1470,7 @@ describe('dom manipulation', () => {
 
             jest.spyOn(Mouse, 'getViewportPosition')
                 .mockReturnValueOnce({ x: 10, y: 10 })
-                .mockReturnValueOnce({ x: 40, y: 40 });
+                .mockReturnValueOnce({ x: 50, y: 50 });
 
             dispatchTouch(el, 'touchstart');
             dispatchTouch(el, 'touchmove');
@@ -1377,6 +1545,21 @@ describe('dom manipulation', () => {
             expect(ev.currentTarget).toBe(child1);
         });
 
+        it('should not double bind longtap native listener', () => {
+            const addSpy = jest.spyOn(document, 'addEventListener');
+
+            const handler = () => {};
+
+            dom.on(el, 'longtap', handler);
+            dom.on(el, 'longtap', handler);
+
+            const longtapBindings = addSpy.mock.calls.filter(
+                ([eventName]) => eventName === 'touchstart'
+            );
+
+            expect(longtapBindings.length).toBe(1);
+        });
+
         it('should remove all handlers when calling off(el)', () => {
             const h1 = jest.fn();
             const h2 = jest.fn();
@@ -1391,6 +1574,31 @@ describe('dom manipulation', () => {
             expect(h1).not.toHaveBeenCalled();
             expect(h2).not.toHaveBeenCalled();
         });
+
+
+        it('should handle events dispatched from a text node', () => {
+            document.body.innerHTML = `
+              <div id="root">
+                <button id="btn">Click me</button>
+              </div>
+            `
+
+            const root = document.getElementById('root');
+            const btn = document.getElementById('btn');
+
+            const handler = jest.fn();
+
+            dom.on(root, 'click', 'button', handler);
+
+            const textNode = btn.firstChild;
+
+            const event = new MouseEvent('click', { bubbles: true })
+
+            textNode.dispatchEvent(event)
+
+            expect(handler).toHaveBeenCalledTimes(1)
+            expect(handler.mock.calls[0][0].target).toBe(textNode)
+        })
     })
 
     describe('dom.on delegated events propagation', () => {
@@ -1454,7 +1662,7 @@ describe('dom manipulation', () => {
             expect(calls).toEqual(['child1', 'child2']);
         });
 
-        it('child can stop parent regardless of bind order', () => {
+        it('child shoult stop parent regardless of bind order', () => {
             const el = document.createElement('div');
             el.innerHTML = `<div class="parent"><div class="child"></div></div>`;
             document.body.appendChild(el);
@@ -1474,6 +1682,31 @@ describe('dom manipulation', () => {
             child.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
             expect(calls).toEqual(['child1']);
+        });
+
+        it('preventDefault should call native preventDefault', () => {
+            const el = document.createElement('div');
+            el.innerHTML = `<button class="btn"></button>`;
+            document.body.appendChild(el);
+
+            const btn = el.querySelector('.btn');
+
+            let defaultPreventedInsideHandler = false;
+
+            dom.on(el, 'click', '.btn', (ev) => {
+                ev.preventDefault();
+                defaultPreventedInsideHandler = ev.originalEvent.defaultPrevented;
+            });
+
+            const event = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true
+            });
+
+            btn.dispatchEvent(event);
+
+            expect(defaultPreventedInsideHandler).toBe(true);
+            expect(event.defaultPrevented).toBe(true);
         });
 
         it('should stop propagation on native events', () => {
@@ -1505,6 +1738,23 @@ describe('dom manipulation', () => {
             expect(calls).toEqual(['native:child']);
         });
 
+        it('should ignore event if propagation already stopped on same element', () => {
+            const calls = [];
+
+            parent.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                calls.push('native:parent');
+            });
+
+            dom.on(parent, 'click', () => {
+                calls.push('dom.on:parent');
+            });
+
+            parent.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+            expect(calls).toEqual(['native:parent']);
+        });
+
         it('should stop dom.on internal propagation if native listener stops propagation before it reaches root', () => {
             const calls = [];
 
@@ -1521,6 +1771,55 @@ describe('dom manipulation', () => {
 
             expect(calls).toEqual(['native:parent-stop']);
         });
+    })
+
+    describe('dblclick prevention on touch devices', () => {
+        beforeEach(() => {
+            __resetCustomEventsForTests()
+            jest.spyOn(is, 'isTouchDevice').mockReturnValue(true)
+        })
+
+        afterEach(() => {
+            jest.restoreAllMocks()
+        })
+
+        it('should attach a dblclick listener that blocks the event', () => {
+            const spy = jest.spyOn(document, 'addEventListener')
+
+            dom.on(document, 'dbltap', () => {})
+
+            const dblclickCall = spy.mock.calls.find(
+                ([event]) => event === 'dblclick'
+            )
+
+            expect(dblclickCall).toBeTruthy()
+
+            const handler = dblclickCall[1];
+
+            const ev = {
+                preventDefault: jest.fn(),
+                stopPropagation: jest.fn(),
+                stopImmediatePropagation: jest.fn(),
+            }
+
+            handler(ev);
+
+            expect(ev.preventDefault).toHaveBeenCalled()
+            expect(ev.stopPropagation).toHaveBeenCalled()
+            expect(ev.stopImmediatePropagation).toHaveBeenCalled()
+        })
+
+        it('should not attach dblclick listener on non-touch devices', () => {
+            is.isTouchDevice.mockReturnValue(false)
+
+            const spy = jest.spyOn(document, 'addEventListener')
+
+            dom.on(document, 'dbltap', () => {})
+
+            expect(
+                spy.mock.calls.find(([event]) => event === 'dblclick')
+            ).toBeUndefined()
+        })
     })
 })
 

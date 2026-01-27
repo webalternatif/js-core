@@ -1,8 +1,7 @@
-import {isArray, isArrayLike, isFunction, isObject, isPlainObject, isString, isTouchDevice} from "./is.js";
+import {isArray, isArrayLike, isObject, isPlainObject, isString} from "./is.js";
 import {camelCase} from "./string.js";
 import {each, foreach, map} from "./traversal.js";
 import {inArray} from "./array.js";
-import Mouse from "./Mouse.js";
 import {on, off, __resetCustomEventsForTests} from './onOff.js';
 
 const cssNumber = [
@@ -313,9 +312,8 @@ const dom = {
      */
     closest(el, selector) {
         if (selector instanceof Element) {
-            if (el === selector) {
+            if (el === selector)
                 return el;
-            }
 
             let parentEl = el.parentElement;
 
@@ -524,7 +522,7 @@ const dom = {
     /**
      * @param {Element} el
      * @param {string} [html]
-     * @returns {Element|*}
+     * @returns {Element|string}
      */
     html(el, html) {
         if (undefined === html) return el.innerHTML;
@@ -536,7 +534,7 @@ const dom = {
     /**
      * @param {Element} el
      * @param {string} [text]
-     * @returns {Element|*}
+     * @returns {Element|string}
      */
     text(el, text) {
         if (undefined === text) return el.innerText;
@@ -906,6 +904,20 @@ const dom = {
             top: rect.top + wOffset.top,
             left: rect.left + wOffset.left,
         };
+    },
+
+    /**
+     * @param {Element} el
+     * @returns {boolean}
+     */
+    isEditable(el) {
+        if (!(el instanceof HTMLElement)) return false;
+
+        return (
+            inArray(el.tagName, ['INPUT', 'TEXTAREA', 'SELECT']) ||
+            el.isContentEditable ||
+            !!this.closest(el, '[contenteditable="true"]')
+        )
     },
 
     on,

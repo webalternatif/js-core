@@ -2271,7 +2271,7 @@ doctrine-temporary-fork@2.1.0:
 
 documentation@^14.0.3:
   version "14.0.3"
-  resolved "https://registry.npmjs.org/documentation/-/documentation-14.0.3.tgz"
+  resolved "https://registry.yarnpkg.com/documentation/-/documentation-14.0.3.tgz#738998d0560193c35b2451b9706a924dc9fa9ec9"
   integrity sha512-B7cAviVKN9Rw7Ofd+9grhVuxiHwly6Ieh+d/ceMw8UdBOv/irkuwnDEJP8tq0wgdLJDUVuIkovV+AX9mTrZFxg==
   dependencies:
     "@babel/core" "^7.18.10"

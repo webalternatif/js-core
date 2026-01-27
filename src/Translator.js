@@ -2,15 +2,15 @@ import {isFunction, isPlainObject} from "./is.js";
 import {each, extend} from "./traversal.js";
 
 /**
- * @typedef {string | (() => string)} TranslatorValue
+ * @typedef {string|(()=>string)} TranslatorValue
  */
 
 /**
- * @typedef {Record<string, Record<string, Record<string, TranslatorValue>>>} TranslatorNsMapping
+ * @typedef {Record<string,Record<string,Record<string,TranslatorValue>>>} TranslatorNsMapping
  */
 
 /**
- * @typedef {Record<string, Record<string, TranslatorValue>>} TranslatorCoreMapping
+ * @typedef {Record<string,Record<string,TranslatorValue>>} TranslatorCoreMapping
  */
 
 /**
@@ -130,11 +130,7 @@ export default class Translator {
 
     #resolve(entry) {
         if (isFunction(entry)) {
-            try {
-                return entry();
-            } catch (e) {
-                return null;
-            }
+            return entry();
         }
 
         return entry;

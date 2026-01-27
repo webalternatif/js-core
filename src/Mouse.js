@@ -2,6 +2,11 @@ import {isTouchDevice} from "./is.js";
 
 class Mouse
 {
+    /**
+     * @param {Event} ev
+     * @param {Element} element
+     * @returns {{x: number, y: number}}
+     */
     static getPosition(ev, element) {
         ev = this.#getEvent(ev);
         let rect = { left: 0, top: 0 };
@@ -16,11 +21,15 @@ class Mouse
         }
 
         return {
-            x: ev.pageX !== undefined ? ev.pageX - rect.left : rect.left,
-            y: ev.pageY !== undefined ? ev.pageY - rect.top : rect.top
+            x: ev.pageX - rect.left,
+            y: ev.pageY - rect.top
         };
     }
 
+    /**
+     * @param {Event} ev
+     * @returns {{x: number, y: number}}
+     */
     static getViewportPosition(ev) {
         ev = this.#getEvent(ev);
 
@@ -36,18 +45,23 @@ class Mouse
         return window.document.elementFromPoint(ev.clientX, ev.clientY);
     }
 
+    /**
+     * @param {Event|{originalEvent?: Event}} ev
+     * @returns {Event}
+     */
     static #getEvent(ev) {
-        if (isTouchDevice()) {
-            const orgEvent = ev.originalEvent ? ev.originalEvent : ev;
+        ev = ev.originalEvent ?? ev;
 
-            if (orgEvent.changedTouches && orgEvent.changedTouches.length) {
-                ev = orgEvent.changedTouches[0];
-            } else if (orgEvent.touches) {
-                ev = orgEvent.touches[0];
-            }
+        if (isTouchDevice()) {
+            const touch = ev.changedTouches?.[0] || ev.touches?.[0];
+
+            ev.clientX = touch.clientX;
+            ev.clientY = touch.clientY;
+            ev.pageX = touch.pageX;
+            ev.pageY = touch.pageY;
         }
 
-        return ev.originalEvent ?? ev;
+        return ev;
     }
 }
 

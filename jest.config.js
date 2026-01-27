@@ -11,7 +11,7 @@ export default {
     ],
     collectCoverageFrom: [
         'src/**/*.{js,jsx}',
-        '!i18n/**',
+        '!src/index.js',
         '!tests/**/*.js'
     ],
     transform: {

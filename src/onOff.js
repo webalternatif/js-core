@@ -50,7 +50,7 @@ const enableLongTap = function () {
     };
 
     const move = (ev) => {
-        if (!timer) return;
+        // if (!timer) return;
 
         const pos = Mouse.getViewportPosition(ev)
 
@@ -61,7 +61,7 @@ const enableLongTap = function () {
     };
 
     const end = () => {
-        if (timer) clearTimeout(timer);
+        clearTimeout(timer);
         timer = null;
     };
 
@@ -133,8 +133,9 @@ function buildTree(target, el) {
     let node = target.nodeType === 3 ? target.parentElement : target;
 
     while (node) {
-        if (node.nodeType === 1) path.push(node);
-        if (node === el) break;
+        path.push(node);
+        if (node === el)
+            break;
         node = node.parentElement;
     }
 
@@ -231,7 +232,7 @@ export function on(el, events, selector, handler, options) {
             supplyEvent(event);
         }
 
-        const events = map(store, (_, entry) => entry.event ? entry.event : null)
+        const events = map(store, (_, entry) => entry.event)
 
         if (!inArray(event, events)) {
             el.addEventListener(event, listener, options);

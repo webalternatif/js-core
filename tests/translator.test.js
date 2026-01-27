@@ -153,6 +153,37 @@ describe('Translation from one lang to another', () => {
     it('should resolve function entries', () => {
         expect(translator.translateFrom('Demain', 'fr', 'en', 'date')).toBe('Tomorrow');
     })
+
+    it('should return label if label is falsy', () => {
+        expect(translator.translateFrom('', 'fr', 'en')).toBe('');
+        expect(translator.translateFrom(null, 'fr', 'en')).toBe(null);
+    });
+
+    it('should return label if namespace does not exist', () => {
+        expect(translator.translateFrom('Bonjour', 'fr', 'en', 'unknown')).toBe('Bonjour');
+    });
+
+    it('should return label if source language map is missing', () => {
+        expect(translator.translateFrom('Bonjour', 'es', 'en')).toBe('Bonjour');
+    });
+
+    it('should return label if target language map is missing', () => {
+        expect(translator.translateFrom('Bonjour', 'fr', 'es')).toBe('Bonjour');
+    });
+
+    it('should return label if value is not found in source language map', () => {
+        expect(translator.translateFrom('Salut', 'fr', 'en')).toBe('Salut');
+    });
+
+    it('should return label if target entry resolves to falsy value', () => {
+        const brokenMapping = {
+            fr: { hello: 'Bonjour' },
+            en: { hello: null }
+        };
+
+        const t = new Translator(brokenMapping);
+        expect(t.translateFrom('Bonjour', 'fr', 'en')).toBe('Bonjour');
+    });
 });
 
 
