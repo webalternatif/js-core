@@ -1,14 +1,12 @@
 name: CI Tests & Build
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'dist/**'
   pull_request:
 
 jobs:
@@ -41,16 +39,6 @@ jobs:
 
       - name: Build
         run: yarn build
-
-      - name: Commit dist if changed
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add dist
-          git diff --cached --quiet || git commit -m "chore(ci): update dist"
-
-      - name: Push changes to main
-        run: git push origin main
 
   publish:
     name: Publish to npm

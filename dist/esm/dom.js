@@ -737,6 +737,17 @@ var dom = {
     if (!(el instanceof HTMLElement)) return false;
     return inArray(el.tagName, ['INPUT', 'TEXTAREA', 'SELECT']) || el.isContentEditable || !!this.closest(el, '[contenteditable="true"]');
   },
+  /**
+   * @param {Node} node
+   * @returns {boolean}
+   */
+  isInDOM: function isInDOM(node) {
+    if (!(node instanceof Node)) return false;
+    var root = node.getRootNode({
+      composed: true
+    });
+    return root === document;
+  },
   on: on,
   off: off
 };
