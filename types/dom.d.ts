@@ -291,6 +291,11 @@ declare namespace dom {
      * @returns {boolean}
      */
     export function isEditable(el: Element): boolean;
+    /**
+     * @param {Node} node
+     * @returns {boolean}
+     */
+    export function isInDOM(node: Node): boolean;
     export { on };
     export { off };
 }
