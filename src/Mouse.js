@@ -65,3 +65,9 @@ class Mouse {
 }
 
 export default Mouse
+
+/* istanbul ignore else */
+if (typeof window !== 'undefined') {
+    window.webf = window.webf || {}
+    window.webf.mouse = Mouse
+}

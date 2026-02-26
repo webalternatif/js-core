@@ -1,7 +1,8 @@
-import dom, { isWindow, isDocument, isDomElement, getStyle } from '../src/dom.js'
+import dom from '../src/dom.js'
 import Mouse from '../src/Mouse.js'
 import { __resetCustomEventsForTests } from '../src/onOff.js'
 import * as is from '../src/is.js'
+import { isDocument, isDomElement, isWindow } from '../src/is.js'
 
 function dispatchTouch(el, type) {
     el.dispatchEvent(new Event(type, { bubbles: true, cancelable: true }))
@@ -55,60 +56,6 @@ describe('dom methods', () => {
             expect(isDomElement(42)).toBe(false)
             expect(isDomElement('string')).toBe(false)
             expect(isDomElement({ nodeType: 1 })).toBe(false)
-        })
-    })
-
-    describe('getStyle', () => {
-        const mockElement = (styles = {}) => {
-            const element = document.createElement('div')
-            Object.assign(element.style, styles)
-            return element
-        }
-
-        const mockNonDomElement = () => ({})
-
-        it('should return empty string for non-DOM elements', () => {
-            const nonDomElement = mockNonDomElement()
-            expect(getStyle(nonDomElement, 'color')).toBe('')
-        })
-
-        it('should return the computed style for a valid DOM element', () => {
-            const elem = mockElement({ color: 'red' })
-            document.body.appendChild(elem)
-
-            expect(getStyle(elem, 'color')).toBe('red')
-            document.body.removeChild(elem)
-        })
-
-        it('should return inline style when no computed style is available', () => {
-            const elem = mockElement({ backgroundColor: 'blue' })
-            expect(getStyle(elem, 'background-color')).toBe('blue')
-        })
-
-        it('should return camelCase style for kebab-case properties', () => {
-            const elem = mockElement({ backgroundColor: 'green' })
-            expect(getStyle(elem, 'background-color')).toBe('green')
-        })
-
-        it('should return empty string for undefined styles', () => {
-            const elem = mockElement()
-            expect(getStyle(elem, 'color')).toBe('')
-        })
-
-        it('should return empty string for invalid cssRule', () => {
-            const elem = mockElement({ color: 'red' })
-            expect(getStyle(elem, 'invalid-rule')).toBe('')
-        })
-
-        it('should handle cases where getComputedStyle is unavailable', () => {
-            const originalGetComputedStyle = window.getComputedStyle
-            delete window.getComputedStyle
-
-            const elem = mockElement({ color: 'blue' })
-            expect(getStyle(elem, 'color')).toBe('blue')
-            expect(getStyle(elem, 'notexists')).toBe('')
-
-            window.getComputedStyle = originalGetComputedStyle
         })
     })
 })
@@ -262,6 +209,21 @@ describe('dom manipulation', () => {
             const found = dom.findOneByData(el, 'test', 'x')
 
             expect(found).toBe(a)
+        })
+
+        it('should return the matching descendants by data attribute even if no value is provided', () => {
+            const a = el.querySelector('.child1 .grandchild0')
+            const b = el.querySelector('.child1 .grandchild1')
+
+            a.dataset.test = 'x'
+            b.dataset.test = 'x'
+
+            const found = dom.findByData(el, 'test')
+            const foundOne = dom.findOneByData(el, 'test')
+
+            expect(found).toHaveLength(2)
+            expect(found).toEqual([a, b])
+            expect(foundOne).toBe(a)
         })
 
         it('should return null if nothing matches', () => {
@@ -689,6 +651,16 @@ describe('dom manipulation', () => {
         })
     })
 
+    describe('prevAll()', () => {
+        it('should return the index of an element', () => {
+            const child3 = el.children[2]
+
+            expect(dom.index(child3)).toBe(2)
+            expect(dom.index(child3, '.child')).toBe(2)
+            expect(dom.index(child3, '.child1')).toBe(1)
+        })
+    })
+
     describe('wrap()', () => {
         it('should wrap a child element with a wrapper', () => {
             const child = el.querySelector('.child1')
@@ -872,6 +844,18 @@ describe('dom manipulation', () => {
         it('should return the element', () => {
             expect(dom.hide(el)).toBe(el)
         })
+
+        it('should fallback to inline style if getComputedStyle is not available', () => {
+            const original = window.getComputedStyle
+            delete window.getComputedStyle
+
+            el.style.display = 'grid'
+            dom.hide(el)
+
+            expect(dom.data(el, '__display__')).toBe('grid')
+
+            window.getComputedStyle = original
+        })
     })
 
     describe('show()', () => {
@@ -1033,6 +1017,25 @@ describe('dom manipulation', () => {
         it('should set CSS custom properties (--var)', () => {
             dom.css(el, '--my-color', 'blue')
             expect(el.style.getPropertyValue('--my-color')).toBe('blue')
+        })
+
+        it('should fallback to inline style if getComputedStyle is not available', () => {
+            const original = window.getComputedStyle
+            delete window.getComputedStyle
+
+            dom.css(el, 'width', 42)
+            expect(dom.css(el, 'width') === '42px').toBe(true)
+
+            window.getComputedStyle = original
+        })
+
+        it('should return an empty string for invalid properties', () => {
+            const original = window.getComputedStyle
+            delete window.getComputedStyle
+
+            expect(dom.css(el, 'karadoc')).toBe('')
+
+            window.getComputedStyle = original
         })
     })
 

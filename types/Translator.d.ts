@@ -1,3 +1,8 @@
+export default Translator;
+export type TranslatorValue = string | (() => string);
+export type TranslatorNsMapping = Record<string, Record<string, Record<string, TranslatorValue>>>;
+export type TranslatorCoreMapping = Record<string, Record<string, TranslatorValue>>;
+export type TranslatorMapping = TranslatorNsMapping | TranslatorCoreMapping;
 /**
  * @typedef {string|(()=>string)} TranslatorValue
  */
@@ -10,7 +15,7 @@
 /**
  * @typedef {TranslatorNsMapping | TranslatorCoreMapping} TranslatorMapping
  */
-export default class Translator {
+declare class Translator {
     /**
      * @param {TranslatorMapping} mapping
      * @param {string} [defaultLang]
@@ -35,7 +40,3 @@ export default class Translator {
     setLang(lang: any): void;
     #private;
 }
-export type TranslatorValue = string | (() => string);
-export type TranslatorNsMapping = Record<string, Record<string, Record<string, TranslatorValue>>>;
-export type TranslatorCoreMapping = Record<string, Record<string, TranslatorValue>>;
-export type TranslatorMapping = TranslatorNsMapping | TranslatorCoreMapping;

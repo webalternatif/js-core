@@ -25,6 +25,7 @@ export default defineConfig([
             eqeqeq: 'warn',
             'prettier/prettier': 'warn',
             'no-prototype-builtins': 'off',
+            'no-console': ['error', { allow: ['warn', 'error'] }],
         },
     },
     {

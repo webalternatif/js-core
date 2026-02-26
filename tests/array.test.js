@@ -178,69 +178,6 @@ describe('array methods', () => {
         })
     })
 
-    describe('compareArray()', () => {
-        it('should return true for identical arrays', () => {
-            const arr1 = [1, 2, 3]
-            const arr2 = [1, 2, 3]
-            expect(compareArray(arr1, arr2)).toBe(true)
-        })
-
-        it('should return false for arrays with different lengths', () => {
-            const arr1 = [1, 2, 3]
-            const arr2 = [1, 2]
-            expect(compareArray(arr1, arr2)).toBe(false)
-        })
-
-        it('should return true for nested identical arrays', () => {
-            const arr1 = [1, [2, 3], 4]
-            const arr2 = [1, [2, 3], 4]
-            expect(compareArray(arr1, arr2)).toBe(true)
-        })
-
-        it('should return false for nested arrays with different values', () => {
-            const arr1 = [1, [2, 3], 4]
-            const arr2 = [1, [2, 4], 4]
-            expect(compareArray(arr1, arr2)).toBe(false)
-        })
-
-        it('should return false if one array has nested arrays and the other does not', () => {
-            const arr1 = [1, [2, 3], 4, 5]
-            const arr2 = [1, 2, 3, 4]
-            expect(compareArray(arr1, arr2)).toBe(false)
-            expect(compareArray(arr2, arr1)).toBe(false)
-        })
-
-        it('should return true for empty arrays', () => {
-            const arr1 = []
-            const arr2 = []
-            expect(compareArray(arr1, arr2)).toBe(true)
-        })
-
-        it('should return false for arrays with different primitive values', () => {
-            const arr1 = [1, 2, 3]
-            const arr2 = [1, 2, 4]
-            expect(compareArray(arr1, arr2)).toBe(false)
-        })
-
-        it('should return false for deeply nested arrays with differences', () => {
-            const arr1 = [1, [2, [3, 4]], 5]
-            const arr2 = [1, [2, [3, 5]], 5]
-            expect(compareArray(arr1, arr2)).toBe(false)
-        })
-
-        it('should return true for deeply identical nested arrays', () => {
-            const arr1 = [1, [2, [3, 4]], 5]
-            const arr2 = [1, [2, [3, 4]], 5]
-            expect(compareArray(arr1, arr2)).toBe(true)
-        })
-
-        it('should handle arrays with mixed types correctly', () => {
-            const arr1 = [1, 'hello', [true, null], { key: 'value' }]
-            const arr2 = [1, 'hello', [true, null], { key: 'value' }]
-            expect(compareArray(arr1, arr2)).toBe(true)
-        })
-    })
-
     describe('range()', () => {
         it('should generate a range of numbers starting from 0', () => {
             expect(range(5)).toEqual([0, 1, 2, 3, 4])

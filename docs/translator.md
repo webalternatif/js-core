@@ -16,7 +16,7 @@ import { translator } from '@webalternatif/js-core'
 
 ## Translator
 
-[src/Translator.js:20-142][1]
+[src/Translator.js:20-140][1]
 
 ### Parameters
 
@@ -25,7 +25,7 @@ import { translator } from '@webalternatif/js-core'
 
 ### translate
 
-[src/Translator.js:61-75][2]
+[src/Translator.js:63-77][2]
 
 #### Parameters
 
@@ -37,7 +37,7 @@ Returns **[string][3]**&#x20;
 
 ### translateFrom
 
-[src/Translator.js:83-100][4]
+[src/Translator.js:85-102][4]
 
 #### Parameters
 
@@ -48,19 +48,19 @@ Returns **[string][3]**&#x20;
 
 ## TranslatorNsMapping
 
-[src/Translator.js:20-142][5]
+[src/Translator.js:20-140][5]
 
 Type: Record<[string][3], Record<[string][3], Record<[string][3], TranslatorValue>>>
 
 ## TranslatorCoreMapping
 
-[src/Translator.js:20-142][6]
+[src/Translator.js:20-140][6]
 
 Type: Record<[string][3], Record<[string][3], TranslatorValue>>
 
 ## TranslatorMapping
 
-[src/Translator.js:20-142][7]
+[src/Translator.js:20-140][7]
 
 Type: ([TranslatorNsMapping][8] | [TranslatorCoreMapping][9])
 
@@ -72,24 +72,24 @@ Type: ([TranslatorNsMapping][8] | [TranslatorCoreMapping][9])
 
 [src/Translator.js:25-25][11]
 
-[1]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/Translator.js#L20-L142 "Source code on GitHub"
+[1]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/Translator.js#L20-L140 "Source code on GitHub"
 
-[2]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/Translator.js#L61-L75 "Source code on GitHub"
+[2]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/Translator.js#L63-L77 "Source code on GitHub"
 
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[4]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/Translator.js#L83-L100 "Source code on GitHub"
+[4]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/Translator.js#L85-L102 "Source code on GitHub"
 
-[5]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/Translator.js#L8-L10 "Source code on GitHub"
+[5]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/Translator.js#L8-L10 "Source code on GitHub"
 
-[6]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/Translator.js#L12-L14 "Source code on GitHub"
+[6]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/Translator.js#L12-L14 "Source code on GitHub"
 
-[7]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/Translator.js#L16-L18 "Source code on GitHub"
+[7]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/Translator.js#L16-L18 "Source code on GitHub"
 
 [8]: #translatornsmapping
 
 [9]: #translatorcoremapping
 
-[10]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/Translator.js#L22-L22 "Source code on GitHub"
+[10]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/Translator.js#L22-L22 "Source code on GitHub"
 
-[11]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/Translator.js#L25-L25 "Source code on GitHub"
+[11]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/Translator.js#L25-L25 "Source code on GitHub"

@@ -16,7 +16,7 @@ import { array } from '@webalternatif/js-core'
 
 ## inArray
 
-[src/array.js:27-53][1]
+[src/array.js:24-51][1]
 
 Checks if a value exists in an array or an object
 
@@ -30,23 +30,50 @@ Checks if a value exists in an array or an object
 ### Examples
 
 ```javascript
-inArray(2, [1, 2, 3])
-// → true
+inArray(2, [1, 2, 3]) => true
 ```
 
 ```javascript
-inArray({a: 1}, {a: 1, b: 2})
-// → true
+inArray({a: 1}, {a: 1, b: 2}) // => true
 ```
 
 ```javascript
-inArray(5, [1, 2, 3])
-// → false
+inArray(5, [1, 2, 3]) // => false
 ```
 
 Returns **[boolean][5]**&#x20;
 
-[1]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/array.js#L27-L53 "Source code on GitHub"
+## indexOf
+
+[src/array.js:62-74][6]
+
+Returns the first index at which a given element can be found in an array or a string.
+or -1 if it is not present.
+
+### Parameters
+
+*   `arr` **([Array][3]\<any> | [string][7])** The array to search in
+*   `elt` **any** The element to search for
+*   `from` **[number][4]?** The index to start the search from. Can be negative. (optional, default `0`)
+
+Returns **[number][4]** The index of the element, or -1 if not found
+
+## lastIndexOf
+
+[src/array.js:85-97][8]
+
+Returns the last index at which a given element can be found in an array or a string.
+or -1 if it is not present.
+
+### Parameters
+
+*   `arr` **([Array][3]\<any> | [string][7])** The array to search in
+*   `elt` **any** The element to search for
+*   `from` **[number][4]?** The index to start the search from. Can be negative. (optional, default `-1`)
+
+Returns **[number][4]** The index of the element, or -1 if not found
+
+[1]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/array.js#L24-L51 "Source code on GitHub"
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
@@ -55,3 +82,9 @@ Returns **[boolean][5]**&#x20;
 [4]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
 [5]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[6]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/array.js#L62-L74 "Source code on GitHub"
+
+[7]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+
+[8]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/array.js#L85-L97 "Source code on GitHub"

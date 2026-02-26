@@ -134,3 +134,9 @@ var EventDispatcher = /*#__PURE__*/function () {
 }();
 var eventDispatcher = new EventDispatcher();
 export default eventDispatcher;
+
+/* istanbul ignore next */
+if (typeof window !== 'undefined') {
+  window.webf = window.webf || {};
+  window.webf.eventDispatcher = eventDispatcher;
+}

@@ -2,14 +2,23 @@ const path = require('path')
 
 module.exports = {
     mode: 'production',
-    entry: './src/index.js',
+    entry: {
+        webf: './src/index.js',
+        dom: './src/dom.js',
+        mouse: './src/Mouse.js',
+        eventDispatcher: './src/eventDispatcher.js',
+        Translator: './src/Translator.js',
+    },
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        library: 'webf',
-        libraryTarget: 'umd',
+        filename: '[name].umd.js',
+        path: path.resolve(__dirname, 'dist/umd'),
+        library: {
+            name: ['[name]'],
+            type: 'umd',
+        },
         globalObject: 'this',
-        filename: 'index.js',
         publicPath: '/dist/',
+        clean: true
     },
     optimization: {
         minimize: true,

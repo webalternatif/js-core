@@ -144,3 +144,46 @@ export var isEventSupported = function () {
 export var isTouchDevice = function isTouchDevice() {
   return isEventSupported('touchstart');
 };
+
+/**
+ * Checks whether the given value is the global `window` object.
+ *
+ * @example
+ * isWindow(window) // true
+ * isWindow(globalThis) // true (in browsers)
+ *
+ * @param {any} o - Value to test
+ * @returns {boolean} - `true` if the value is the browser window object
+ */
+export var isWindow = function isWindow(o) {
+  return !!o && o === o.window;
+};
+
+/**
+ * Checks whether the given value is the global `document` object.
+ *
+ * @example
+ * isDocument(document) // true (in browsers)
+ * isDocument(window.document) // true (in browsers)
+ * isDocument({document}) // false
+ *
+ * @param {any} o - Value to test
+ * @returns {boolean} - `true` if the value is the browser document object
+ */
+export var isDocument = function isDocument(o) {
+  return !!o && o.nodeType === 9;
+};
+
+/**
+ * Checks whether the given value is a DOM Element.
+ *
+ * @example
+ * const el = document.createElement('div')
+ * isDomElement(el) // true
+ *
+ * @param {any} o - Value to test
+ * @returns {boolean} - `true` if the value is a DOM Element
+ */
+export var isDomElement = function isDomElement(o) {
+  return isObject(o) && 1 === o.nodeType && !isPlainObject(o);
+};

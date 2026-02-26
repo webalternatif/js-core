@@ -13,15 +13,13 @@ import { equals } from './utils.js';
  * @returns {boolean}
  *
  * @example
- * inArray(2, [1, 2, 3])
- * // → true
+ * inArray(2, [1, 2, 3]) => true
  *
  * @example
- * inArray({a: 1}, {a: 1, b: 2})
- * // → true
+ * inArray({a: 1}, {a: 1, b: 2}) // => true
  *
  * @example
- * inArray(5, [1, 2, 3]) // → false
+ * inArray(5, [1, 2, 3]) // => false
  */
 export var inArray = function inArray(value, arr) {
   var index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
@@ -39,7 +37,7 @@ export var inArray = function inArray(value, arr) {
           ret = equals(val, value);
           return false;
         } else if (isArray(value) && isObject(val)) {
-          ret = _compareArray(val, value);
+          ret = equals(val, value);
           return false;
           // eslint-disable-next-line eqeqeq
         } else if (val == value) {
@@ -97,35 +95,6 @@ export var lastIndexOf = function lastIndexOf(arr, elt) {
   }
   return -1;
 };
-
-/**
- * Returns true if given arrays are equals
- *
- * @example
- *
- *
- * @param {Array} a1
- * @param {Array} a2
- * @returns {boolean}
- */
-var _compareArray = function compareArray(a1, a2) {
-  if (a1.length !== a2.length) {
-    return false;
-  } else {
-    for (var i = 0; i < a1.length; i++) {
-      if (isArray(a1[i])) {
-        if (!isArray(a2[i])) {
-          return false;
-        }
-        return _compareArray(a1[i], a2[i]);
-      } else if (a1[i] !== a2[i]) {
-        return false;
-      }
-    }
-  }
-  return true;
-};
-export { _compareArray as compareArray };
 export var arrayUnique = function arrayUnique(arr) {
   return arr.filter(function (el, index, arr) {
     return index === indexOf(arr, el);

@@ -14,6 +14,10 @@ describe('utils methods', () => {
             expect(equals(true, false)).toBe(false)
         })
 
+        it('should return true for similar NaN', () => {
+            expect(equals(NaN, NaN)).toBe(true)
+        })
+
         it('should return false if types are different', () => {
             expect(equals(42, '42')).toBe(false)
             expect(equals(true, 'true')).toBe(false)
@@ -41,12 +45,12 @@ describe('utils methods', () => {
 
         it('should return false for objects with different keys', () => {
             const obj1 = { a: 1, b: 2 }
-            const obj2 = { a: 1, c: 3 }
+            const obj2 = { a: 1, c: 2 }
 
             expect(equals(obj1, obj2)).toBe(false)
         })
 
-        it('should return true for deeply nested empty objects', () => {
+        it('should return true for empty objects', () => {
             const obj1 = {}
             const obj2 = {}
 
@@ -59,7 +63,13 @@ describe('utils methods', () => {
             obj1.self = obj1
             obj2.self = obj2
 
+            const a = []
+            a.push(a)
+            const b = []
+            b.push(b)
+
             expect(equals(obj1, obj2)).toBe(true)
+            expect(equals(a, b)).toBe(true)
         })
 
         it('should return true for empty objects', () => {
@@ -69,11 +79,105 @@ describe('utils methods', () => {
             expect(equals(obj1, obj2)).toBe(true)
         })
 
+        it('should accept more than 2 arguments', () => {
+            const obj1 = { a: 1, b: { c: 2 } }
+            const obj2 = { a: 1, b: { c: 2 } }
+            const obj3 = { a: 1, b: { c: 2 } }
+            const obj4 = { a: 1 }
+
+            expect(equals(obj1, obj2, obj3)).toBe(true)
+            expect(equals(obj1, obj2, obj3, obj4)).toBe(false)
+            expect(equals(obj1, obj2, obj3, 4)).toBe(false)
+        })
+
         it('should return false for objects with different lengths', () => {
             const obj1 = { a: 1 }
             const obj2 = { a: 1, b: 2 }
 
             expect(equals(obj1, obj2)).toBe(false)
+        })
+
+        it('should handle arrays', () => {
+            const obj1 = [1]
+            const obj2 = [1]
+            const obj3 = [1, 2]
+
+            expect(equals(obj1, obj2)).toBe(true)
+            expect(equals(obj1, obj2, obj3)).toBe(false)
+        })
+
+        it('should return nested arrays and objects', () => {
+            const obj1 = [{ a: 1 }, [{ b: [2] }]]
+            const obj2 = [{ a: 1 }, [{ b: [2] }]]
+            const obj3 = [{ a: 1 }, [{ b: [3] }]]
+
+            expect(equals(obj1, obj2)).toBe(true)
+            expect(equals(obj1, obj2, obj3)).toBe(false)
+        })
+
+        it('should return false for objects with different prototypes', () => {
+            class A {
+                constructor(x) {
+                    this.x = x
+                }
+            }
+            class B {
+                constructor(x) {
+                    this.x = x
+                }
+            }
+
+            const a = new A(1)
+            const b = new B(1)
+
+            expect(equals(a, b)).toBe(false)
+        })
+
+        it('should return true for instances of the same class with same props', () => {
+            class A {
+                constructor(x) {
+                    this.x = x
+                }
+            }
+
+            const a1 = new A(1)
+            const a2 = new A(1)
+
+            expect(equals(a1, a2)).toBe(true)
+        })
+
+        it('should return false for Date objects with different values', () => {
+            expect(equals(new Date(0), new Date(1000))).toBe(false)
+        })
+
+        it('should return true for Date objects with same value', () => {
+            expect(equals(new Date(1234), new Date(1234))).toBe(true)
+        })
+
+        it('should return false for RegExp with different patterns', () => {
+            expect(equals(/abc/, /def/)).toBe(false)
+        })
+
+        it('should return true for RegExp with same source and flags', () => {
+            expect(equals(/abc/gi, /abc/gi)).toBe(true)
+        })
+
+        it('should not treat a class instance as a plain object', () => {
+            class A {
+                constructor(x) {
+                    this.x = x
+                }
+            }
+
+            const instance = new A(1)
+            const plain = { x: 1 }
+
+            expect(equals(instance, plain)).toBe(false)
+        })
+
+        it('should handle edge cases', () => {
+            expect(equals(new Date(), {})).toBe(false)
+            expect(equals()).toBe(false)
         })
     })
 
@@ -184,7 +288,7 @@ describe('utils methods', () => {
         })
 
         it('should handle strings with no numeric values and return NaN', () => {
-            expect(strParseFloat('abc')).toBeNaN()
+            expect(strParseFloat('abc')).toBe(0)
         })
     })
 

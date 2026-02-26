@@ -13,15 +13,13 @@ import { equals } from './utils.js'
  * @returns {boolean}
  *
  * @example
- * inArray(2, [1, 2, 3])
- * // → true
+ * inArray(2, [1, 2, 3]) => true
  *
  * @example
- * inArray({a: 1}, {a: 1, b: 2})
- * // → true
+ * inArray({a: 1}, {a: 1, b: 2}) // => true
  *
  * @example
- * inArray(5, [1, 2, 3]) // → false
+ * inArray(5, [1, 2, 3]) // => false
  */
 export const inArray = function (value, arr, index = 0, strict = false) {
     let ret = false
@@ -38,7 +36,7 @@ export const inArray = function (value, arr, index = 0, strict = false) {
                     ret = equals(val, value)
                     return false
                 } else if (isArray(value) && isObject(val)) {
-                    ret = compareArray(val, value)
+                    ret = equals(val, value)
                     return false
                     // eslint-disable-next-line eqeqeq
                 } else if (val == value) {
@@ -96,36 +94,6 @@ export const lastIndexOf = function (arr, elt, from = -1) {
     }
 
     return -1
-}
-
-/**
- * Returns true if given arrays are equals
- *
- * @example
- *
- *
- * @param {Array} a1
- * @param {Array} a2
- * @returns {boolean}
- */
-export const compareArray = function (a1, a2) {
-    if (a1.length !== a2.length) {
-        return false
-    } else {
-        for (let i = 0; i < a1.length; i++) {
-            if (isArray(a1[i])) {
-                if (!isArray(a2[i])) {
-                    return false
-                }
-
-                return compareArray(a1[i], a2[i])
-            } else if (a1[i] !== a2[i]) {
-                return false
-            }
-        }
-    }
-
-    return true
 }
 
 export const arrayUnique = function (arr) {

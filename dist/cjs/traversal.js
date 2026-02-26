@@ -5,7 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.reduce = exports.merge = exports.map = exports.foreach = exports.extend = exports.each = exports.clone = void 0;
 var _is = require("./is.js");
-var _dom = require("./dom.js");
 var _utils = require("./utils.js");
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -195,7 +194,7 @@ var _extend = exports.extend = function extend() {
  * @returns {T} The copy of o
  */
 var _clone = exports.clone = function clone(o) {
-  if (!(0, _is.isObject)(o) && !(0, _is.isArray)(o) || (0, _dom.isWindow)(o)) {
+  if (!(0, _is.isObject)(o) && !(0, _is.isArray)(o) || (0, _is.isWindow)(o)) {
     return o;
   }
   var c = (0, _is.isObject)(o) ? {} : [];

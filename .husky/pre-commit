@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+export PATH=/usr/local/bin:$PATH
+
 yarn lint-staged
 yarn build
 git add dist types

@@ -110,3 +110,9 @@ class EventDispatcher {
 const eventDispatcher = new EventDispatcher()
 
 export default eventDispatcher
+
+/* istanbul ignore next */
+if (typeof window !== 'undefined') {
+    window.webf = window.webf || {}
+    window.webf.eventDispatcher = eventDispatcher
+}

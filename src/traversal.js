@@ -6,8 +6,8 @@ import {
     isPlainObject,
     isString,
     isUndefined,
+    isWindow,
 } from './is.js'
-import { isWindow } from './dom.js'
 import { sizeOf } from './utils.js'
 
 /**

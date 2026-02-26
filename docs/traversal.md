@@ -16,13 +16,13 @@ import { traversal } from '@webalternatif/js-core'
 
 ## Collection
 
-[src/traversal.js:24-70][1]
+[src/traversal.js:31-68][1]
 
 Type: ([Array][2]\<T> | [Set][3]\<T> | [Map][4]\<any, T> | [Object][5]<[string][6], T> | [string][6] | [Array][2]<[string][6]>)
 
 ## each
 
-[src/traversal.js:24-70][7]
+[src/traversal.js:31-68][7]
 
 Iterates over Arrays, Strings, Maps, Sets and plain Objects.
 
@@ -39,7 +39,7 @@ If the callback returns `false`, the iteration stops.
 
 ## foreach
 
-[src/traversal.js:84-86][9]
+[src/traversal.js:82-88][9]
 
 Same as each except that key and value are reversed in callback
 
@@ -54,7 +54,7 @@ The callback receives:
 
 ## map
 
-[src/traversal.js:103-114][10]
+[src/traversal.js:105-116][10]
 
 Iterates over Arrays, Strings, Maps, Sets and plain Objects.
 Returns an array from the callback results.
@@ -74,7 +74,7 @@ Returns **[Array][2]\<R>** Returns the resulted array
 
 ## reduce
 
-[src/traversal.js:128-144][11]
+[src/traversal.js:130-148][11]
 
 Reduces a collection to a single value
 
@@ -91,7 +91,7 @@ Returns **R** Returns the accumulated value
 
 ## extend
 
-[src/traversal.js:154-183][12]
+[src/traversal.js:158-187][12]
 
 Creates a shallow or deep copy of one or more objects or arrays
 If the first argument is `true`, nested plain objects are merged recursively.
@@ -104,7 +104,7 @@ Returns **T** A copy of the merged result
 
 ## clone
 
-[src/traversal.js:192-208][14]
+[src/traversal.js:196-212][14]
 
 Creates a deep copy of an Object or Array
 
@@ -116,7 +116,7 @@ Returns **T** The copy of o
 
 ## merge
 
-[src/traversal.js:219-232][15]
+[src/traversal.js:223-235][15]
 
 Merge multiple collections into a single array
 
@@ -128,7 +128,7 @@ Merge multiple collections into a single array
 
 Returns **[Array][2]\<T>** the resulted merged array
 
-[1]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/traversal.js#L5-L8 "Source code on GitHub"
+[1]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/traversal.js#L12-L15 "Source code on GitHub"
 
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
@@ -140,20 +140,20 @@ Returns **[Array][2]\<T>** the resulted merged array
 
 [6]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[7]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/traversal.js#L24-L70 "Source code on GitHub"
+[7]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/traversal.js#L31-L68 "Source code on GitHub"
 
 [8]: #collection
 
-[9]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/traversal.js#L84-L86 "Source code on GitHub"
+[9]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/traversal.js#L82-L88 "Source code on GitHub"
 
-[10]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/traversal.js#L103-L114 "Source code on GitHub"
+[10]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/traversal.js#L105-L116 "Source code on GitHub"
 
-[11]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/traversal.js#L128-L144 "Source code on GitHub"
+[11]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/traversal.js#L130-L148 "Source code on GitHub"
 
-[12]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/traversal.js#L154-L183 "Source code on GitHub"
+[12]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/traversal.js#L158-L187 "Source code on GitHub"
 
 [13]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
 
-[14]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/traversal.js#L192-L208 "Source code on GitHub"
+[14]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/traversal.js#L196-L212 "Source code on GitHub"
 
-[15]: https://github.com/webalternatif/js-core/blob/c9158e27ed191c37c696ced37950f978a21eecba/src/traversal.js#L219-L232 "Source code on GitHub"
+[15]: https://github.com/webalternatif/js-core/blob/c59faf2628616256e5ee2499f03adb5e9a32460d/src/traversal.js#L223-L235 "Source code on GitHub"

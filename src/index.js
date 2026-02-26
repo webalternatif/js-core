@@ -4,12 +4,16 @@ import * as arrayFunctions from './array.js'
 import * as is from './is.js'
 import * as random from './random.js'
 import * as traversal from './traversal.js'
-import dom, { getStyle, isDomElement, isWindow, isDocument } from './dom.js'
+import dom from './dom.js'
 import * as math from './math.js'
 import * as utils from './utils.js'
 import eventDispatcher from './eventDispatcher.js'
 import Mouse from './Mouse.js'
 import Translator from './Translator.js'
+
+/**
+ * @typedef {import('./traversal.js').Collection<any>} Collection
+ */
 
 /**
  * Main entry point of js-core.
@@ -25,10 +29,6 @@ const webf = {
     ...traversal,
     ...is,
     ...random,
-    isWindow,
-    isDocument,
-    isDomElement,
-    getStyle,
     ...math,
     ...utils,
 }
@@ -97,7 +97,6 @@ export {
     traversal,
     is,
     random,
-    getStyle,
     dom,
     math,
     utils,

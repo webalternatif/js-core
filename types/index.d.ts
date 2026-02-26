@@ -1,4 +1,8 @@
 export default webf;
+export type Collection = import("./traversal.js").Collection<any>;
+/**
+ * @typedef {import('./traversal.js').Collection<any>} Collection
+ */
 /**
  * Main entry point of js-core.
  *
@@ -8,24 +12,20 @@ export default webf;
  * @module webf
  */
 declare const webf: {
-    equals: (o1: any, o2: any, seen?: WeakMap<WeakKey, any>) => any;
+    equals: (...values: any[]) => boolean;
     noop: () => void;
-    sizeOf: (o: any) => number;
+    sizeOf: (v: Object | any[] | string) => number;
     flatten: (o: Object | any[]) => any[];
     strParseFloat: (val: any) => number;
-    throttle: (func: any, wait: any, leading?: boolean, trailing?: boolean, context?: null) => (...args: any[]) => void;
-    debounce: (func: Function, wait: number, immediate?: boolean, context?: Object) => Function;
-    round: (val: any, precision?: number) => number;
-    floorTo: (n: any, precision: any) => number;
-    plancher: (n: any, precision: any) => number;
-    min: (list: any, cmp_func: any) => number | undefined;
-    max: (list: any, cmp_func: any) => number | undefined;
+    throttle: (func: Function, wait: number, leading?: boolean, trailing?: boolean, context?: any) => Function;
+    debounce: (func: Function, wait: number, immediate?: boolean, context?: any) => Function;
+    round: (val: number, precision?: number) => number;
+    floorTo: (val: number, precision: number) => number;
+    plancher: (val: number, precision: number) => number;
+    min: <T>(list: Iterable<T> | Record<string, T>, cmp_func?: (a: T, b: T) => number) => T | undefined;
+    max: <T>(list: math.Collection<T>, cmp_func?: (a: T, b: T) => number) => T | undefined;
     dec2hex: (n: number) => string;
     hex2dec: (hex: string) => number;
-    isWindow: (o: any) => boolean;
-    isDocument: (o: any) => boolean;
-    isDomElement: (o: any) => boolean;
-    getStyle: (el: Element, cssRule: string) => string;
     randAlpha: (n: any) => string;
     randAlphaCs: (n: any) => string;
     randAlphaNum: (n: any) => string;
@@ -50,17 +50,19 @@ declare const webf: {
     isScalar: (v: any) => boolean;
     isEventSupported: (eventName: any) => boolean;
     isTouchDevice: () => boolean;
-    each: <T>(o: Collection<T>, callback: (key: number | string, value: T, o: Collection<T>, index: number) => (void | boolean), context?: any) => typeof o;
-    foreach: <T>(o: Collection<T>, callback: (value: T, key: number | string, o: Collection<T>, index: number) => (void | boolean), context?: any) => typeof o;
-    map: <T, R>(o: Collection<T>, callback: (key: number | string, value: T, o: Collection<T>, index: number) => (R | null | false), context?: any) => Array<R>;
-    reduce: <T, R>(o: Collection<T>, callback: (accumulator: R | T, value: T, key: any, index: number, o: Collection<T>) => R, initialValue?: R) => R;
+    isWindow: (o: any) => boolean;
+    isDocument: (o: any) => boolean;
+    isDomElement: (o: any) => boolean;
+    each: <T>(o: traversal.Collection<T>, callback: (key: number | string, value: T, o: traversal.Collection<T>, index: number) => (void | boolean), context?: any) => typeof o;
+    foreach: <T>(o: traversal.Collection<T>, callback: (value: T, key: number | string, o: traversal.Collection<T>, index: number) => (void | boolean), context?: any) => typeof o;
+    map: <T, R>(o: traversal.Collection<T>, callback: (key: number | string, value: T, o: traversal.Collection<T>, index: number) => (R | null | false), context?: any) => Array<R>;
+    reduce: <T, R>(o: traversal.Collection<T>, callback: (accumulator: R | T, value: T, key: any, index: number, o: traversal.Collection<T>) => R, initialValue?: R) => R;
     extend: <T>(...args: (boolean | T)[]) => T;
     clone: <T>(o: T) => T;
-    merge: <T>(first: Collection<T>, second?: Collection<T>, ...args: Collection<T>[]) => Array<T>;
+    merge: <T>(first: traversal.Collection<T>, second?: traversal.Collection<T>, ...args: traversal.Collection<T>[]) => Array<T>;
     inArray: (value: any, arr: Object | any[], index?: number, strict?: boolean) => boolean;
     indexOf: (arr: Array<any> | string, elt: any, from?: number) => number;
     lastIndexOf: (arr: Array<any> | string, elt: any, from?: number) => number;
-    compareArray: (a1: any[], a2: any[]) => boolean;
     arrayUnique: (arr: any) => any;
     array_unique: (arr: any) => any;
     arrayDiff: (array1: any, array2: any, strict?: boolean) => any;
@@ -109,11 +111,10 @@ import * as arrayFunctions from './array.js';
 import * as traversal from './traversal.js';
 import * as is from './is.js';
 import * as random from './random.js';
-import { getStyle } from './dom.js';
 import dom from './dom.js';
 import * as math from './math.js';
 import * as utils from './utils.js';
 import eventDispatcher from './eventDispatcher.js';
 import Mouse from './Mouse.js';
 import Translator from './Translator.js';
-export { stringFunctions, arrayFunctions, traversal, is, random, getStyle, dom, math, utils, eventDispatcher, Mouse, Translator };
+export { stringFunctions, arrayFunctions, traversal, is, random, dom, math, utils, eventDispatcher, Mouse, Translator };

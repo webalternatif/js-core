@@ -3,11 +3,11 @@
 [![codecov](https://codecov.io/github/webalternatif/js-core/branch/main/graph/badge.svg?token=MLPFU51XJH)](https://codecov.io/github/webalternatif/js-core)
 ![npm](https://img.shields.io/npm/v/@webalternatif/js-core)
 
-# js-core
+# `@webalternatif/js-core`
 
-Modular JavaScript utilities for modern applications.
+The utility library that would’ve been revolutionary in 2012.
 
-Lightweight, framework-agnostic helpers for data manipulation, DOM handling, events and internationalization.
+Lightweight, framework-agnostic helpers for data manipulation, DOM handling, events, internationalization and more to come.
 
 ---
 

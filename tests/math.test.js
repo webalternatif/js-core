@@ -96,10 +96,10 @@ describe('math functions', () => {
             expect(result).toBe(1)
         })
 
-        it('should handle an empty array and return Infinity', () => {
+        it('should handle an empty array and return undefined', () => {
             const list = []
             const result = min(list)
-            expect(result).toBe(Infinity)
+            expect(result).toBeUndefined()
         })
 
         it('should handle an object with a custom comparison function', () => {
@@ -135,10 +135,10 @@ describe('math functions', () => {
             expect(result).toBe(9)
         })
 
-        it('should handle an empty array and return -Infinity', () => {
+        it('should handle an empty array and return undefined', () => {
             const list = []
             const result = max(list)
-            expect(result).toBe(-Infinity)
+            expect(result).toBeUndefined()
         })
 
         it('should handle an object with a custom comparison function', () => {

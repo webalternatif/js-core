@@ -15,3 +15,6 @@ export function isFloat(n: any): boolean;
 export function isScalar(v: any): boolean;
 export function isEventSupported(eventName: any): boolean;
 export function isTouchDevice(): boolean;
+export function isWindow(o: any): boolean;
+export function isDocument(o: any): boolean;
+export function isDomElement(o: any): boolean;

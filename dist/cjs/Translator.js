@@ -33,7 +33,7 @@ function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.h
 var _lang = /*#__PURE__*/new WeakMap();
 var _mapping = /*#__PURE__*/new WeakMap();
 var _Translator_brand = /*#__PURE__*/new WeakSet();
-var Translator = exports["default"] = /*#__PURE__*/function () {
+var Translator = /*#__PURE__*/function () {
   /**
    * @param {TranslatorMapping} mapping
    * @param {string} [defaultLang]
@@ -145,4 +145,10 @@ function _resolve(entry) {
     return entry();
   }
   return entry;
+}
+var _default = exports["default"] = Translator;
+/* istanbul ignore next */
+if (typeof window !== 'undefined') {
+  window.webf = window.webf || {};
+  window.webf.Translator = Translator;
 }

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isUndefined = exports.isTouchDevice = exports.isString = exports.isScalar = exports.isPlainObject = exports.isObject = exports.isInteger = exports.isInt = exports.isFunction = exports.isFloat = exports.isEventSupported = exports.isEvent = exports.isDate = exports.isBoolean = exports.isBool = exports.isArrayLike = exports.isArray = void 0;
+exports.isWindow = exports.isUndefined = exports.isTouchDevice = exports.isString = exports.isScalar = exports.isPlainObject = exports.isObject = exports.isInteger = exports.isInt = exports.isFunction = exports.isFloat = exports.isEventSupported = exports.isEvent = exports.isDomElement = exports.isDocument = exports.isDate = exports.isBoolean = exports.isBool = exports.isArrayLike = exports.isArray = void 0;
 var _array = require("./array.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /**
@@ -148,4 +148,47 @@ var isEventSupported = exports.isEventSupported = function () {
  */
 var isTouchDevice = exports.isTouchDevice = function isTouchDevice() {
   return isEventSupported('touchstart');
+};
+
+/**
+ * Checks whether the given value is the global `window` object.
+ *
+ * @example
+ * isWindow(window) // true
+ * isWindow(globalThis) // true (in browsers)
+ *
+ * @param {any} o - Value to test
+ * @returns {boolean} - `true` if the value is the browser window object
+ */
+var isWindow = exports.isWindow = function isWindow(o) {
+  return !!o && o === o.window;
+};
+
+/**
+ * Checks whether the given value is the global `document` object.
+ *
+ * @example
+ * isDocument(document) // true (in browsers)
+ * isDocument(window.document) // true (in browsers)
+ * isDocument({document}) // false
+ *
+ * @param {any} o - Value to test
+ * @returns {boolean} - `true` if the value is the browser document object
+ */
+var isDocument = exports.isDocument = function isDocument(o) {
+  return !!o && o.nodeType === 9;
+};
+
+/**
+ * Checks whether the given value is a DOM Element.
+ *
+ * @example
+ * const el = document.createElement('div')
+ * isDomElement(el) // true
+ *
+ * @param {any} o - Value to test
+ * @returns {boolean} - `true` if the value is a DOM Element
+ */
+var isDomElement = exports.isDomElement = function isDomElement(o) {
+  return isObject(o) && 1 === o.nodeType && !isPlainObject(o);
 };

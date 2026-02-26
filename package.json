@@ -17,6 +17,8 @@
   "types": "types/index.d.ts",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
+  "unpkg": "dist/umd/webf.umd.js",
+  "jsdelivr": "dist/umd/webf.umd.js",
   "exports": {
     ".": {
       "types": "./types/index.d.ts",
@@ -34,8 +36,9 @@
     "test:watch": "jest --watch",
     "build:esm": "babel src --out-dir dist/esm --extensions .js",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --out-dir dist/cjs --extensions .js",
-    "types": "tsc",
-    "build": "rm -rf dist && yarn build:esm && yarn build:cjs && yarn types",
+    "build:umd": "webpack --config webpack.config.cjs",
+    "build": "rm -rf dist && yarn build:esm && yarn build:cjs && yarn build:umd && yarn types",
+    "types": "rm -rf types && tsc",
     "docs": "node scripts/docs.js",
     "prepublishOnly": "yarn build",
     "prepare": "husky install"
@@ -63,10 +66,13 @@
     "lint-staged": "^16.2.7",
     "nodemon": "^3.1.9",
     "prettier": "^3.8.1",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "webpack": "^5.105.3",
+    "webpack-cli": "^6.0.1"
   },
   "files": [
     "dist",
+    "src",
     "types",
     "README.md",
     "docs",

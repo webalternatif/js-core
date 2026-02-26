@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.range = exports.lastIndexOf = exports.indexOf = exports.inArray = exports.compareArray = exports.array_unique = exports.array_diff = exports.arrayUnique = exports.arrayDiff = void 0;
+exports.range = exports.lastIndexOf = exports.indexOf = exports.inArray = exports.array_unique = exports.array_diff = exports.arrayUnique = exports.arrayDiff = void 0;
 var _traversal = require("./traversal.js");
 var _is = require("./is.js");
 var _math = require("./math.js");
@@ -18,15 +18,13 @@ var _utils = require("./utils.js");
  * @returns {boolean}
  *
  * @example
- * inArray(2, [1, 2, 3])
- * // → true
+ * inArray(2, [1, 2, 3]) => true
  *
  * @example
- * inArray({a: 1}, {a: 1, b: 2})
- * // → true
+ * inArray({a: 1}, {a: 1, b: 2}) // => true
  *
  * @example
- * inArray(5, [1, 2, 3]) // → false
+ * inArray(5, [1, 2, 3]) // => false
  */
 var inArray = exports.inArray = function inArray(value, arr) {
   var index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
@@ -44,7 +42,7 @@ var inArray = exports.inArray = function inArray(value, arr) {
           ret = (0, _utils.equals)(val, value);
           return false;
         } else if ((0, _is.isArray)(value) && (0, _is.isObject)(val)) {
-          ret = _compareArray(val, value);
+          ret = (0, _utils.equals)(val, value);
           return false;
           // eslint-disable-next-line eqeqeq
         } else if (val == value) {
@@ -101,34 +99,6 @@ var lastIndexOf = exports.lastIndexOf = function lastIndexOf(arr, elt) {
     }
   }
   return -1;
-};
-
-/**
- * Returns true if given arrays are equals
- *
- * @example
- *
- *
- * @param {Array} a1
- * @param {Array} a2
- * @returns {boolean}
- */
-var _compareArray = exports.compareArray = function compareArray(a1, a2) {
-  if (a1.length !== a2.length) {
-    return false;
-  } else {
-    for (var i = 0; i < a1.length; i++) {
-      if ((0, _is.isArray)(a1[i])) {
-        if (!(0, _is.isArray)(a2[i])) {
-          return false;
-        }
-        return _compareArray(a1[i], a2[i]);
-      } else if (a1[i] !== a2[i]) {
-        return false;
-      }
-    }
-  }
-  return true;
 };
 var arrayUnique = exports.arrayUnique = function arrayUnique(arr) {
   return arr.filter(function (el, index, arr) {

@@ -28,12 +28,6 @@ Object.defineProperty(exports, "eventDispatcher", {
     return _eventDispatcher["default"];
   }
 });
-Object.defineProperty(exports, "getStyle", {
-  enumerable: true,
-  get: function get() {
-    return _dom.getStyle;
-  }
-});
 exports.utils = exports.traversal = exports.stringFunctions = exports.random = exports.math = exports.is = void 0;
 var stringFunctions = _interopRequireWildcard(require("./string.js"));
 exports.stringFunctions = stringFunctions;
@@ -46,7 +40,7 @@ var random = _interopRequireWildcard(require("./random.js"));
 exports.random = random;
 var traversal = _interopRequireWildcard(require("./traversal.js"));
 exports.traversal = traversal;
-var _dom = _interopRequireWildcard(require("./dom.js"));
+var _dom = _interopRequireDefault(require("./dom.js"));
 var math = _interopRequireWildcard(require("./math.js"));
 exports.math = math;
 var utils = _interopRequireWildcard(require("./utils.js"));
@@ -63,6 +57,10 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /**
+ * @typedef {import('./traversal.js').Collection<any>} Collection
+ */
+
+/**
  * Main entry point of js-core.
  *
  * Provides pure JavaScript utility functions such as string, array,
@@ -70,12 +68,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
  *
  * @module webf
  */
-var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, stringFunctions), arrayFunctions), traversal), is), random), {}, {
-  isWindow: _dom.isWindow,
-  isDocument: _dom.isDocument,
-  isDomElement: _dom.isDomElement,
-  getStyle: _dom.getStyle
-}, math), utils);
+var webf = _objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread(_objectSpread({}, stringFunctions), arrayFunctions), traversal), is), random), math), utils);
 
 /**
  * Default export containing pure utility functions.

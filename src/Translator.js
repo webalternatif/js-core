@@ -17,7 +17,7 @@ import { each, extend } from './traversal.js'
  * @typedef {TranslatorNsMapping | TranslatorCoreMapping} TranslatorMapping
  */
 
-export default class Translator {
+class Translator {
     /** @type string */
     #lang
 
@@ -137,4 +137,12 @@ export default class Translator {
 
         return entry
     }
+}
+
+export default Translator
+
+/* istanbul ignore next */
+if (typeof window !== 'undefined') {
+    window.webf = window.webf || {}
+    window.webf.Translator = Translator
 }
