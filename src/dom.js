@@ -395,7 +395,7 @@ const dom = {
     },
 
     /**
-     * @param {Element|NodeList|Element[]|string} els
+     * @param {...(Element|NodeListOf<Element>|Iterable<Element>|string)} els
      * @returns {void}
      */
     remove(...els) {
@@ -405,7 +405,7 @@ const dom = {
             } else if (el instanceof NodeList || isArray(el)) {
                 Array.from(el).forEach((e) => e.remove())
             } else {
-                this.remove(this.find(el))
+                this.find(el).forEach((e) => e.remove())
             }
         })
     },

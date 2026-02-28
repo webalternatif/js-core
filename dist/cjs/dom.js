@@ -338,7 +338,7 @@ var dom = {
     return node;
   },
   /**
-   * @param {Element|NodeList|Element[]|string} els
+   * @param {...(Element|NodeListOf<Element>|Iterable<Element>|string)} els
    * @returns {void}
    */
   remove: function remove() {
@@ -354,7 +354,9 @@ var dom = {
           return e.remove();
         });
       } else {
-        _this3.remove(_this3.find(el));
+        _this3.find(el).forEach(function (e) {
+          return e.remove();
+        });
       }
     });
   },

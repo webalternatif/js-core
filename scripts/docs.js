@@ -38,7 +38,7 @@ const modules = [
         marker: 'GENERATED:translator',
         title: 'Translator',
     },
-    { name: 'mouse', entry: 'src/Mouse.js', marker: 'GENERATED:mouse', title: 'Mouse Utilities' },
+    { name: 'Mouse', entry: 'src/Mouse.js', marker: 'GENERATED:mouse', title: 'Mouse Utilities' },
 ]
 
 async function build() {

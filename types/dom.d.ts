@@ -218,10 +218,10 @@ declare namespace dom {
      */
     export function prepend(node: Node, ...children: (Node | string)[]): Node;
     /**
-     * @param {Element|NodeList|Element[]|string} els
+     * @param {...(Element|NodeListOf<Element>|Iterable<Element>|string)} els
      * @returns {void}
      */
-    export function remove(...els: Element | NodeList | Element[] | string): void;
+    export function remove(...els: (Element | NodeListOf<Element> | Iterable<Element> | string)[]): void;
     /**
      * Returns the closest ancestor of an element matching a selector or a specific element.
      *
