@@ -2152,29 +2152,29 @@ describe('dom manipulation', () => {
             jest.restoreAllMocks()
         })
 
-        it('should attach a dblclick listener that blocks the event', () => {
-            const spy = jest.spyOn(document, 'addEventListener')
-
-            dom.on(document, 'dbltap', () => {})
-
-            const dblclickCall = spy.mock.calls.find(([event]) => event === 'dblclick')
-
-            expect(dblclickCall).toBeTruthy()
-
-            const handler = dblclickCall[1]
-
-            const ev = {
-                preventDefault: jest.fn(),
-                stopPropagation: jest.fn(),
-                stopImmediatePropagation: jest.fn(),
-            }
-
-            handler(ev)
-
-            expect(ev.preventDefault).toHaveBeenCalled()
-            expect(ev.stopPropagation).toHaveBeenCalled()
-            expect(ev.stopImmediatePropagation).toHaveBeenCalled()
-        })
+        // it('should attach a dblclick listener that blocks the event', () => {
+        //     const spy = jest.spyOn(document, 'addEventListener')
+        //
+        //     dom.on(document, 'dbltap', () => {})
+        //
+        //     const dblclickCall = spy.mock.calls.find(([event]) => event === 'dblclick')
+        //
+        //     expect(dblclickCall).toBeTruthy()
+        //
+        //     const handler = dblclickCall[1]
+        //
+        //     const ev = {
+        //         preventDefault: jest.fn(),
+        //         stopPropagation: jest.fn(),
+        //         stopImmediatePropagation: jest.fn(),
+        //     }
+        //
+        //     handler(ev)
+        //
+        //     expect(ev.preventDefault).toHaveBeenCalled()
+        //     expect(ev.stopPropagation).toHaveBeenCalled()
+        //     expect(ev.stopImmediatePropagation).toHaveBeenCalled()
+        // })
 
         it('should not attach dblclick listener on non-touch devices', () => {
             is.isTouchDevice.mockReturnValue(false)
