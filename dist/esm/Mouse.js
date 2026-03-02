@@ -5,7 +5,7 @@ function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), 
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _assertClassBrand(e, t, n) { if ("function" == typeof e ? e === t : e.has(t)) return arguments.length < 3 ? t : n; throw new TypeError("Private element is not present on this object"); }
-import { isTouchDevice } from './is.js';
+import webf from '@webalternatif/js-core';
 var Mouse = /*#__PURE__*/function () {
   function Mouse() {
     _classCallCheck(this, Mouse);
@@ -58,23 +58,28 @@ var Mouse = /*#__PURE__*/function () {
     }
 
     /**
-     * @param {Event|{originalEvent?: Event}} ev
-     * @returns {Event}
+     * Normalize an event
+     *
+     * @param {Event|{originalEvent?: Event}|{detail?: {originalEvent?: Event}}} ev
+     * @returns {{clientX:number, clientY:number, pageX:number, pageY:number}|null}
      */
   }]);
 }();
 function _getEvent(ev) {
-  var _ev$originalEvent;
-  ev = (_ev$originalEvent = ev.originalEvent) !== null && _ev$originalEvent !== void 0 ? _ev$originalEvent : ev;
-  if (isTouchDevice()) {
-    var _ev$changedTouches, _ev$touches;
-    var touch = ((_ev$changedTouches = ev.changedTouches) === null || _ev$changedTouches === void 0 ? void 0 : _ev$changedTouches[0]) || ((_ev$touches = ev.touches) === null || _ev$touches === void 0 ? void 0 : _ev$touches[0]);
-    ev.clientX = touch.clientX;
-    ev.clientY = touch.clientY;
-    ev.pageX = touch.pageX;
-    ev.pageY = touch.pageY;
-  }
-  return ev;
+  var _ref, _ev$detail$originalEv, _ev$detail, _ref2, _e$changedTouches$, _e$changedTouches, _e$touches;
+  var e = (_ref = (_ev$detail$originalEv = ev === null || ev === void 0 || (_ev$detail = ev.detail) === null || _ev$detail === void 0 ? void 0 : _ev$detail.originalEvent) !== null && _ev$detail$originalEv !== void 0 ? _ev$detail$originalEv : ev === null || ev === void 0 ? void 0 : ev.originalEvent) !== null && _ref !== void 0 ? _ref : ev;
+  if (!e) return null;
+  var src = (_ref2 = (_e$changedTouches$ = (_e$changedTouches = e.changedTouches) === null || _e$changedTouches === void 0 ? void 0 : _e$changedTouches[0]) !== null && _e$changedTouches$ !== void 0 ? _e$changedTouches$ : (_e$touches = e.touches) === null || _e$touches === void 0 ? void 0 : _e$touches[0]) !== null && _ref2 !== void 0 ? _ref2 : e;
+  var clientX = typeof src.clientX === 'number' ? src.clientX : 0;
+  var clientY = typeof src.clientY === 'number' ? src.clientY : 0;
+  var pageX = typeof src.pageX === 'number' ? src.pageX : clientX + ('undefined' !== typeof window ? window.scrollX : 0);
+  var pageY = typeof src.pageY === 'number' ? src.pageY : clientY + ('undefined' !== typeof window ? window.scrollY : 0);
+  return {
+    clientX: clientX,
+    clientY: clientY,
+    pageX: pageX,
+    pageY: pageY
+  };
 }
 export default Mouse;
 

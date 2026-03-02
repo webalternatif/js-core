@@ -19,10 +19,21 @@ declare class Mouse {
     };
     static getElement(ev: any): Element | null;
     /**
-     * @param {Event|{originalEvent?: Event}} ev
-     * @returns {Event}
+     * Normalize an event
+     *
+     * @param {Event|{originalEvent?: Event}|{detail?: {originalEvent?: Event}}} ev
+     * @returns {{clientX:number, clientY:number, pageX:number, pageY:number}|null}
      */
     static "__#1@#getEvent"(ev: Event | {
         originalEvent?: Event;
-    }): Event;
+    } | {
+        detail?: {
+            originalEvent?: Event;
+        };
+    }): {
+        clientX: number;
+        clientY: number;
+        pageX: number;
+        pageY: number;
+    } | null;
 }

@@ -1,4 +1,4 @@
-import { isTouchDevice } from './is.js'
+import webf from '@webalternatif/js-core'
 
 class Mouse {
     /**
@@ -45,22 +45,30 @@ class Mouse {
     }
 
     /**
-     * @param {Event|{originalEvent?: Event}} ev
-     * @returns {Event}
+     * Normalize an event
+     *
+     * @param {Event|{originalEvent?: Event}|{detail?: {originalEvent?: Event}}} ev
+     * @returns {{clientX:number, clientY:number, pageX:number, pageY:number}|null}
      */
     static #getEvent(ev) {
-        ev = ev.originalEvent ?? ev
+        const e = ev?.detail?.originalEvent ?? ev?.originalEvent ?? ev
+        if (!e) return null
 
-        if (isTouchDevice()) {
-            const touch = ev.changedTouches?.[0] || ev.touches?.[0]
+        const src = e.changedTouches?.[0] ?? e.touches?.[0] ?? e
 
-            ev.clientX = touch.clientX
-            ev.clientY = touch.clientY
-            ev.pageX = touch.pageX
-            ev.pageY = touch.pageY
-        }
+        const clientX = typeof src.clientX === 'number' ? src.clientX : 0
+        const clientY = typeof src.clientY === 'number' ? src.clientY : 0
 
-        return ev
+        const pageX =
+            typeof src.pageX === 'number'
+                ? src.pageX
+                : clientX + ('undefined' !== typeof window ? window.scrollX : 0)
+        const pageY =
+            typeof src.pageY === 'number'
+                ? src.pageY
+                : clientY + ('undefined' !== typeof window ? window.scrollY : 0)
+
+        return { clientX, clientY, pageX, pageY }
     }
 }
 
