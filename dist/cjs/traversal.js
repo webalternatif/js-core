@@ -15,7 +15,7 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 /**
  * @template T
- * @typedef {Array<T> | Set<T> | Map<any, T> | Object<string, T> | string | string[]} Collection
+ * @typedef {Array<T> | readonly T[] | Set<T> | Map<any, T> | Object<string, T> | string | string[]} Collection
  */
 
 /**

@@ -10,7 +10,7 @@ import { sizeOf } from './utils.js';
 
 /**
  * @template T
- * @typedef {Array<T> | Set<T> | Map<any, T> | Object<string, T> | string | string[]} Collection
+ * @typedef {Array<T> | readonly T[] | Set<T> | Map<any, T> | Object<string, T> | string | string[]} Collection
  */
 
 /**

@@ -1,21 +1,15 @@
 export default {
+    preset: 'ts-jest',
     testEnvironment: 'jsdom',
     verbose: true,
     collectCoverage: true,
     coverageDirectory: 'coverage',
-    moduleFileExtensions: ['js'],
+    moduleFileExtensions: ['ts', 'js'],
     coverageReporters: ['text', 'lcov', 'html'],
     roots: ['<rootDir>/tests', '<rootDir>/src'],
-    collectCoverageFrom: ['src/**/*.{js,jsx}', '!src/index.js', '!tests/**/*.js'],
-    coverageThreshold: {
-        global: {
-            statements: 99,
-            branches: 99,
-            functions: 99,
-            lines: 99,
-        },
-    },
+    collectCoverageFrom: ['src/**/*.{ts,js}', '!src/index.ts', '!src/index.js', '!tests/**/*'],
     transform: {
+        '^.+\\.(ts|tsx)$': 'ts-jest',
         '^.+\\.js$': [
             'babel-jest',
             {

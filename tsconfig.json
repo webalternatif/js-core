@@ -12,6 +12,5 @@
         "baseUrl": "./",
     },
     "include": ["src/**/*.js"],
-    "exclude": [
-        "src/i18n", "index.js"]
+    "exclude": ["index.js"]
 }
