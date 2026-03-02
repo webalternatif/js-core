@@ -49,8 +49,6 @@ const enableLongTap = function () {
     }
 
     const move = (ev) => {
-        // if (!timer) return;
-
         const pos = Mouse.getViewportPosition(ev)
 
         if (Math.hypot(pos.x - startX, pos.y - startY) > MOVE_TOLERANCE) {
@@ -97,6 +95,8 @@ const enableDblTap = function () {
     // }
 
     const start = (ev) => {
+        if (ev.touches?.length === 1) ev.preventDefault()
+
         const target = ev.target
 
         if (Date.now() - lastTapTime > DBLTAP_DELAY) {
@@ -120,10 +120,10 @@ const enableDblTap = function () {
         }
     }
 
-    document.addEventListener('touchstart', start, { passive: true })
+    document.addEventListener('touchstart', start, { passive: false })
 
     teardownDblTap = () => {
-        document.removeEventListener('touchstart', start, { passive: true })
+        document.removeEventListener('touchstart', start)
         teardownDblTap = null
     }
 }

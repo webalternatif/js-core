@@ -48,8 +48,6 @@ var enableLongTap = function enableLongTap() {
     }, LONGPRESS_DELAY);
   };
   var move = function move(ev) {
-    // if (!timer) return;
-
     var pos = Mouse.getViewportPosition(ev);
     if (Math.hypot(pos.x - startX, pos.y - startY) > MOVE_TOLERANCE) {
       clearTimeout(timer);
@@ -99,6 +97,8 @@ var enableDblTap = function enableDblTap() {
   // }
 
   var start = function start(ev) {
+    var _ev$touches;
+    if (((_ev$touches = ev.touches) === null || _ev$touches === void 0 ? void 0 : _ev$touches.length) === 1) ev.preventDefault();
     var target = ev.target;
     if (Date.now() - lastTapTime > DBLTAP_DELAY) {
       lastTapTime = Date.now();
@@ -119,12 +119,10 @@ var enableDblTap = function enableDblTap() {
     }
   };
   document.addEventListener('touchstart', start, {
-    passive: true
+    passive: false
   });
   _teardownDblTap = function teardownDblTap() {
-    document.removeEventListener('touchstart', start, {
-      passive: true
-    });
+    document.removeEventListener('touchstart', start);
     _teardownDblTap = null;
   };
 };
