@@ -84,17 +84,17 @@ const enableDblTap = function () {
     let lastTapTime = 0
     let lastPos = null
 
-    if (isTouchDevice()) {
-        document.addEventListener(
-            'dblclick',
-            (ev) => {
-                ev.preventDefault()
-                ev.stopPropagation()
-                ev.stopImmediatePropagation()
-            },
-            { capture: true },
-        )
-    }
+    // if (isTouchDevice()) {
+    //     document.addEventListener(
+    //         'dblclick',
+    //         (ev) => {
+    //             ev.preventDefault()
+    //             ev.stopPropagation()
+    //             ev.stopImmediatePropagation()
+    //         },
+    //         { capture: true },
+    //     )
+    // }
 
     const start = (ev) => {
         const target = ev.target

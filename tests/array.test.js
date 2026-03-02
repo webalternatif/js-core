@@ -1,13 +1,5 @@
 import * as traversal from '../src/traversal.js'
-import {
-    arrayDiff,
-    arrayUnique,
-    compareArray,
-    inArray,
-    indexOf,
-    lastIndexOf,
-    range,
-} from '../src/array.js'
+import { arrayDiff, arrayUnique, inArray, indexOf, lastIndexOf, range } from '../src/array.js'
 import { each } from '../src/traversal.js'
 
 describe('array methods', () => {

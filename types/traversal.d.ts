@@ -5,6 +5,6 @@ export function reduce<T, R>(o: Collection<T>, callback: (accumulator: R | T, va
 export function extend<T>(...args: (boolean | T)[]): T;
 export function clone<T>(o: T): T;
 export function merge<T>(first: Collection<T>, second?: Collection<T>, ...args: Collection<T>[]): Array<T>;
-export type Collection<T> = Array<T> | Set<T> | Map<any, T> | {
+export type Collection<T> = Array<T> | readonly T[] | Set<T> | Map<any, T> | {
     [x: string]: T;
 } | string | string[];

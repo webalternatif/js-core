@@ -85,15 +85,19 @@ var enableDblTap = function enableDblTap() {
   var MOVE_TOLERANCE = 40;
   var lastTapTime = 0;
   var lastPos = null;
-  if (isTouchDevice()) {
-    document.addEventListener('dblclick', function (ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
-      ev.stopImmediatePropagation();
-    }, {
-      capture: true
-    });
-  }
+
+  // if (isTouchDevice()) {
+  //     document.addEventListener(
+  //         'dblclick',
+  //         (ev) => {
+  //             ev.preventDefault()
+  //             ev.stopPropagation()
+  //             ev.stopImmediatePropagation()
+  //         },
+  //         { capture: true },
+  //     )
+  // }
+
   var start = function start(ev) {
     var target = ev.target;
     if (Date.now() - lastTapTime > DBLTAP_DELAY) {
