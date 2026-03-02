@@ -95,8 +95,6 @@ const enableDblTap = function () {
     // }
 
     const start = (ev) => {
-        if (ev.touches?.length === 1) ev.preventDefault()
-
         const target = ev.target
 
         if (Date.now() - lastTapTime > DBLTAP_DELAY) {
@@ -106,6 +104,8 @@ const enableDblTap = function () {
             const pos = Mouse.getViewportPosition(ev)
 
             if (Math.hypot(pos.x - lastPos.x, pos.y - lastPos.y) <= MOVE_TOLERANCE) {
+                ev.preventDefault()
+
                 target.dispatchEvent(
                     new CustomEvent('dbltap', {
                         bubbles: true,

@@ -97,8 +97,6 @@ var enableDblTap = function enableDblTap() {
   // }
 
   var start = function start(ev) {
-    var _ev$touches;
-    if (((_ev$touches = ev.touches) === null || _ev$touches === void 0 ? void 0 : _ev$touches.length) === 1) ev.preventDefault();
     var target = ev.target;
     if (Date.now() - lastTapTime > DBLTAP_DELAY) {
       lastTapTime = Date.now();
@@ -106,6 +104,7 @@ var enableDblTap = function enableDblTap() {
     } else {
       var pos = Mouse.getViewportPosition(ev);
       if (Math.hypot(pos.x - lastPos.x, pos.y - lastPos.y) <= MOVE_TOLERANCE) {
+        ev.preventDefault();
         target.dispatchEvent(new CustomEvent('dbltap', {
           bubbles: true,
           cancelable: true,
