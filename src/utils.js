@@ -240,3 +240,36 @@ export const debounce = function (func, wait, immediate = false, context = null)
         }, wait)
     }
 }
+
+export const getScrollbarWidth = (() => {
+    let scrollbarWidth = null
+
+    return function () {
+        if (scrollbarWidth === null) {
+            const outer = document.createElement('div')
+
+            outer.style.visibility = 'hidden'
+            outer.style.width = '100px'
+            outer.style.msOverflowStyle = 'scrollbar'
+
+            document.body.appendChild(outer)
+
+            const widthNoScroll = outer.offsetWidth
+
+            outer.style.overflow = 'scroll'
+
+            const inner = document.createElement('div')
+            inner.style.width = '100%'
+
+            outer.appendChild(inner)
+
+            const widthWithScroll = inner.offsetWidth
+
+            outer.remove()
+
+            scrollbarWidth = widthNoScroll - widthWithScroll
+        }
+
+        return scrollbarWidth
+    }
+})()

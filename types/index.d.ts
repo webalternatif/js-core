@@ -19,6 +19,7 @@ declare const webf: {
     strParseFloat: (val: any) => number;
     throttle: (func: Function, wait: number, leading?: boolean, trailing?: boolean, context?: any) => Function;
     debounce: (func: Function, wait: number, immediate?: boolean, context?: any) => Function;
+    getScrollbarWidth: () => any;
     round: (val: number, precision?: number) => number;
     floorTo: (val: number, precision: number) => number;
     plancher: (val: number, precision: number) => number;
