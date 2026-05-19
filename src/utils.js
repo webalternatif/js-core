@@ -244,6 +244,12 @@ export const debounce = function (func, wait, immediate = false, context = null)
 export const getScrollbarWidth = (() => {
     let scrollbarWidth = null
 
+    /**
+     * Returns the browser scrollbar width in pixels.
+     * The value is computed once and then cached.
+     *
+     * @returns {number} - The scrollbar width in pixels.
+     */
     return function () {
         if (scrollbarWidth === null) {
             const outer = document.createElement('div')

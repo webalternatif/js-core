@@ -243,6 +243,13 @@ export var debounce = function debounce(func, wait) {
 };
 export var getScrollbarWidth = function () {
   var scrollbarWidth = null;
+
+  /**
+   * Returns the browser scrollbar width in pixels.
+   * The value is computed once and then cached.
+   *
+   * @returns {number} - The scrollbar width in pixels.
+   */
   return function () {
     if (scrollbarWidth === null) {
       var outer = document.createElement('div');
