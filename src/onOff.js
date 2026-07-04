@@ -1,7 +1,8 @@
-import { isFunction, isTouchDevice } from './is.js'
+import { isFunction, isString, isTouchDevice } from './is.js'
 import { foreach, map } from './traversal.js'
 import { inArray } from './array.js'
 import Mouse from './Mouse.js'
+import dom from './dom.js'
 
 const LISTENERS = new Map()
 const CUSTOM_EVENTS = ['longtap', 'dbltap']
@@ -178,14 +179,22 @@ function createWrappedEvent(ev, currentTarget) {
 }
 
 /**
- * @param {Element|Document|Window} el
+ * @param {Element|Document|Window|string} el
  * @param {string} events
  * @param {string|Element|function} selector
  * @param {function|AddEventListenerOptions|boolean} [handler]
  * @param {AddEventListenerOptions|boolean} [options]
- * @returns {Element}
+ * @returns {Element|Document|Window|string}
  */
 export function on(el, events, selector, handler, options) {
+    if (isString(el)) {
+        foreach(dom.find(el), (node) => {
+            on(node, events, selector, handler, options)
+        })
+
+        return el
+    }
+
     if (isFunction(selector)) {
         options = handler
         handler = selector
@@ -251,14 +260,22 @@ export function on(el, events, selector, handler, options) {
 }
 
 /**
- * @param {Element|Document|Window} el
+ * @param {Element|Document|Window|string} el
  * @param {string} [events]
  * @param {string|Element|function} [selector]
  * @param {function|AddEventListenerOptions|boolean} [handler]
  * @param {AddEventListenerOptions|boolean} [options]
- * @returns {Element}
+ * @returns {Element|Document|Window|string}
  */
 export function off(el, events, selector, handler, options) {
+    if (isString(el)) {
+        foreach(dom.find(el), (node) => {
+            off(node, events, selector, handler, options)
+        })
+
+        return el
+    }
+
     if (isFunction(selector)) {
         options = handler
         handler = selector

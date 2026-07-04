@@ -10,6 +10,10 @@ class Mouse {
         ev = this.#getEvent(ev)
         let rect = { left: 0, top: 0 }
 
+        if (!(element instanceof Element) && element?.[0] instanceof Element) {
+            element = element[0]
+        }
+
         if (element instanceof Element) {
             const r = element.getBoundingClientRect()
 

@@ -19,11 +19,15 @@ var Mouse = /*#__PURE__*/function () {
      * @returns {{x: number, y: number}}
      */
     function getPosition(ev, element) {
+      var _element;
       ev = _assertClassBrand(Mouse, this, _getEvent).call(this, ev);
       var rect = {
         left: 0,
         top: 0
       };
+      if (!(element instanceof Element) && ((_element = element) === null || _element === void 0 ? void 0 : _element[0]) instanceof Element) {
+        element = element[0];
+      }
       if (element instanceof Element) {
         var r = element.getBoundingClientRect();
         rect = {
