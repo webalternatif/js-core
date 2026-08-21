@@ -747,7 +747,7 @@ var dom = {
    * dom.show(el) // element becomes visible again with its original display
    *
    * @param {Element} el - Element to show
-   * @returns {Element} - The element
+   * @returns {Element} The element
    */
   show: function show(el) {
     var dataDisplay = this.data(el, '__display__');
@@ -762,16 +762,23 @@ var dom = {
   /**
    * Toggles the visibility of an element using `dom.hide` and `dom.show`.
    *
-   * The visibility state is determined from the computed display value,
-   * not only the inline style.
+   * If `state` is provided, the element is explicitly shown or hidden.
+   * Otherwise, its current visibility is determined from the computed
+   * `display` value, not only the inline style.
    *
    * @example
-   * dom.toggle(el) // hides if visible, shows if hidden
+   * dom.toggle(el)        // hides if visible, shows if hidden
+   * dom.toggle(el, true)  // shows the element
+   * dom.toggle(el, false) // hides the element
    *
    * @param {Element} el - Element to toggle
-   * @returns {Element} - The element
+   * @param {boolean} [state] - Whether the element should be shown (`true`) or hidden (`false`)
+   * @returns {Element} The element
    */
-  toggle: function toggle(el) {
+  toggle: function toggle(el, state) {
+    if (undefined !== state) {
+      return state ? this.show(el) : this.hide(el);
+    }
     return 'none' === this.css(el, 'display') ? this.show(el) : this.hide(el);
   },
   /**

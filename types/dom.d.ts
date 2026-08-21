@@ -487,22 +487,26 @@ declare namespace dom {
      * dom.show(el) // element becomes visible again with its original display
      *
      * @param {Element} el - Element to show
-     * @returns {Element} - The element
+     * @returns {Element} The element
      */
     export function show(el: Element): Element;
     /**
      * Toggles the visibility of an element using `dom.hide` and `dom.show`.
      *
-     * The visibility state is determined from the computed display value,
-     * not only the inline style.
+     * If `state` is provided, the element is explicitly shown or hidden.
+     * Otherwise, its current visibility is determined from the computed
+     * `display` value, not only the inline style.
      *
      * @example
-     * dom.toggle(el) // hides if visible, shows if hidden
+     * dom.toggle(el)        // hides if visible, shows if hidden
+     * dom.toggle(el, true)  // shows the element
+     * dom.toggle(el, false) // hides the element
      *
      * @param {Element} el - Element to toggle
-     * @returns {Element} - The element
+     * @param {boolean} [state] - Whether the element should be shown (`true`) or hidden (`false`)
+     * @returns {Element} The element
      */
-    export function toggle(el: Element): Element;
+    export function toggle(el: Element, state?: boolean): Element;
     /**
      * Gets, sets, or removes data-* attributes on an element.
      *
