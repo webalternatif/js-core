@@ -1826,8 +1826,8 @@ describe('dom manipulation', () => {
 
             jest.spyOn(Mouse, 'getViewportPosition').mockReturnValueOnce({ x: 10, y: 10 })
 
-            dispatchTouch(el, 'touchstart')
-            dispatchTouch(el, 'touchmove')
+            dispatchTouch(el, 'pointerdown')
+            dispatchTouch(el, 'pointermove')
 
             jest.advanceTimersByTime(799)
             expect(handler).not.toHaveBeenCalled()
@@ -1844,8 +1844,8 @@ describe('dom manipulation', () => {
                 .mockReturnValueOnce({ x: 10, y: 10 })
                 .mockReturnValueOnce({ x: 50, y: 50 })
 
-            dispatchTouch(el, 'touchstart')
-            dispatchTouch(el, 'touchmove')
+            dispatchTouch(el, 'pointerdown')
+            dispatchTouch(el, 'pointermove')
 
             jest.advanceTimersByTime(800)
 
@@ -1858,8 +1858,8 @@ describe('dom manipulation', () => {
 
             jest.spyOn(Mouse, 'getViewportPosition').mockReturnValueOnce({ x: 10, y: 10 })
 
-            dispatchTouch(el, 'touchstart')
-            dispatchTouch(el, 'touchend')
+            dispatchTouch(el, 'pointerdown')
+            dispatchTouch(el, 'pointerup')
 
             jest.advanceTimersByTime(800)
 
@@ -1904,7 +1904,7 @@ describe('dom manipulation', () => {
 
             jest.spyOn(Mouse, 'getViewportPosition').mockReturnValueOnce({ x: 10, y: 10 })
 
-            dispatchTouch(child1, 'touchstart')
+            dispatchTouch(child1, 'pointerdown')
 
             jest.advanceTimersByTime(800)
 
@@ -1924,7 +1924,7 @@ describe('dom manipulation', () => {
             dom.on(el, 'longtap', handler)
 
             const longtapBindings = addSpy.mock.calls.filter(
-                ([eventName]) => eventName === 'touchstart',
+                ([eventName]) => eventName === 'pointerdown',
             )
 
             expect(longtapBindings.length).toBe(1)
