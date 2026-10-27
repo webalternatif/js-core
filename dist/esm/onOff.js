@@ -33,6 +33,7 @@ var enableLongTap = function enableLongTap() {
   var startY = 0;
   var target = null;
   var start = function start(ev) {
+    clearTimeout(timer);
     target = ev.target;
     var pos = Mouse.getViewportPosition(ev);
     startX = pos.x;
@@ -59,23 +60,23 @@ var enableLongTap = function enableLongTap() {
     clearTimeout(timer);
     timer = null;
   };
-  document.addEventListener('touchstart', start, {
+  document.addEventListener('pointerdown', start, {
     passive: true
   });
-  document.addEventListener('touchmove', move, {
+  document.addEventListener('pointermove', move, {
     passive: true
   });
-  document.addEventListener('touchend', end);
-  document.addEventListener('touchcancel', end);
+  document.addEventListener('pointerup', end);
+  document.addEventListener('pointercancel', end);
   _teardownLongTap = function teardownLongTap() {
-    document.removeEventListener('touchstart', start, {
+    document.removeEventListener('pointerdown', start, {
       passive: true
     });
-    document.removeEventListener('touchmove', move, {
+    document.removeEventListener('pointermove', move, {
       passive: true
     });
-    document.removeEventListener('touchend', end);
-    document.removeEventListener('touchcancel', end);
+    document.removeEventListener('pointerup', end);
+    document.removeEventListener('pointercancel', end);
     _teardownLongTap = null;
   };
 };

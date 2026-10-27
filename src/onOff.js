@@ -30,6 +30,8 @@ const enableLongTap = function () {
     let target = null
 
     const start = (ev) => {
+        clearTimeout(timer)
+
         target = ev.target
 
         const pos = Mouse.getViewportPosition(ev)
@@ -63,16 +65,16 @@ const enableLongTap = function () {
         timer = null
     }
 
-    document.addEventListener('touchstart', start, { passive: true })
-    document.addEventListener('touchmove', move, { passive: true })
-    document.addEventListener('touchend', end)
-    document.addEventListener('touchcancel', end)
+    document.addEventListener('pointerdown', start, { passive: true })
+    document.addEventListener('pointermove', move, { passive: true })
+    document.addEventListener('pointerup', end)
+    document.addEventListener('pointercancel', end)
 
     teardownLongTap = () => {
-        document.removeEventListener('touchstart', start, { passive: true })
-        document.removeEventListener('touchmove', move, { passive: true })
-        document.removeEventListener('touchend', end)
-        document.removeEventListener('touchcancel', end)
+        document.removeEventListener('pointerdown', start, { passive: true })
+        document.removeEventListener('pointermove', move, { passive: true })
+        document.removeEventListener('pointerup', end)
+        document.removeEventListener('pointercancel', end)
         teardownLongTap = null
     }
 }
